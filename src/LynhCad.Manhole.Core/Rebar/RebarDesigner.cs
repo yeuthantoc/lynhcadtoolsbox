@@ -64,6 +64,13 @@ namespace LynhCad.Manhole.Core.Rebar
         public IEnumerable<MatLayer> AllLayers { get { return BaseLayers.Concat(RoofLayers); } }
     }
 
+    /// <summary>Vòng thép chữ nhật quanh tâm hố, ghi bằng nửa kích thước theo X và Y.</summary>
+    public struct HalfSize
+    {
+        public readonly double X, Y;
+        public HalfSize(double x, double y) { X = x; Y = y; }
+    }
+
     public class RebarDesign
     {
         public RebarLayout Layout;
@@ -206,7 +213,7 @@ namespace LynhCad.Manhole.Core.Rebar
 
             int vertCount = 0;
             foreach (var loop in VerticalLoops(g, L))
-                vertCount += LoopPositions(loop.Item1, loop.Item2, L.SV).Count;
+                vertCount += LoopPositions(loop.X, loop.Y, L.SV).Count;
             sets.Add(new BarSetInfo { Key = BarSets.WallVert, Dia = L.DV, Spacing = L.SV, Suffix = "EF VERT" });
             items.Add(new BarItem { SetKey = BarSets.WallVert, Group = 'W', Dia = L.DV, Shape = BarShape.L, A = vertA, B = L.VertLeg, Count = vertCount });
 
@@ -216,7 +223,7 @@ namespace LynhCad.Manhole.Core.Rebar
             sets.Add(new BarSetInfo { Key = BarSets.WallHoriz, Dia = L.DH, Spacing = L.SH, Suffix = "EF HORIZ" });
             foreach (var loop in HorizontalLoops(g, L))
             {
-                double bx = loop.Item1, by = loop.Item2;
+                double bx = loop.X, by = loop.Y;
                 double leg = Math.Min(2 * by, by + L.Lap / 2);
                 items.Add(new BarItem { SetKey = BarSets.WallHoriz, Group = 'W', Dia = L.DH, Shape = BarShape.U, A = leg, B = 2 * bx, C = leg, Count = 2 * nLevels });
             }
@@ -241,22 +248,22 @@ namespace LynhCad.Manhole.Core.Rebar
         }
 
         /// <summary>Hai vòng thép đứng (mặt trong, mặt ngoài) dạng nửa kích thước (ax, ay).</summary>
-        public static List<Tuple<double, double>> VerticalLoops(ManholeGeometry g, RebarLayout L)
+        public static List<HalfSize> VerticalLoops(ManholeGeometry g, RebarLayout L)
         {
-            return new List<Tuple<double, double>>
+            return new List<HalfSize>
             {
-                Tuple.Create(g.Li / 2 + L.VertOffset, g.Wi / 2 + L.VertOffset),
-                Tuple.Create(g.Lo / 2 - L.VertOffset, g.Wo / 2 - L.VertOffset),
+                new HalfSize(g.Li / 2 + L.VertOffset, g.Wi / 2 + L.VertOffset),
+                new HalfSize(g.Lo / 2 - L.VertOffset, g.Wo / 2 - L.VertOffset),
             };
         }
 
         /// <summary>Hai vòng thép ngang (mặt trong, mặt ngoài) dạng nửa kích thước (bx, by).</summary>
-        public static List<Tuple<double, double>> HorizontalLoops(ManholeGeometry g, RebarLayout L)
+        public static List<HalfSize> HorizontalLoops(ManholeGeometry g, RebarLayout L)
         {
-            return new List<Tuple<double, double>>
+            return new List<HalfSize>
             {
-                Tuple.Create(g.Li / 2 + L.HorizOffset, g.Wi / 2 + L.HorizOffset),
-                Tuple.Create(g.Lo / 2 - L.HorizOffset, g.Wo / 2 - L.HorizOffset),
+                new HalfSize(g.Li / 2 + L.HorizOffset, g.Wi / 2 + L.HorizOffset),
+                new HalfSize(g.Lo / 2 - L.HorizOffset, g.Wo / 2 - L.HorizOffset),
             };
         }
 

@@ -229,16 +229,16 @@ namespace LynhCad.Manhole.Core.Model
         /// <summary>
         /// Hố tròn: các khoảng góc bị lỗ xuyên chiếm trên đường tròn bán kính r (radian, CCW, tâm = góc ống).
         /// </summary>
-        public List<Tuple<double, double>> AngularGaps(double r)
+        public List<Interval> AngularGaps(double r)
         {
-            var list = new List<Tuple<double, double>>();
+            var list = new List<Interval>();
             foreach (var f in Pipes)
             {
                 double a = GeomUtil.NormAngle(f.Dir.Angle());
                 double half = Math.Asin(Math.Min(1, f.HalfGap / r));
-                list.Add(Tuple.Create(a - half, a + half));
+                list.Add(new Interval(a - half, a + half));
             }
-            list.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+            list.Sort((x, y) => x.Min.CompareTo(y.Min));
             return list;
         }
 

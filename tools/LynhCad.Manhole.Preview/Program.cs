@@ -123,6 +123,12 @@ namespace LynhCad.Manhole.Preview
 
             Eq("mass N12", 8.88, new BarMark { Dia = 12, Length = 1000, Count = 10 }.Mass, 1e-9);
             Eq("bulge 90", Math.Tan(Math.PI / 8), GeomUtil.Bulge(Math.PI / 2));
+
+            // bảng thống kê làm tròn lên 10 mm nhưng không sửa BarItem đầu vào
+            var item = new BarItem { SetKey = "S", Group = 'B', Dia = 12, Shape = BarShape.Straight, A = 1234, Count = 2 };
+            var built = RebarSchedule.Build(new[] { item }, new BarSetInfo[0]);
+            Eq("schedule rounds up", 1240, built.Marks[0].Length);
+            Eq("schedule keeps input", 1234, item.A);
         }
 
         private static void RectangularSample()

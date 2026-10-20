@@ -83,8 +83,8 @@ namespace LynhCad.Manhole.Core.Drawing
             for (int k = 0; k < n; k++)
             {
                 int k2 = (k + 1) % n;
-                double o0 = gapsO[k].Item2, o1 = gapsO[k2].Item1;
-                double i0 = gapsI[k].Item2, i1 = gapsI[k2].Item1;
+                double o0 = gapsO[k].Max, o1 = gapsO[k2].Min;
+                double i0 = gapsI[k].Max, i1 = gapsI[k2].Min;
                 if (k2 <= k) { o1 += 2 * Math.PI; i1 += 2 * Math.PI; }
                 if (o1 - o0 < 1e-6) continue;
 
@@ -99,8 +99,8 @@ namespace LynhCad.Manhole.Core.Drawing
             // cạnh lỗ xuyên (song song trục ống)
             for (int k = 0; k < n; k++)
             {
-                m.Add(PPolyline.Line(Vec2.FromAngle(gapsO[k].Item1) * g.Ro, Vec2.FromAngle(gapsI[k].Item1) * g.Ri, Layers.Concrete));
-                m.Add(PPolyline.Line(Vec2.FromAngle(gapsO[k].Item2) * g.Ro, Vec2.FromAngle(gapsI[k].Item2) * g.Ri, Layers.Concrete));
+                m.Add(PPolyline.Line(Vec2.FromAngle(gapsO[k].Min) * g.Ro, Vec2.FromAngle(gapsI[k].Min) * g.Ri, Layers.Concrete));
+                m.Add(PPolyline.Line(Vec2.FromAngle(gapsO[k].Max) * g.Ro, Vec2.FromAngle(gapsI[k].Max) * g.Ri, Layers.Concrete));
             }
             callouts.Add(new Annot.Callout(Vec2.FromAngle(1.25 * Math.PI) * (g.Ri + g.Tw / 2),
                 string.Format("PRECAST MANHOLE SHAFT\nID {0:0}, WALL {1:0}", g.P.InternalDiameter, g.Tw), false));
@@ -174,9 +174,10 @@ namespace LynhCad.Manhole.Core.Drawing
             double c = L.Cover;
 
             // Thép ngang: vòng trong & vòng ngoài, đứt tại lỗ ống
-            foreach (var loop in RebarDesigner.HorizontalLoops(g, L))
+            var horizLoops = RebarDesigner.HorizontalLoops(g, L);
+            foreach (var loop in horizLoops)
             {
-                double bx = loop.Item1, by = loop.Item2;
+                double bx = loop.X, by = loop.Y;
                 DrawLoopSide(new Vec2(-bx, by), new Vec2(bx, by), WallSide.North, true, c);
                 DrawLoopSide(new Vec2(-bx, -by), new Vec2(bx, -by), WallSide.South, true, c);
                 DrawLoopSide(new Vec2(bx, -by), new Vec2(bx, by), WallSide.East, false, c);
@@ -186,15 +187,15 @@ namespace LynhCad.Manhole.Core.Drawing
             // Thép đứng: chấm
             Vec2? sampleDot = null;
             foreach (var loop in RebarDesigner.VerticalLoops(g, L))
-                foreach (var p in RebarDesigner.LoopPositions(loop.Item1, loop.Item2, L.SV))
+                foreach (var p in RebarDesigner.LoopPositions(loop.X, loop.Y, L.SV))
                 {
                     if (InPipeGap(p, c)) continue;
                     m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV) });
-                    if (sampleDot == null && p.Y < 0 && p.X < 0 && Math.Abs(p.X + loop.Item1) < 1e-6) sampleDot = p;
+                    if (sampleDot == null && p.Y < 0 && p.X < 0 && Math.Abs(p.X + loop.X) < 1e-6) sampleDot = p;
                 }
 
-            var hb = RebarDesigner.HorizontalLoops(g, L)[1];
-            callouts.Add(new Annot.Callout(new Vec2(-hb.Item1, -g.Wi / 4), rd.Schedule.Callout(BarSets.WallHoriz)));
+            var outer = horizLoops[1];
+            callouts.Add(new Annot.Callout(new Vec2(-outer.X, -g.Wi / 4), rd.Schedule.Callout(BarSets.WallHoriz)));
             if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
         }
 

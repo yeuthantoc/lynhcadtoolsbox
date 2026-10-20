@@ -74,6 +74,16 @@ namespace LynhCad.Manhole.Core.Rebar
             }
         }
 
+        /// <summary>Bản sao với A, B, C làm tròn lên 10 mm như thông lệ bảng thống kê (không sửa bản gốc).</summary>
+        internal BarItem RoundedTo10()
+        {
+            var r = (BarItem)MemberwiseClone();
+            r.A = GeomUtil.RoundUp(A, 10);
+            r.B = GeomUtil.RoundUp(B, 10);
+            r.C = GeomUtil.RoundUp(C, 10);
+            return r;
+        }
+
         internal string Signature
         {
             get { return string.Format("{0}|{1}|{2}|{3:0}|{4:0}|{5:0}", Group, Dia, Shape, A, B, C); }
@@ -167,15 +177,10 @@ namespace LynhCad.Manhole.Core.Rebar
                 .Select((it, idx) => new { it, idx })
                 .OrderBy(x => groupOrder.IndexOf(x.it.Group) < 0 ? 99 : groupOrder.IndexOf(x.it.Group))
                 .ThenBy(x => x.idx)
-                .Select(x => x.it);
+                .Select(x => x.it.RoundedTo10());
 
             foreach (var it in ordered)
             {
-                // làm tròn kích thước lên 10 mm như thông lệ bảng thống kê
-                it.A = GeomUtil.RoundUp(it.A, 10);
-                it.B = GeomUtil.RoundUp(it.B, 10);
-                it.C = GeomUtil.RoundUp(it.C, 10);
-
                 BarMark m;
                 if (!bySig.TryGetValue(it.Signature, out m))
                 {
