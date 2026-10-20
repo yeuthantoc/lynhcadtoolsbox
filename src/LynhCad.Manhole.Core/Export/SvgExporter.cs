@@ -142,7 +142,7 @@ namespace LynhCad.Manhole.Core.Export
             {
                 var lines = t.Lines;
                 double fs = t.Height / 0.72;
-                double lineStep = t.Height * 1.5;
+                double lineStep = t.Height * PText.LineSpacing;
                 string anchor = t.Align == TextAlign.Left ? "start" : t.Align == TextAlign.Center ? "middle" : "end";
                 double blockH = (lines.Length - 1) * lineStep;
                 // y (model) của baseline dòng đầu

@@ -115,6 +115,7 @@ Hộp thoại có nút **Load JSON / Save JSON** để lưu cấu hình chuẩn 
 - Tab Pipes: **DN**, **OD** và **Material** chọn từ danh sách (hoặc gõ giá trị khác). Đổi DN / vật liệu thì OD tự điền theo danh mục (`PipeCatalog`: PVC-U AS/NZS 1260, PE100, DICL; vật liệu khác OD ≈ 1.2·DN) — chỉ là giá trị gợi ý, cần kiểm tra theo catalogue nhà sản xuất.
 - **Mặt bản đáy** = đáy ngoài thấp nhất của các ống − `sumpDepth`. **Mặt bản nắp** = `coverLevel` − `coverAllowance`.
 - **Mặt cắt A-A** luôn đi dọc trục ống ra (ống ra nằm bên phải), nhìn về phía trái của hướng ống ra.
+- **Ghi chú (callout)**: xếp thành cột hai bên hình, cách nhau ≥ 1.2 × chiều cao chữ; leader ngang khi chữ cùng cao độ với điểm đặt, nếu phải dời chữ thì gãy khúc 45° (hoặc 90°) tính từ điểm đặt rồi landing ngang; các leader không cắt nhau và giữ khoảng trống 1.2 × chiều cao chữ với số kích thước / nhãn cao độ. Mặt bằng thép bản nắp đặt thẳng tim dưới mặt bằng.
 
 ## File thông số JSON
 

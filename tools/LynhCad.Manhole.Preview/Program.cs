@@ -103,6 +103,7 @@ namespace LynhCad.Manhole.Preview
             Json();
             Naming();
             Overlap();
+            CalloutLayout();
             Blocks();
             Catalog();
             Snapshot();
@@ -391,16 +392,96 @@ namespace LynhCad.Manhole.Preview
                 var st = new DrawStyle(p.Scale);
                 var dims = res.Model.Items.OfType<PDim>().Select(d => Annot.DimTextRect(d, st)).ToList();
                 var texts = res.Model.Items.SelectMany(i => i is PBlock ? SymbolLibrary.Expand((PBlock)i).Items : new List<Prim> { i })
-                    .OfType<PText>().Where(t => t.Layer == Layers.Text).Select(Annot.TextRect).ToList();
+                    .OfType<PText>().Where(t => t.Layer == Layers.Text).Select(t => Annot.TextRect(t)).ToList();
                 foreach (var l in res.Model.Items.OfType<PLeader>())
                 {
-                    var box = Annot.TextRect(new PText { Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align });
+                    // hộp chữ ghi chú sát chữ; vật cản đã nới ClearanceFactor → chữ ghi chú phải cách số kích thước / chữ khác ≥ khoảng trống đó
+                    var box = Annot.TextRect(new PText { Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align }, 0);
                     string name = p.Id + " leader '" + l.Text.Replace('\n', ' ') + "'";
                     True(name + " text clear of dim text", !dims.Any(r => Overlaps(r, box)));
                     True(name + " text clear of other text", !texts.Any(r => Overlaps(r, box)));
                     for (int i = 0; i + 1 < l.Points.Count; i++)
                         True(name + " line clear of dim text", !dims.Any(r => GeomUtil.SegmentIntersectsRect(l.Points[i], l.Points[i + 1], r)));
                 }
+            }
+        }
+
+        /// <summary>
+        /// Cách xếp ghi chú: khoảng hở giữa hai ghi chú liền nhau ≥ 1.2 chiều cao chữ; leader hoặc ngang, hoặc gãy khúc
+        /// với đoạn xiên đúng 45° / đứng 90° từ điểm đặt và landing ngang tới chữ; bản nắp cùng tim X với mặt bằng.
+        /// </summary>
+        private static void CalloutLayout()
+        {
+            var st = new DrawStyle(20);
+            double h = st.TextSmall;
+
+            // leader thẳng / 45° / 90°
+            var flat = Annot.LeaderPoints(new Vec2(0, 0), -500, 0, h);
+            True("leader flat has 2 points", flat.Count == 2);
+            var diag = Annot.LeaderPoints(new Vec2(0, 0), -500, -200, h);
+            True("segments cross", GeomUtil.SegmentsCross(new Vec2(0, 0), new Vec2(10, 10), new Vec2(0, 10), new Vec2(10, 0)));
+            True("segments touching at end do not cross", !GeomUtil.SegmentsCross(new Vec2(0, 0), new Vec2(10, 10), new Vec2(10, 10), new Vec2(20, 0)));
+            True("parallel segments do not cross", !GeomUtil.SegmentsCross(new Vec2(0, 0), new Vec2(10, 10), new Vec2(0, 5), new Vec2(10, 15)));
+            True("leader 45°: 3 points", diag.Count == 3);
+            Eq("leader 45° knee x", -200, diag[1].X);
+            Eq("leader 45° knee y", -200, diag[1].Y);
+            var vert = Annot.LeaderPoints(new Vec2(0, 0), -500, -480, h);
+            True("leader 90° when 45° leaves no landing", vert.Count == 3 && vert[1].X == 0 && vert[1].Y == -480);
+
+            // cột ghi chú: nhiều điểm cùng cao độ → chữ xếp xuống, cách nhau ≥ 1.2h, leader gãy đúng góc
+            var m = new DrawingModel();
+            var items = Enumerable.Range(0, 4).Select(i => new Annot.Callout(new Vec2(0, -i * 10), "NOTE " + i + "\nLINE 2")).ToList();
+            Annot.CalloutColumn(m, st, items, -800, -1);
+            var leaders = m.Items.OfType<PLeader>().OrderByDescending(l => l.TextPosition.Y).ToList();
+            Eq("column count", 4, leaders.Count);
+            for (int i = 0; i + 1 < leaders.Count; i++)
+            {
+                double bottom = leaders[i].TextPosition.Y - 2 * h * PText.LineSpacing / 2;
+                double top = leaders[i + 1].TextPosition.Y + 2 * h * PText.LineSpacing / 2;
+                True("column gap " + i + " >= 1.2h", bottom - top >= Annot.CalloutGapFactor * h - 1e-6);
+            }
+            foreach (var l in leaders)
+            {
+                var pts = l.Points;
+                True("leader last segment horizontal", Math.Abs(pts[pts.Count - 1].Y - pts[pts.Count - 2].Y) < 1e-9);
+                if (pts.Count == 3)
+                {
+                    var d = pts[1] - pts[0];
+                    True("leader first segment 45° or 90°", Math.Abs(Math.Abs(d.X) - Math.Abs(d.Y)) < 1e-9 || Math.Abs(d.X) < 1e-9);
+                }
+            }
+
+            // mọi mẫu: leader đều ngang hoặc gãy đúng góc, cùng quy tắc
+            foreach (var p in new[] { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular(), ManholeParams.SampleCircularCast() })
+            {
+                var res = DetailComposer.Compose(p);
+                foreach (var l in res.Model.Items.OfType<PLeader>())
+                {
+                    var pts = l.Points;
+                    True(p.Id + " leader '" + l.Text.Split('\n')[0] + "' ends horizontal", Math.Abs(pts[pts.Count - 1].Y - pts[pts.Count - 2].Y) < 1e-9);
+                    if (pts.Count == 3)
+                    {
+                        var d = pts[1] - pts[0];
+                        True(p.Id + " leader '" + l.Text.Split('\n')[0] + "' 45°/90°", Math.Abs(Math.Abs(d.X) - Math.Abs(d.Y)) < 1e-9 || Math.Abs(d.X) < 1e-9);
+                    }
+                }
+                // leader trong cùng một hình không cắt nhau
+                var all = res.Model.Items.OfType<PLeader>().ToList();
+                for (int a = 0; a < all.Count; a++)
+                    for (int b = a + 1; b < all.Count; b++)
+                    {
+                        bool cross = false;
+                        for (int i = 0; i + 1 < all[a].Points.Count; i++)
+                            for (int j = 0; j + 1 < all[b].Points.Count; j++)
+                                cross |= GeomUtil.SegmentsCross(all[a].Points[i], all[a].Points[i + 1], all[b].Points[j], all[b].Points[j + 1]);
+                        True(p.Id + " leaders '" + all[a].Text.Split('\n')[0] + "' / '" + all[b].Text.Split('\n')[0] + "' do not cross", !cross);
+                    }
+
+                // bản nắp cùng tim X với mặt bằng (tiêu đề cả hai căn giữa tại tim)
+                var titles = res.Model.Items.OfType<PText>().Where(t => t.Layer == Layers.Title).ToList();
+                var plan = titles.First(t => t.Text.StartsWith("PLAN"));
+                var roof = titles.First(t => t.Text.StartsWith("ROOF SLAB"));
+                Eq(p.Id + " roof plan aligned with plan", plan.Position.X, roof.Position.X);
             }
         }
 

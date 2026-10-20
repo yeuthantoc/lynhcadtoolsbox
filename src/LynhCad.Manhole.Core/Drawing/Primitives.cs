@@ -219,7 +219,10 @@ namespace LynhCad.Manhole.Core.Drawing
             get { return Lines.Max(l => l.Length) * Height * 0.8; }
         }
 
-        public double EstimatedHeight { get { return Lines.Length * Height * 1.5; } }
+        /// <summary>Bước dòng của MText AutoCAD (line spacing 1.0 = 5/3 chiều cao chữ). SVG và cách xếp ghi chú dùng cùng giá trị.</summary>
+        public const double LineSpacing = 5.0 / 3.0;
+
+        public double EstimatedHeight { get { return Lines.Length * Height * LineSpacing; } }
 
         public override void AddBounds(Bounds b)
         {

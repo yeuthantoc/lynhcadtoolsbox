@@ -58,6 +58,19 @@ namespace LynhCad.Manhole.Core.Geometry
             return new Interval(t0, t1);
         }
 
+        /// <summary>Hai đoạn a–b và c–d có cắt nhau thật sự không (cắt tại điểm trong của cả hai; chạm đầu mút không tính).</summary>
+        public static bool SegmentsCross(Vec2 a, Vec2 b, Vec2 c, Vec2 d)
+        {
+            var ab = b - a; var cd = d - c;
+            double den = ab.Cross(cd);
+            if (Math.Abs(den) < 1e-12) return false; // song song / trùng phương
+            var ac = c - a;
+            double t = ac.Cross(cd) / den;
+            double u = ac.Cross(ab) / den;
+            const double e = 1e-6;
+            return t > e && t < 1 - e && u > e && u < 1 - e;
+        }
+
         /// <summary>Đoạn thẳng a–b có cắt qua (hoặc nằm trong) hình chữ nhật r không.</summary>
         public static bool SegmentIntersectsRect(Vec2 a, Vec2 b, Rect2 r)
         {

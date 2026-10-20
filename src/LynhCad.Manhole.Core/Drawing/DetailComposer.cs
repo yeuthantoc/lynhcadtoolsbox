@@ -57,10 +57,11 @@ namespace LynhCad.Manhole.Core.Drawing
             double x = bp.MinX;
             if (p.DrawRoofPlan)
             {
+                // bản nắp đặt thẳng dưới mặt bằng, cùng tim X (cả hai dựng quanh tâm hố (0,0)) để cạnh bản nắp thẳng hàng với tường
                 var roof = new RoofPlanBuilder(g, rd, st).Build();
                 AddTitleBelow(roof, st, 0, "ROOF SLAB REINFORCEMENT" + id, scaleText);
                 var br = roof.GetBounds();
-                roof.Translate(new Vec2(x - br.MinX, row2Top - br.MaxY));
+                roof.Translate(new Vec2(0, row2Top - br.MaxY));
                 br = roof.GetBounds();
                 all.AddRange(roof);
                 x = br.MaxX + gap;

@@ -327,7 +327,11 @@ namespace LynhCad.Manhole.Core.Drawing
             if (text == null) return;
             var range = roof ? roofS : baseS;
             double sTarget = range.Min + Math.Min(250, range.Length * 0.15);
-            callouts.Add(new Annot.Callout(new Vec2(sTarget, layer.Z), text));
+            var c = new Annot.Callout(new Vec2(sTarget, layer.Z), text);
+            // lưới thép chạy suốt bản: nếu leader từ điểm chính vướng chữ kích thước thì chỉ vào điểm xa tường hơn
+            foreach (var f in new[] { 0.25, 0.35, 0.45 })
+                c.AltTargets.Add(new Vec2(range.Min + range.Length * f, layer.Z));
+            callouts.Add(c);
         }
 
         private void DrawWallRebar()
