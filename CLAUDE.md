@@ -33,7 +33,7 @@ Plugin build (Windows only, WPF + net48):
 .\build.ps1 -AcadDir "C:\Program Files\Autodesk\AutoCAD 2024"   # reference AutoCAD's own DLLs instead of NuGet
 ```
 
-`.github/workflows/build.yml` builds the bundle on `windows-latest` and uploads it as an artifact. The plugin project does not build on Linux (no WPF SDK); to type-check `Commands.cs`/`AcadRenderer.cs`/`AcadSetup.cs` there, compile them in a throwaway net48 project that references `AutoCAD.NET` and stubs `ManholeWindow`.
+`.github/workflows/build.yml` builds the bundle on `windows-latest`, uploads it as an artifact and, on `main`, replaces `LynhCadToolsBox-AutoCAD2023.zip` on the `latest` GitHub release. `install-acad2023.ps1` (end-user installer, saved as UTF-8 with BOM + CRLF so Windows PowerShell 5.1 reads the Vietnamese text) downloads that zip and copies the bundle to `%APPDATA%\Autodesk\ApplicationPlugins`. The plugin project does not build on Linux (no WPF SDK); to type-check `Commands.cs`/`AcadRenderer.cs`/`AcadSetup.cs` there, compile them in a throwaway net48 project that references `AutoCAD.NET` and stubs `ManholeWindow`.
 
 ## Architecture
 

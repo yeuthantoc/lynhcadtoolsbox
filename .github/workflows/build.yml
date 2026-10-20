@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -28,3 +31,18 @@ jobs:
         with:
           name: LynhCadToolsBox-AutoCAD${{ matrix.acad }}
           path: dist/
+
+      # Bản build trên main được đăng lên release "latest" để install-acad2023.ps1 tải về (không cần đăng nhập GitHub)
+      - name: Publish to release "latest"
+        if: github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $zip = "LynhCadToolsBox-AutoCAD${{ matrix.acad }}.zip"
+          Compress-Archive -Path dist\LynhCadToolsBox.bundle -DestinationPath $zip -Force
+          gh release view latest *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create latest --target main --title "Latest build" --notes "Bản build tự động mới nhất từ main. Cài bằng install-acad2023.ps1."
+          }
+          gh release upload latest $zip --clobber

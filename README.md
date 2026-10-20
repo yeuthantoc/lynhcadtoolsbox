@@ -57,7 +57,14 @@ cd lynhcadtoolsbox
 .\build.ps1 -AcadDir "C:\Program Files\Autodesk\AutoCAD 2024"
 ```
 
-Không có máy build: mỗi lần push, GitHub Actions (tab **Actions** → *Build plugin*) build sẵn bundle cho AutoCAD 2023, tải ở mục **Artifacts**, giải nén `LynhCadToolsBox.bundle` vào `%APPDATA%\Autodesk\ApplicationPlugins`.
+**Cài nhanh cho AutoCAD 2023 (không cần build):** tải [`install-acad2023.ps1`](install-acad2023.ps1), đóng AutoCAD, rồi chạy
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install-acad2023.ps1             # tải bản mới nhất và cài
+powershell -ExecutionPolicy Bypass -File .\install-acad2023.ps1 -Uninstall  # gỡ
+```
+
+Script tải bản build mới nhất ở release [`latest`](https://github.com/yeuthantoc/lynhcadtoolsbox/releases/tag/latest). GitHub Actions tự build lại release này mỗi lần push lên `main`.
 
 Không muốn cài bundle: trong AutoCAD gõ `NETLOAD` rồi chọn `src\LynhCad.Manhole.Plugin\bin\Release\net48\LynhCad.Manhole.dll`.
 
