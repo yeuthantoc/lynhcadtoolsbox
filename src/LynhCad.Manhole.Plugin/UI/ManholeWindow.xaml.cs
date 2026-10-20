@@ -59,10 +59,19 @@ namespace LynhCad.Manhole.Plugin.UI
         /// <summary>Ẩn/hiện các trường riêng của hố chữ nhật / hố tròn.</summary>
         private void UpdateTypePanels()
         {
-            if (grpRect == null || Params == null) return;
+            if (grpRect == null || txtCastWall == null || Params == null) return;
             bool rect = IsRect;
             grpRect.Visibility = rect ? Visibility.Visible : Visibility.Collapsed;
             grpCirc.Visibility = rect ? Visibility.Collapsed : Visibility.Visible;
+
+            // hố tròn: đúc sẵn dùng chiều dày vách + chiều cao đốt; đổ tại chỗ dùng chiều dày tường BTCT
+            bool precast = Params.Type == ManholeType.CircularPrecast;
+            grpCirc.Header = precast ? "Circular precast" : "Circular cast in-situ";
+            var precastVis = precast ? Visibility.Visible : Visibility.Collapsed;
+            foreach (UIElement el in new UIElement[] { lblPrecastWall, txtPrecastWall, lblRing, txtRing, unitRing })
+                el.Visibility = precastVis;
+            foreach (UIElement el in new UIElement[] { lblCastWall, txtCastWall })
+                el.Visibility = precast ? Visibility.Collapsed : Visibility.Visible;
             var openVis = rect ? Visibility.Visible : Visibility.Collapsed;
             foreach (UIElement el in new UIElement[] { lblOpenX, txtOpenX, unitOpenX, lblOpenY, txtOpenY, unitOpenY })
                 el.Visibility = openVis;

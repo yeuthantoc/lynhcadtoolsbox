@@ -10,6 +10,8 @@ namespace LynhCad.Manhole.Core.Model
         RectangularCast = 0,
         /// <summary>Hố ga tròn: thân đúc sẵn (precast), đáy và nắp đổ tại chỗ.</summary>
         CircularPrecast = 1,
+        /// <summary>Hố ga tròn BTCT đổ tại chỗ (đáy + tường tròn + nắp liền khối, tường có thép hai mặt).</summary>
+        CircularCast = 2,
     }
 
     public enum PipeRole { Inlet = 0, Outlet = 1 }
@@ -109,10 +111,12 @@ namespace LynhCad.Manhole.Core.Model
         [DataMember(Name = "internalLength")] public double InternalLength { get; set; }
         /// <summary>Chiều rộng lòng theo Y (mm).</summary>
         [DataMember(Name = "internalWidth")] public double InternalWidth { get; set; }
+        /// <summary>Chiều dày tường BTCT đổ tại chỗ (mm): hố chữ nhật và hố tròn đổ tại chỗ.</summary>
         [DataMember(Name = "wallThickness")] public double WallThickness { get; set; }
 
-        // ---------- Hố tròn ----------
+        // ---------- Hố tròn (đúc sẵn và đổ tại chỗ) ----------
         [DataMember(Name = "internalDiameter")] public double InternalDiameter { get; set; }
+        /// <summary>Hố tròn đúc sẵn: chiều dày vách đốt cống (mm).</summary>
         [DataMember(Name = "precastWallThickness")] public double PrecastWallThickness { get; set; }
         /// <summary>Chiều cao một đốt cống/vành đúc sẵn, để vẽ mối nối (mm).</summary>
         [DataMember(Name = "ringHeight")] public double RingHeight { get; set; }
@@ -231,6 +235,20 @@ namespace LynhCad.Manhole.Core.Model
             p.Pipes.Add(new PipeSpec { Mark = "P1", Role = PipeRole.Inlet, NominalDiameter = 300, OutsideDiameter = 360, InvertLevel = 12.450, Wall = WallSide.West, Offset = 0 });
             p.Pipes.Add(new PipeSpec { Mark = "P2", Role = PipeRole.Inlet, NominalDiameter = 225, OutsideDiameter = 275, InvertLevel = 12.600, Wall = WallSide.North, Offset = -200 });
             p.Pipes.Add(new PipeSpec { Mark = "P3", Role = PipeRole.Outlet, NominalDiameter = 375, OutsideDiameter = 450, InvertLevel = 12.400, Wall = WallSide.East, Offset = 0 });
+            return p;
+        }
+
+        /// <summary>Ví dụ hố tròn ID1500 BTCT đổ tại chỗ, 2 ống vào 1 ống ra.</summary>
+        public static ManholeParams SampleCircularCast()
+        {
+            var p = new ManholeParams
+            {
+                Id = "MH04", Type = ManholeType.CircularCast, InternalDiameter = 1500, WallThickness = 200,
+                RoofProjection = 0, BaseProjection = 150, OpeningDiameter = 600, CoverLevel = 15.000,
+            };
+            p.Pipes.Add(new PipeSpec { Mark = "P1", Role = PipeRole.Inlet, NominalDiameter = 375, OutsideDiameter = 450, InvertLevel = 12.500, AngleDeg = 180 });
+            p.Pipes.Add(new PipeSpec { Mark = "P2", Role = PipeRole.Inlet, NominalDiameter = 300, OutsideDiameter = 360, InvertLevel = 12.600, AngleDeg = 90 });
+            p.Pipes.Add(new PipeSpec { Mark = "P3", Role = PipeRole.Outlet, NominalDiameter = 450, OutsideDiameter = 530, InvertLevel = 12.450, AngleDeg = 0 });
             return p;
         }
 

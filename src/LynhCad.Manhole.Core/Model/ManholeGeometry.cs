@@ -39,6 +39,12 @@ namespace LynhCad.Manhole.Core.Model
         public readonly List<string> Warnings = new List<string>();
 
         public bool IsRect { get { return P.Type == ManholeType.RectangularCast; } }
+        /// <summary>Hố tròn (đúc sẵn hoặc đổ tại chỗ): ống khai báo theo góc, lỗ thăm tròn.</summary>
+        public bool IsCircular { get { return !IsRect; } }
+        /// <summary>Thân hố đúc sẵn: vẽ mối nối từng đốt, tường không có thép trong bản vẽ.</summary>
+        public bool IsPrecast { get { return P.Type == ManholeType.CircularPrecast; } }
+        /// <summary>Tường BTCT đổ tại chỗ liền khối với đáy và nắp, có thép tường (chữ nhật hoặc tròn).</summary>
+        public bool HasCastWalls { get { return !IsPrecast; } }
 
         // Mặt bằng
         public double Li, Wi, Lo, Wo, Tw;      // chữ nhật
@@ -89,12 +95,17 @@ namespace LynhCad.Manhole.Core.Model
             }
             else
             {
-                Ri = P.InternalDiameter / 2; Tw = P.PrecastWallThickness;
+                Ri = P.InternalDiameter / 2;
+                Tw = IsPrecast ? P.PrecastWallThickness : P.WallThickness;
                 Ro = Ri + Tw;
                 OuterHalfX = OuterHalfY = Ro;
                 Require(P.InternalDiameter >= 600, "Đường kính trong phải ≥ 600 mm.");
-                Require(Tw >= 50, "Chiều dày vách đúc sẵn phải ≥ 50 mm.");
-                Require(P.RingHeight >= 150, "Chiều cao đốt đúc sẵn phải ≥ 150 mm.");
+                if (IsPrecast)
+                {
+                    Require(Tw >= 50, "Chiều dày vách đúc sẵn phải ≥ 50 mm.");
+                    Require(P.RingHeight >= 150, "Chiều cao đốt đúc sẵn phải ≥ 150 mm.");
+                }
+                else Require(Tw >= 150, "Chiều dày tường phải ≥ 150 mm.");
             }
             Require(Tb >= 150 && Ts >= 150, "Bản đáy và bản nắp phải dày ≥ 150 mm.");
             Require(P.Cover >= 20 && P.Cover < Math.Min(Tb, Ts) / 2, "Lớp bê tông bảo vệ không hợp lý.");
@@ -106,7 +117,7 @@ namespace LynhCad.Manhole.Core.Model
 
             // Lỗ thăm
             OpeningCenter = new Vec2(P.OpeningOffsetX, P.OpeningOffsetY);
-            OpeningIsCircle = !IsRect;
+            OpeningIsCircle = IsCircular;
             if (OpeningIsCircle) OpeningHalfX = OpeningHalfY = P.OpeningDiameter / 2;
             else { OpeningHalfX = P.OpeningX / 2; OpeningHalfY = P.OpeningY / 2; }
             Require(OpeningHalfX >= 250 && OpeningHalfY >= 250, "Lỗ thăm phải ≥ 500 mm.");
@@ -229,13 +240,14 @@ namespace LynhCad.Manhole.Core.Model
         /// <summary>
         /// Hố tròn: các khoảng góc bị lỗ xuyên chiếm trên đường tròn bán kính r (radian, CCW, tâm = góc ống).
         /// </summary>
-        public List<Interval> AngularGaps(double r)
+        /// <param name="extra">Nới thêm mỗi bên lỗ (mm), vd lớp bảo vệ khi cắt thép vòng.</param>
+        public List<Interval> AngularGaps(double r, double extra = 0)
         {
             var list = new List<Interval>();
             foreach (var f in Pipes)
             {
                 double a = GeomUtil.NormAngle(f.Dir.Angle());
-                double half = Math.Asin(Math.Min(1, f.HalfGap / r));
+                double half = Math.Asin(Math.Min(1, (f.HalfGap + extra) / r));
                 list.Add(new Interval(a - half, a + half));
             }
             list.Sort((x, y) => x.Min.CompareTo(y.Min));

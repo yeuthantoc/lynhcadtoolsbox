@@ -59,6 +59,7 @@ Key conventions:
 - Composed model origin (0,0) = manhole centre on plan; the plugin translates it to the picked point.
 - Section A-A is always cut along the outlet pipe axis (outlet on the right).
 - Rectangular pipes are placed by `wall` + `offset`; circular pipes by `angle` (0° = +X, CCW).
+- Three `ManholeType`s: `RectangularCast`, `CircularPrecast`, `CircularCast`. Branch on what a check means, via `ManholeGeometry` flags: `IsRect` / `IsCircular` (plan shape, pipe placement, opening), `IsPrecast` (ring joints, precast note, no wall bars), `HasCastWalls` (monolithic outline + wall reinforcement). Circular cast hoops are `BarShape.Ring` (A = centreline diameter, B = lap).
 - JSON (`ParamsJson`, DataContract) is the parameter format for the dialog's Load/Save, `LCT_MANHOLE_JSON` (single object or array), and the last-used settings in `%APPDATA%\LynhCadToolsBox\manhole-last.json`. Missing fields take defaults, so new `[DataMember]` fields must have sensible defaults.
 
 Plugin specifics:

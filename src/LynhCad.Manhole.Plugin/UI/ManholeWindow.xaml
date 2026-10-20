@@ -106,8 +106,8 @@
                             </Grid>
                         </GroupBox>
 
-                        <!-- Hố tròn -->
-                        <GroupBox x:Name="grpCirc" Header="Circular precast" Margin="0,8,0,0" Padding="4">
+                        <!-- Hố tròn (đúc sẵn / đổ tại chỗ): tiêu đề và ô chiều dày tường đổi theo loại hố -->
+                        <GroupBox x:Name="grpCirc" Header="Circular" Margin="0,8,0,0" Padding="4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
@@ -117,12 +117,14 @@
                                 <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Lbl}" Text="Internal diameter" />
                                 <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding InternalDiameter}" />
                                 <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
-                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="Precast wall" />
-                                <TextBox Grid.Row="0" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding PrecastWallThickness}" />
+                                <TextBlock x:Name="lblPrecastWall" Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="Precast wall" />
+                                <TextBox x:Name="txtPrecastWall" Grid.Row="0" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding PrecastWallThickness}" />
+                                <TextBlock x:Name="lblCastWall" Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="Wall thickness" />
+                                <TextBox x:Name="txtCastWall" Grid.Row="0" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding WallThickness}" />
                                 <TextBlock Grid.Row="0" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
-                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Ring height (joints)" />
-                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding RingHeight}" />
-                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock x:Name="lblRing" Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Ring height (joints)" />
+                                <TextBox x:Name="txtRing" Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding RingHeight}" />
+                                <TextBlock x:Name="unitRing" Grid.Row="1" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
                                 <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource Lbl}" Text="Access opening Ø" />
                                 <TextBox Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding OpeningDiameter}" />
                                 <TextBlock Grid.Row="1" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />

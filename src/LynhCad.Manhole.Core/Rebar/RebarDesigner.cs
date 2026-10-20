@@ -79,7 +79,8 @@ namespace LynhCad.Manhole.Core.Rebar
 
     /// <summary>
     /// Bố trí thép theo nguyên tắc thông dụng (đơn giản hoá) cho hố ga BTCT:
-    ///  - Tường: thép đứng chân L neo vào đáy, thép ngang dạng 2 thanh U mỗi lớp, hai mặt (EF).
+    ///  - Tường đổ tại chỗ: thép đứng chân L neo vào đáy, hai mặt (EF). Thép ngang: hố chữ nhật 2 thanh U mỗi lớp,
+    ///    hố tròn 1 vòng kín có nối chồng mỗi lớp.
     ///  - Bản đáy: lưới dưới (+ lưới trên tuỳ chọn), hai phương.
     ///  - Bản nắp: lưới dưới (+ lưới trên tuỳ chọn), thanh bị lỗ thăm cắt được tách và thống kê riêng,
     ///    có thanh gia cường (trimmer) mỗi cạnh lỗ.
@@ -118,8 +119,8 @@ namespace LynhCad.Manhole.Core.Rebar
 
             AddRoofTrimmers(g, L, items, sets);
 
-            // ---------------- Tường (hố chữ nhật) ----------------
-            if (g.IsRect) AddWalls(g, L, items, sets);
+            // ---------------- Tường đổ tại chỗ (chữ nhật hoặc tròn) ----------------
+            if (g.HasCastWalls) AddWalls(g, L, items, sets);
 
             return new RebarDesign { Layout = L, Schedule = RebarSchedule.Build(items, sets) };
         }
@@ -212,20 +213,34 @@ namespace LynhCad.Manhole.Core.Rebar
             double vertA = L.VertZTop - L.VertZBot;
 
             int vertCount = 0;
-            foreach (var loop in VerticalLoops(g, L))
-                vertCount += LoopPositions(loop.X, loop.Y, L.SV).Count;
+            if (g.IsRect)
+                foreach (var loop in VerticalLoops(g, L))
+                    vertCount += LoopPositions(loop.X, loop.Y, L.SV).Count;
+            else
+                foreach (var r in VerticalRingRadii(g, L))
+                    vertCount += RingPositions(r, L.SV).Count;
             sets.Add(new BarSetInfo { Key = BarSets.WallVert, Dia = L.DV, Spacing = L.SV, Suffix = "EF VERT" });
             items.Add(new BarItem { SetKey = BarSets.WallVert, Group = 'W', Dia = L.DV, Shape = BarShape.L, A = vertA, B = L.VertLeg, Count = vertCount });
 
-            // ---- Thép ngang: mỗi cao độ, mỗi mặt = 2 thanh U nối chồng ở giữa cạnh ngắn ----
+            // ---- Thép ngang ----
             L.HorizLevels = GeomUtil.Distribute(50, g.H - 50, L.SH);
             int nLevels = L.HorizLevels.Count;
             sets.Add(new BarSetInfo { Key = BarSets.WallHoriz, Dia = L.DH, Spacing = L.SH, Suffix = "EF HORIZ" });
-            foreach (var loop in HorizontalLoops(g, L))
+            if (g.IsRect)
             {
-                double bx = loop.X, by = loop.Y;
-                double leg = Math.Min(2 * by, by + L.Lap / 2);
-                items.Add(new BarItem { SetKey = BarSets.WallHoriz, Group = 'W', Dia = L.DH, Shape = BarShape.U, A = leg, B = 2 * bx, C = leg, Count = 2 * nLevels });
+                // mỗi cao độ, mỗi mặt = 2 thanh U nối chồng ở giữa cạnh ngắn
+                foreach (var loop in HorizontalLoops(g, L))
+                {
+                    double bx = loop.X, by = loop.Y;
+                    double leg = Math.Min(2 * by, by + L.Lap / 2);
+                    items.Add(new BarItem { SetKey = BarSets.WallHoriz, Group = 'W', Dia = L.DH, Shape = BarShape.U, A = leg, B = 2 * bx, C = leg, Count = 2 * nLevels });
+                }
+            }
+            else
+            {
+                // mỗi cao độ, mỗi mặt = 1 vòng kín, nối chồng một chỗ
+                foreach (var r in HorizontalRingRadii(g, L))
+                    items.Add(new BarItem { SetKey = BarSets.WallHoriz, Group = 'W', Dia = L.DH, Shape = BarShape.Ring, A = 2 * r, B = L.Lap, Count = nLevels });
             }
 
             // ---- Trimmer quanh lỗ ống xuyên tường ----
@@ -265,6 +280,27 @@ namespace LynhCad.Manhole.Core.Rebar
                 new HalfSize(g.Li / 2 + L.HorizOffset, g.Wi / 2 + L.HorizOffset),
                 new HalfSize(g.Lo / 2 - L.HorizOffset, g.Wo / 2 - L.HorizOffset),
             };
+        }
+
+        /// <summary>Hố tròn: bán kính tim hai vòng thép đứng (mặt trong, mặt ngoài).</summary>
+        public static List<double> VerticalRingRadii(ManholeGeometry g, RebarLayout L)
+        {
+            return new List<double> { g.Ri + L.VertOffset, g.Ro - L.VertOffset };
+        }
+
+        /// <summary>Hố tròn: bán kính tim hai vòng thép ngang (mặt trong, mặt ngoài).</summary>
+        public static List<double> HorizontalRingRadii(ManholeGeometry g, RebarLayout L)
+        {
+            return new List<double> { g.Ri + L.HorizOffset, g.Ro - L.HorizOffset };
+        }
+
+        /// <summary>Vị trí thanh đứng rải đều trên vòng tròn bán kính r, khoảng cách theo cung ≤ s, bắt đầu tại góc 0.</summary>
+        public static List<Vec2> RingPositions(double r, double s)
+        {
+            int n = Math.Max(4, (int)Math.Ceiling(2 * Math.PI * r / s - 1e-9));
+            var pts = new List<Vec2>();
+            for (int k = 0; k < n; k++) pts.Add(Vec2.FromAngle(2 * Math.PI * k / n) * r);
+            return pts;
         }
 
         /// <summary>Vị trí thanh đứng rải quanh vòng chữ nhật (ax, ay), mỗi góc một thanh, không trùng.</summary>

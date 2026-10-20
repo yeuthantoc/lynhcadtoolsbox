@@ -5,7 +5,8 @@ using LynhCad.Manhole.Core.Geometry;
 
 namespace LynhCad.Manhole.Core.Rebar
 {
-    public enum BarShape { Straight, L, U }
+    /// <summary>Hình dạng thanh. Ring = vòng tròn kín (A = đường kính tim, B = chiều dài nối chồng).</summary>
+    public enum BarShape { Straight, L, U, Ring }
 
     /// <summary>
     /// Tên các bộ thép logic: khoá nối RebarDesigner (bảng thống kê) với các builder (ký hiệu trên bản vẽ).
@@ -69,6 +70,7 @@ namespace LynhCad.Manhole.Core.Rebar
                 {
                     case BarShape.L: return A + B;
                     case BarShape.U: return A + B + C;
+                    case BarShape.Ring: return Math.PI * A + B;
                     default: return A;
                 }
             }

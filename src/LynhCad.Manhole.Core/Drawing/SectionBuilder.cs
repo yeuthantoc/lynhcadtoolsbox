@@ -102,8 +102,9 @@ namespace LynhCad.Manhole.Core.Drawing
             var leftWall = new Interval(outerS.Min, innerS.Min);
             var rightWall = new Interval(innerS.Max, outerS.Max);
 
-            if (g.IsRect)
+            if (g.HasCastWalls)
             {
+                // đổ tại chỗ: đáy + tường + nắp liền khối → một đường bao chung
                 var all = new List<Rect2> { baseR };
                 all.AddRange(WallPieces(leftWall, new Interval(0, g.H), cutLeft));
                 all.AddRange(WallPieces(rightWall, new Interval(0, g.H), cutRight));
@@ -236,7 +237,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 callouts.Add(new Annot.Callout(new Vec2(openingS.Value.Max + g.P.Cover + 20, tz), sch.Callout(BarSets.RoofTrim)));
             }
 
-            if (g.IsRect) DrawWallRebar();
+            if (g.HasCastWalls) DrawWallRebar();
         }
 
         /// <summary>Thanh chạy theo X (alongX) hoặc Y có song song với đường cắt không.</summary>

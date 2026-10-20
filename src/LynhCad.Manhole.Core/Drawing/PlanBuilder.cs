@@ -22,6 +22,7 @@ namespace LynhCad.Manhole.Core.Drawing
             BuildHiddenOutlines();
             BuildPipes();
             if (g.IsRect) BuildWallRebar();
+            else if (g.HasCastWalls) BuildRingWallRebar();
             BuildDims();
             BuildSectionMarker();
             PlaceCallouts();
@@ -103,7 +104,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 m.Add(PPolyline.Line(Vec2.FromAngle(gapsO[k].Max) * g.Ro, Vec2.FromAngle(gapsI[k].Max) * g.Ri, Layers.Concrete));
             }
             callouts.Add(new Annot.Callout(Vec2.FromAngle(1.25 * Math.PI) * (g.Ri + g.Tw / 2),
-                string.Format("PRECAST MANHOLE SHAFT\nID {0:0}, WALL {1:0}", g.P.InternalDiameter, g.Tw), false));
+                string.Format("{0}\nID {1:0}, WALL {2:0}", g.IsPrecast ? "PRECAST MANHOLE SHAFT" : "CAST IN-SITU RC WALL", g.P.InternalDiameter, g.Tw), false));
         }
 
         // ---------------------------------------------------------------- nét khuất
@@ -185,6 +186,41 @@ namespace LynhCad.Manhole.Core.Drawing
 
             var outer = horizLoops[1];
             callouts.Add(new Annot.Callout(new Vec2(-outer.X, -g.Wi / 4), rd.Schedule.Callout(BarSets.WallHoriz)));
+            if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
+        }
+
+        /// <summary>Hố tròn đổ tại chỗ: thép ngang là các vòng tròn (đứt tại lỗ ống), thép đứng là chấm trên hai vòng.</summary>
+        private void BuildRingWallRebar()
+        {
+            var L = rd.Layout;
+            double c = L.Cover;
+
+            var horiz = RebarDesigner.HorizontalRingRadii(g, L);
+            foreach (var r in horiz)
+            {
+                var gaps = g.AngularGaps(r, c);
+                int n = gaps.Count;
+                for (int k = 0; k < n; k++)
+                {
+                    int k2 = (k + 1) % n;
+                    double a0 = gaps[k].Max, a1 = gaps[k2].Min;
+                    if (k2 <= k) a1 += 2 * Math.PI;
+                    if (a1 - a0 < 1e-6) continue;
+                    m.Add(new PArc { Layer = Layers.Rebar, Center = Vec2.Zero, Radius = r, StartAngle = a0, EndAngle = a1 });
+                }
+            }
+
+            Vec2? sampleDot = null;
+            var vert = RebarDesigner.VerticalRingRadii(g, L);
+            foreach (var r in vert)
+                foreach (var p in RebarDesigner.RingPositions(r, L.SV))
+                {
+                    if (InPipeGap(p, c)) continue;
+                    m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV) });
+                    if (sampleDot == null && r == vert[0] && p.X < 0 && p.Y < 0) sampleDot = p;
+                }
+
+            callouts.Add(new Annot.Callout(Vec2.FromAngle(0.8 * Math.PI) * horiz[1], rd.Schedule.Callout(BarSets.WallHoriz)));
             if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
         }
 

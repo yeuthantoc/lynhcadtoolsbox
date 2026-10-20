@@ -1,0 +1,93 @@
+{
+  "baseBottom": {
+    "dia": 16,
+    "spacing": 200
+  },
+  "baseProjection": 150,
+  "baseThickness": 250,
+  "baseTop": {
+    "dia": 16,
+    "spacing": 200
+  },
+  "baseTopMat": true,
+  "concreteGrade": "N40",
+  "cover": 50,
+  "coverAllowance": 200,
+  "coverLevel": 15,
+  "drawRoofPlan": true,
+  "drawSchedule": true,
+  "id": "MH04",
+  "internalDiameter": 1500,
+  "internalLength": 1500,
+  "internalWidth": 1200,
+  "lapFactor": 50,
+  "openingDiameter": 600,
+  "openingOffsetX": 0,
+  "openingOffsetY": 0,
+  "openingX": 900,
+  "openingY": 600,
+  "pipeClearance": 50,
+  "pipes": [
+    {
+      "angle": 180,
+      "dn": 375,
+      "il": 12.5,
+      "mark": "P1",
+      "material": "RCP",
+      "od": 450,
+      "offset": 0,
+      "role": "Inlet",
+      "wall": "West"
+    },
+    {
+      "angle": 90,
+      "dn": 300,
+      "il": 12.6,
+      "mark": "P2",
+      "material": "RCP",
+      "od": 360,
+      "offset": 0,
+      "role": "Inlet",
+      "wall": "West"
+    },
+    {
+      "angle": 0,
+      "dn": 450,
+      "il": 12.45,
+      "mark": "P3",
+      "material": "RCP",
+      "od": 530,
+      "offset": 0,
+      "role": "Outlet",
+      "wall": "West"
+    }
+  ],
+  "precastWallThickness": 100,
+  "ringHeight": 600,
+  "roofBottom": {
+    "dia": 12,
+    "spacing": 200
+  },
+  "roofProjection": 0,
+  "roofThickness": 200,
+  "roofTop": {
+    "dia": 12,
+    "spacing": 200
+  },
+  "roofTopMat": false,
+  "scale": 20,
+  "sumpDepth": 50,
+  "trimmerCount": 2,
+  "trimmerDia": 16,
+  "type": "CircularCast",
+  "verticalBarLeg": 300,
+  "wallHorizontal": {
+    "dia": 12,
+    "spacing": 200
+  },
+  "wallThickness": 200,
+  "wallVertical": {
+    "dia": 12,
+    "spacing": 200
+  }
+}

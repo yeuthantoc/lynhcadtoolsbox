@@ -26,9 +26,10 @@ namespace LynhCad.Manhole.Preview
                     case "sample":
                         string dir = args.Length > 1 ? args[1] : ".";
                         Directory.CreateDirectory(dir);
-                        foreach (var p in new[] { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular() })
+                        foreach (var p in new[] { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular(), ManholeParams.SampleCircularCast() })
                         {
-                            string name = p.Type == ManholeType.RectangularCast ? "rect-mh01" : "circ-mh02";
+                            string name = p.Type == ManholeType.RectangularCast ? "rect-mh01"
+                                        : p.Type == ManholeType.CircularPrecast ? "circ-mh02" : "circ-cast-mh04";
                             ParamsJson.Save(p, Path.Combine(dir, name + ".json"));
                             WriteSvg(p, Path.Combine(dir, name + ".svg"));
                         }
@@ -89,6 +90,7 @@ namespace LynhCad.Manhole.Preview
             Geometry();
             RectangularSample();
             CircularSample();
+            CircularCastSample();
             Validation();
             Json();
             Naming();
@@ -201,6 +203,41 @@ namespace LynhCad.Manhole.Preview
             p.Pipes[1].AngleDeg = 135;
             var r2 = DetailComposer.Compose(p);
             True("diagonal section ok", r2.Ok);
+        }
+
+        private static void CircularCastSample()
+        {
+            var p = ManholeParams.SampleCircularCast();
+            var g = new ManholeGeometry(p);
+            True("circ cast valid: " + string.Join("; ", g.Errors), g.IsValid);
+            True("circ cast flags", g.IsCircular && !g.IsPrecast && g.HasCastWalls && !g.IsRect);
+            Eq("circ cast Ro uses wallThickness", 950, g.Ro);
+
+            var rd = RebarDesigner.Design(g);
+            var sch = rd.Schedule;
+            var vert = sch.Marks.First(m => m.Mark == "W1");
+            True("circ cast W1 is L", vert.Shape == BarShape.L);
+            // vòng trong r = 750+50+12+6 = 818, vòng ngoài r = 950-68 = 882 → ceil(2πr/200) = 26 + 28
+            Eq("circ cast vertical count", 26 + 28, vert.Count);
+            var rings = sch.Marks.Where(m => m.Shape == BarShape.Ring).ToList();
+            Eq("circ cast 2 ring marks (inner/outer face)", 2, rings.Count);
+            // vòng trong: A = 2·(750+56) = 1612, nối chồng 50·12 = 600 → dài π·1620 (A làm tròn lên 10) + 600
+            Eq("circ cast inner ring dia", 1620, rings[0].A);
+            Eq("circ cast inner ring lap", 600, rings[0].B);
+            Eq("circ cast inner ring length", Math.PI * 1620 + 600, rings[0].Length, 1e-6);
+            Eq("circ cast rings per face = levels", rd.Layout.HorizLevels.Count, rings[0].Count);
+            True("circ cast WallHoriz callout", sch.Callout(BarSets.WallHoriz).StartsWith("W2/W3 N12-200 EF HORIZ"));
+            True("circ cast pipe trimmers", sch.Set(BarSets.PipeTrim) != null);
+
+            var res = DetailComposer.Compose(p);
+            True("circ cast compose ok", res.Ok);
+            True("circ cast plan has ring arcs", res.Model.Items.OfType<PArc>().Any(a => a.Layer == Layers.Rebar));
+            True("circ cast schedule shows RING", res.Model.Items.OfType<PTable>().Any(t => t.Rows.Any(r => r[2] == "RING")));
+            True("circ cast notes have no precast note", res.Model.Items.OfType<PText>().All(t => !t.Text.Contains("PRECAST MANHOLE COMPONENTS")));
+
+            var thin = ManholeParams.SampleCircularCast();
+            thin.WallThickness = 120;
+            True("circ cast thin wall error", !new ManholeGeometry(thin).IsValid);
         }
 
         private static void Validation()

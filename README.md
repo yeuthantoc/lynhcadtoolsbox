@@ -10,22 +10,27 @@ Tool đầu tiên: **Manhole Detail**, vẽ tự động chi tiết hố ga BTCT
 |---|---|
 | ![MH02](docs/circ-mh02.png) | ![MH03](docs/circ-mh03-diagonal.png) |
 
+| Hố tròn BTCT đổ tại chỗ |
+|---|
+| ![MH04](docs/circ-cast-mh04.png) |
+
 > Ảnh trên là preview SVG sinh từ lõi tính toán (không cần AutoCAD). Trong AutoCAD tool vẽ ra entity thật: polyline, hatch, MText, dimension, leader, table, mỗi chi tiết gom thành một Group.
 
 ## Tính năng (v0.1)
 
-**Hai loại hố ga**
-- *Rectangular cast in-situ*: đáy + tường + nắp BTCT liền khối.
-- *Circular precast*: thân đúc sẵn (vẽ mối nối từng đốt), đáy và nắp đổ tại chỗ.
+**Ba loại hố ga**
+- *Rectangular cast in-situ* (`RectangularCast`): đáy + tường + nắp BTCT liền khối.
+- *Circular precast* (`CircularPrecast`): thân đúc sẵn (vẽ mối nối từng đốt), đáy và nắp đổ tại chỗ.
+- *Circular cast in-situ* (`CircularCast`): đáy + tường tròn + nắp BTCT liền khối, tường có thép hai mặt.
 
 **Bản vẽ sinh ra**
-- **PLAN**: cắt qua cao độ ống, tường hatch, lỗ xuyên ống, thép tường (hố chữ nhật), lỗ thăm phía trên và bản đáy phía dưới (nét khuất), tim máng, ký hiệu cắt A-A, kích thước.
+- **PLAN**: cắt qua cao độ ống, tường hatch, lỗ xuyên ống, thép tường (hố đổ tại chỗ), lỗ thăm phía trên và bản đáy phía dưới (nét khuất), tim máng, ký hiệu cắt A-A, kích thước.
 - **SECTION A-A**: tự cắt dọc theo trục **ống ra**. Ống bị cắt vẽ dọc, ống phía sau vẽ ellipse đúng phối cảnh, benching và máng, thép bản đáy/nắp/tường (đường và chấm), cao độ CL / TOS / TOB / USB, kích thước.
 - **ROOF SLAB REINFORCEMENT**: lưới dưới, thanh bị lỗ thăm cắt, trimmer quanh lỗ.
 - **BAR SCHEDULE** (AutoCAD Table) + **NOTES**.
 
 **Thép (AS/NZS 4671 D500N)**
-- Tường: thép đứng chân L neo vào đáy; thép ngang 2 thanh U mỗi lớp, nối chồng giữa cạnh ngắn; hai mặt (EF).
+- Tường đổ tại chỗ: thép đứng chân L neo vào đáy, hai mặt (EF). Thép ngang: hố chữ nhật 2 thanh U mỗi lớp, nối chồng giữa cạnh ngắn; hố tròn 1 vòng kín mỗi lớp (`RING` trong bảng: A = đường kính tim vòng, B = chiều dài nối chồng).
 - Bản đáy: lưới dưới + lưới trên (tuỳ chọn), hai phương.
 - Bản nắp: lưới dưới + lưới trên (tuỳ chọn); thanh bị lỗ thăm cắt được tách và thống kê riêng; trimmer mỗi cạnh lỗ.
 - Lỗ ống xuyên tường: trimmer quanh lỗ, hai mặt.
@@ -134,7 +139,9 @@ Ví dụ đầy đủ trong [`samples/`](samples). Trường bị thiếu sẽ l
 }
 ```
 
-Hố tròn: `"type": "CircularPrecast"`, dùng `internalDiameter`, `precastWallThickness`, `ringHeight`, `openingDiameter`, `roofProjection`, và ống dùng `"angle"` thay cho `wall/offset`.
+Hố tròn đúc sẵn: `"type": "CircularPrecast"`, dùng `internalDiameter`, `precastWallThickness`, `ringHeight`, `openingDiameter`, `roofProjection`, và ống dùng `"angle"` thay cho `wall/offset`.
+
+Hố tròn đổ tại chỗ: `"type": "CircularCast"`, dùng `internalDiameter`, `wallThickness` (≥ 150), `openingDiameter`, `roofProjection`, thép tường `wallVertical` / `wallHorizontal`, và ống dùng `"angle"`. Ví dụ: [`samples/circ-cast-mh04.json`](samples/circ-cast-mh04.json).
 
 ## Cấu trúc mã nguồn
 
@@ -148,7 +155,9 @@ src/LynhCad.Manhole.Core      netstandard2.0, KHÔNG phụ thuộc AutoCAD
   Export/     SvgExporter (preview / kiểm tra không cần AutoCAD)
 src/LynhCad.Loader            net48, DLL AutoCAD nạp: đăng ký lệnh, nạp/nạp lại plugin từ byte
 src/LynhCad.Manhole.Plugin    net48 + WPF, plugin AutoCAD (gọi qua Entry.Run, không tự đăng ký lệnh)
-  Commands.cs     lệnh LCT_MANHOLE, LCT_MANHOLE_JSON, LCT_MANHOLE_EDIT; lưu thông số vào group
+  Entry.cs        điểm vào Entry.Run (loader gọi qua reflection)
+  Commands.cs     lệnh LCT_MANHOLE, LCT_MANHOLE_JSON, LCT_MANHOLE_EDIT
+  DetailData.cs   lưu / đọc thông số trong Xrecord của group
   AcadSetup.cs    layer S-*, linetype, text style, dim style LCT_1-20
   AcadRenderer.cs primitive → entity AutoCAD
   UI/             hộp thoại WPF
