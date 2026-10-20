@@ -12,26 +12,17 @@ namespace LynhCad.Manhole.Core.Drawing
     /// y = z (mm, 0 = mặt bản đáy). Thể hiện bê tông cắt, ống bị cắt / ống phía sau, máng & benching,
     /// thép bản đáy / bản nắp / tường, cao độ, kích thước.
     /// </summary>
-    public class SectionBuilder
+    public class SectionBuilder : ViewBuilder
     {
-        private readonly ManholeGeometry g;
-        private readonly RebarDesign rd;
-        private readonly DrawStyle st;
-        private readonly DrawingModel m = new DrawingModel();
-        private readonly List<Annot.Callout> callouts = new List<Annot.Callout>();
-
         private Vec2 u, d, origin;
         private Interval baseS, roofS, outerS, innerS;
         private Interval? openingS;
         private readonly List<PipeFrame> cutLeft = new List<PipeFrame>(), cutRight = new List<PipeFrame>();
         private double zTopRoof, zCL;
 
-        public SectionBuilder(ManholeGeometry geometry, RebarDesign rebar, DrawStyle style)
-        {
-            g = geometry; rd = rebar; st = style;
-        }
+        public SectionBuilder(ManholeGeometry geometry, RebarDesign rebar, DrawStyle style) : base(geometry, rebar, style) { }
 
-        public DrawingModel Build()
+        public override DrawingModel Build()
         {
             Setup();
             BuildConcrete();
@@ -117,14 +108,14 @@ namespace LynhCad.Manhole.Core.Drawing
                 all.AddRange(WallPieces(leftWall, new Interval(0, g.H), cutLeft));
                 all.AddRange(WallPieces(rightWall, new Interval(0, g.H), cutRight));
                 all.AddRange(roofPieces);
-                foreach (var r in all) m.Add(Hatch(r));
+                foreach (var r in all) m.Add(ConcreteHatch(r));
                 foreach (var e in GeomUtil.UnionOutline(all)) m.Add(PPolyline.Line(e.Item1, e.Item2, Layers.Concrete));
             }
             else
             {
                 // Đáy & nắp đổ tại chỗ: viền riêng. Thân đúc sẵn: từng đốt riêng → thấy mối nối.
-                m.Add(Hatch(baseR)); m.Add(PPolyline.Rect(baseR, Layers.Concrete));
-                foreach (var r in roofPieces) m.Add(Hatch(r));
+                m.Add(ConcreteHatch(baseR)); m.Add(PPolyline.Rect(baseR, Layers.Concrete));
+                foreach (var r in roofPieces) m.Add(ConcreteHatch(r));
                 foreach (var e in GeomUtil.UnionOutline(roofPieces)) m.Add(PPolyline.Line(e.Item1, e.Item2, Layers.Concrete));
 
                 double rh = g.P.RingHeight;
@@ -134,7 +125,7 @@ namespace LynhCad.Manhole.Core.Drawing
                     var zr = new Interval(k * rh, Math.Min(g.H, (k + 1) * rh));
                     foreach (var piece in WallPieces(leftWall, zr, cutLeft).Concat(WallPieces(rightWall, zr, cutRight)))
                     {
-                        m.Add(Hatch(piece));
+                        m.Add(ConcreteHatch(piece));
                         m.Add(PPolyline.Rect(piece, Layers.Concrete));
                     }
                 }
@@ -150,11 +141,6 @@ namespace LynhCad.Manhole.Core.Drawing
             var gaps = cuts.Select(f => f.GapZ);
             foreach (var zi in zRange.Subtract(gaps))
                 yield return new Rect2(sRange.Min, zi.Min, sRange.Max, zi.Max);
-        }
-
-        private PHatch Hatch(Rect2 r)
-        {
-            return new PHatch { Layer = Layers.Hatch, Pattern = "AR-CONC", PatternScale = st.ConcreteHatchScale, Loops = { PPolyline.Rect(r, Layers.Hatch) } };
         }
 
         // ---------------------------------------------------------------- benching
@@ -232,13 +218,10 @@ namespace LynhCad.Manhole.Core.Drawing
 
             foreach (var t in L.RoofTrimmers)
             {
-                var dir = t.AlongX ? new Vec2(1, 0) : new Vec2(0, 1);
-                if (Math.Abs(dir.Dot(u)) > 0.99) continue; // song song mặt cắt: không nằm trên đường cắt
-                double? sCross = Crossing(t.AlongX, t.Pos);
+                if (ParallelToCut(t.AlongX)) continue; // song song mặt cắt: không nằm trên đường cắt
+                var run = t.Run;
+                double? sCross = CrossingOnBar(t.AlongX, t.Pos, along => run.Contains(along));
                 if (sCross == null) continue;
-                var p = origin + u * sCross.Value;
-                double along = t.AlongX ? p.X : p.Y;
-                if (!t.Run.Contains(along)) continue;
                 m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sCross.Value, t.Z), Diameter = st.DotSize(t.Dia) });
             }
 
@@ -256,30 +239,37 @@ namespace LynhCad.Manhole.Core.Drawing
             if (g.IsRect) DrawWallRebar();
         }
 
-        /// <summary>Tham số s tại chỗ thanh (song song X hoặc Y, ở toạ độ pos) cắt qua đường cắt.</summary>
-        private double? Crossing(bool alongX, double pos)
+        /// <summary>Thanh chạy theo X (alongX) hoặc Y có song song với đường cắt không.</summary>
+        private bool ParallelToCut(bool alongX)
         {
-            if (alongX)
-            {
-                if (Math.Abs(u.Y) < 1e-9) return null;
-                return (pos - origin.Y) / u.Y;
-            }
-            if (Math.Abs(u.X) < 1e-9) return null;
-            return (pos - origin.X) / u.X;
+            var dir = alongX ? new Vec2(1, 0) : new Vec2(0, 1);
+            return Math.Abs(dir.Dot(u)) > 0.99;
+        }
+
+        /// <summary>
+        /// Tham số s tại chỗ thanh (song song X hoặc Y, ở toạ độ pos) cắt qua đường cắt,
+        /// null nếu không cắt hoặc chỗ cắt nằm ngoài thanh (onBar nhận toạ độ dọc thanh).
+        /// </summary>
+        private double? CrossingOnBar(bool alongX, double pos, Func<double, bool> onBar)
+        {
+            double uPerp = alongX ? u.Y : u.X;
+            if (Math.Abs(uPerp) < 1e-9) return null;
+            double s = (pos - (alongX ? origin.Y : origin.X)) / uPerp;
+            var p = origin + u * s;
+            return onBar(alongX ? p.X : p.Y) ? s : (double?)null;
         }
 
         private void DrawMatLayer(MatLayer layer)
         {
-            var dir = layer.AlongX ? new Vec2(1, 0) : new Vec2(0, 1);
-            if (Math.Abs(dir.Dot(u)) > 0.99)
+            if (ParallelToCut(layer.AlongX))
             {
                 // song song mặt cắt → vẽ thanh gần đường cắt nhất dạng đường
                 double cutPerp = layer.AlongX ? origin.Y : origin.X;
                 double pos = layer.Positions.OrderBy(p => Math.Abs(p - cutPerp)).First();
                 foreach (var piece in layer.Pieces(pos))
                 {
-                    var a = layer.AlongX ? new Vec2(piece.Min, pos) : new Vec2(pos, piece.Min);
-                    var b = layer.AlongX ? new Vec2(piece.Max, pos) : new Vec2(pos, piece.Max);
+                    var a = BarPoint(layer.AlongX, piece.Min, pos);
+                    var b = BarPoint(layer.AlongX, piece.Max, pos);
                     m.Add(PPolyline.Line(new Vec2(S(a), layer.Z), new Vec2(S(b), layer.Z), Layers.Rebar));
                 }
                 return;
@@ -287,11 +277,9 @@ namespace LynhCad.Manhole.Core.Drawing
             // cắt ngang qua mặt cắt → chấm
             foreach (var pos in layer.Positions)
             {
-                double? sc = Crossing(layer.AlongX, pos);
+                var pieces = layer.Pieces(pos);
+                double? sc = CrossingOnBar(layer.AlongX, pos, along => pieces.Any(i => i.Contains(along)));
                 if (sc == null) continue;
-                var p = origin + u * sc.Value;
-                double along = layer.AlongX ? p.X : p.Y;
-                if (!layer.Pieces(pos).Any(i => i.Contains(along))) continue;
                 m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sc.Value, layer.Z), Diameter = st.DotSize(layer.Dia) });
             }
         }
@@ -382,7 +370,7 @@ namespace LynhCad.Manhole.Core.Drawing
             get
             {
                 double e = Math.Min(baseS.Min, roofS.Min);
-                foreach (var f in cutLeft) e = Math.Min(e, outerS.Min - st.PipeStub);
+                if (cutLeft.Count > 0) e = Math.Min(e, outerS.Min - st.PipeStub); // ống bị cắt thò ra bên trái
                 return e;
             }
         }
@@ -407,12 +395,10 @@ namespace LynhCad.Manhole.Core.Drawing
         private void PlaceCallouts()
         {
             double right = Math.Max(roofS.Max, baseS.Max);
-            foreach (var f in cutRight) right = Math.Max(right, outerS.Max + st.PipeStub);
+            if (cutRight.Count > 0) right = Math.Max(right, outerS.Max + st.PipeStub);
             double xL = LeftExtent - st.DimOffset - 2 * st.DimStep - 6 * st.Scale;
             double xR = right + 34 * st.Scale;
-            double mid = innerS.Mid;
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X < mid), xL, -1);
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X >= mid), xR, +1);
+            PlaceCalloutColumns(innerS.Mid, xL, xR);
         }
     }
 }

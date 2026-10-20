@@ -11,20 +11,11 @@ namespace LynhCad.Manhole.Core.Drawing
     /// MẶT BẰNG THÉP BẢN NẮP: viền bản, lỗ thăm, tường bên dưới (khuất), thép lưới dưới (nét đứt theo quy ước),
     /// thanh gia cường quanh lỗ, kích thước. Lưới trên (nếu có) chỉ ghi chú để bản vẽ không rối.
     /// </summary>
-    public class RoofPlanBuilder
+    public class RoofPlanBuilder : ViewBuilder
     {
-        private readonly ManholeGeometry g;
-        private readonly RebarDesign rd;
-        private readonly DrawStyle st;
-        private readonly DrawingModel m = new DrawingModel();
-        private readonly List<Annot.Callout> callouts = new List<Annot.Callout>();
+        public RoofPlanBuilder(ManholeGeometry geometry, RebarDesign rebar, DrawStyle style) : base(geometry, rebar, style) { }
 
-        public RoofPlanBuilder(ManholeGeometry geometry, RebarDesign rebar, DrawStyle style)
-        {
-            g = geometry; rd = rebar; st = style;
-        }
-
-        public DrawingModel Build()
+        public override DrawingModel Build()
         {
             double hx = g.RoofHalfX, hy = g.RoofHalfY;
             var o = g.OpeningCenter;
@@ -54,8 +45,8 @@ namespace LynhCad.Manhole.Core.Drawing
                 foreach (var pos in layer.Positions)
                     foreach (var piece in layer.Pieces(pos))
                     {
-                        var a = layer.AlongX ? new Vec2(piece.Min, pos) : new Vec2(pos, piece.Min);
-                        var b = layer.AlongX ? new Vec2(piece.Max, pos) : new Vec2(pos, piece.Max);
+                        var a = BarPoint(layer.AlongX, piece.Min, pos);
+                        var b = BarPoint(layer.AlongX, piece.Max, pos);
                         m.Add(PPolyline.Line(a, b, Layers.RebarHidden));
                         if (sample == null && pos < 0 && piece.Min < 0) sample = a + (b - a) * 0.15;
                     }
@@ -69,8 +60,8 @@ namespace LynhCad.Manhole.Core.Drawing
             {
                 string key = string.Format("{0}|{1:0}", t.AlongX, t.Pos);
                 if (!drawn.Add(key)) continue;
-                var a = t.AlongX ? new Vec2(t.Run.Min, t.Pos) : new Vec2(t.Pos, t.Run.Min);
-                var b = t.AlongX ? new Vec2(t.Run.Max, t.Pos) : new Vec2(t.Pos, t.Run.Max);
+                var a = BarPoint(t.AlongX, t.Run.Min, t.Pos);
+                var b = BarPoint(t.AlongX, t.Run.Max, t.Pos);
                 m.Add(PPolyline.Line(a, b, Layers.Rebar));
                 if (trimSample == null && t.AlongX && t.Pos > o.Y) trimSample = new Vec2(t.Run.Max - 50, t.Pos);
             }
@@ -97,8 +88,7 @@ namespace LynhCad.Manhole.Core.Drawing
             Annot.DimV(m, -hy, hy, -hx, x - st.DimStep);
 
             double ext = Math.Max(hx, hy) + 12 * st.Scale;
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X < 0), -ext - st.DimStep, -1);
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X >= 0), ext, +1);
+            PlaceCalloutColumns(0, -ext - st.DimStep, ext);
             return m;
         }
     }

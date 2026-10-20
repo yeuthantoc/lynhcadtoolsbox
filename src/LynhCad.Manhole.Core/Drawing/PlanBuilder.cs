@@ -12,20 +12,11 @@ namespace LynhCad.Manhole.Core.Drawing
     /// lỗ thăm phía trên & bản đáy phía dưới (nét khuất), đường cắt A-A, kích thước.
     /// Tâm hố tại gốc toạ độ.
     /// </summary>
-    public class PlanBuilder
+    public class PlanBuilder : ViewBuilder
     {
-        private readonly ManholeGeometry g;
-        private readonly RebarDesign rd;
-        private readonly DrawStyle st;
-        private readonly DrawingModel m = new DrawingModel();
-        private readonly List<Annot.Callout> callouts = new List<Annot.Callout>();
+        public PlanBuilder(ManholeGeometry geometry, RebarDesign rebar, DrawStyle style) : base(geometry, rebar, style) { }
 
-        public PlanBuilder(ManholeGeometry geometry, RebarDesign rebar, DrawStyle style)
-        {
-            g = geometry; rd = rebar; st = style;
-        }
-
-        public DrawingModel Build()
+        public override DrawingModel Build()
         {
             if (g.IsRect) BuildRectWalls(); else BuildCircularWalls();
             BuildHiddenOutlines();
@@ -68,7 +59,7 @@ namespace LynhCad.Manhole.Core.Drawing
             pieces.AddRange(SplitWall(new Rect2(li, -wi, lo, wi), WallSide.East, false));
             pieces.AddRange(SplitWall(new Rect2(-lo, -wi, -li, wi), WallSide.West, false));
 
-            foreach (var r in pieces) m.Add(ConcreteHatch(PPolyline.Rect(r, Layers.Hatch)));
+            foreach (var r in pieces) m.Add(ConcreteHatch(r));
             foreach (var e in GeomUtil.UnionOutline(pieces)) m.Add(PPolyline.Line(e.Item1, e.Item2, Layers.Concrete));
         }
 
@@ -124,11 +115,6 @@ namespace LynhCad.Manhole.Core.Drawing
             for (int i = 0; i < n; i++)
                 pl.Add(Vec2.FromAngle(a0 + i * step) * r, GeomUtil.Bulge(step));
             pl.Add(Vec2.FromAngle(a1) * r);
-        }
-
-        private PHatch ConcreteHatch(PPolyline loop)
-        {
-            return new PHatch { Layer = Layers.Hatch, Pattern = "AR-CONC", PatternScale = st.ConcreteHatchScale, Loops = { loop } };
         }
 
         // ---------------------------------------------------------------- nét khuất
@@ -282,8 +268,7 @@ namespace LynhCad.Manhole.Core.Drawing
         private void PlaceCallouts()
         {
             double ext = Math.Max(ExtentX, ExtentY) + 14 * st.Scale;
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X < 0), -ext, -1);
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X >= 0), ext, +1);
+            PlaceCalloutColumns(0, -ext, ext);
         }
     }
 }
