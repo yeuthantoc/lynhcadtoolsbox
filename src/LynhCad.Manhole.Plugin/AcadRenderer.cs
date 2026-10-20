@@ -67,6 +67,12 @@ namespace LynhCad.Manhole.Plugin
             if (mt != null) { if (!keepStyle.IsNull) mt.TextStyleId = keepStyle; mt.TextHeight = keepHeight; }
             if (dim != null && !keepStyle.IsNull) dim.DimensionStyle = keepStyle;
             if (ld != null && !keepStyle.IsNull) ld.DimensionStyle = keepStyle;
+            return Append(e, layer);
+        }
+
+        /// <summary>Thêm entity đã đặt đủ thuộc tính (không gọi SetDatabaseDefaults nữa).</summary>
+        private ObjectId Append(Entity e, string layer)
+        {
             e.Layer = layer;
             var id = space.AppendEntity(e);
             tr.AddNewlyCreatedDBObject(e, true);
@@ -189,7 +195,55 @@ namespace LynhCad.Manhole.Plugin
             Add(dim, d.Layer);
         }
 
+        /// <summary>
+        /// Ghi chú = một MLeader thật của AutoCAD (đường dẫn + chữ là một đối tượng, di chuyển chữ thì đường dẫn đi theo).
+        /// Nếu AutoCAD từ chối (style MLeader lạ...) thì vẽ Leader + MText như bản cũ để không mất ghi chú.
+        /// </summary>
         public void Visit(PLeader src)
+        {
+            try { AddMLeader(src); }
+            catch (Autodesk.AutoCAD.Runtime.Exception) { AddLeaderAndText(src); }
+        }
+
+        private void AddMLeader(PLeader src)
+        {
+            if (src.Points.Count == 0) return;
+            double h = src.TextHeight;
+            int side = src.Align == TextAlign.Left ? 1 : -1;
+            var last = src.Points[src.Points.Count - 1];
+            double landingGap = 0.4 * h;                                    // khoảng hở đường dẫn → chữ (như bản Leader cũ)
+            double dogleg = Math.Max(0.1 * h, Math.Abs(src.TextPosition.X - last.X) - landingGap);
+
+            var ml = new MLeader();
+            ml.SetDatabaseDefaults(db);
+            ml.Scale = 1.0;                                                 // kích thước dưới đây là mm model, không nhân scale của style
+            ml.ContentType = ContentType.MTextContent;
+            ml.LeaderLineType = LeaderType.StraightLeader;
+            ml.EnableLanding = true;
+            ml.EnableDogleg = true;
+            ml.DoglegLength = dogleg;
+            ml.LandingGap = landingGap;
+            ml.ArrowSize = 0.6 * h;                                         // = Dimasz 1.5 mm giấy
+            if (src.DotArrow && !setup.DotArrowId.IsNull) ml.ArrowSymbolId = setup.DotArrowId;
+            if (!setup.TextStyleId.IsNull) ml.TextStyleId = setup.TextStyleId;
+            ml.TextHeight = h;
+            ml.TextAlignmentType = side > 0 ? TextAlignmentType.LeftAlignment : TextAlignmentType.RightAlignment;
+            ml.SetTextAttachmentType(TextAttachmentType.AttachmentMiddle, LeaderDirectionType.LeftLeader);
+            ml.SetTextAttachmentType(TextAttachmentType.AttachmentMiddle, LeaderDirectionType.RightLeader);
+
+            var mt = ToMText(src.TextPosition, src.Text, h, src.Align, TextVAlign.Middle, 0, false);
+            ml.MText = mt;
+
+            int ld = ml.AddLeader();
+            int ln = ml.AddLeaderLine(ld);
+            ml.AddFirstVertex(ln, P3(src.Points[0]));
+            for (int i = 1; i < src.Points.Count; i++) ml.AddLastVertex(ln, P3(src.Points[i]));
+            ml.SetDogleg(ld, side > 0 ? Vector3d.XAxis : -Vector3d.XAxis);
+            ml.TextLocation = P3(src.TextPosition);
+            Append(ml, src.Layer);
+        }
+
+        private void AddLeaderAndText(PLeader src)
         {
             var ld = new Leader();
             foreach (var pt in src.Points) ld.AppendVertex(P3(pt));

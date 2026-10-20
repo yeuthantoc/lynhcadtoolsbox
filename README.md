@@ -14,7 +14,7 @@ Tool đầu tiên: **Manhole Detail**, vẽ tự động chi tiết hố ga BTCT
 |---|
 | ![MH04](docs/circ-cast-mh04.png) |
 
-> Ảnh trên là preview SVG sinh từ lõi tính toán (không cần AutoCAD). Trong AutoCAD tool vẽ ra entity thật: polyline, hatch, MText, dimension, leader, table, mỗi chi tiết gom thành một Group.
+> Ảnh trên là preview SVG sinh từ lõi tính toán (không cần AutoCAD). Trong AutoCAD tool vẽ ra entity thật: polyline, hatch, MText, dimension (RotatedDimension, dim style `LCT_1-20`), multileader (MLeader), table, mỗi chi tiết gom thành một Group.
 
 ## Tính năng (v0.1)
 
