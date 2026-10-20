@@ -62,6 +62,20 @@ Không muốn cài bundle: trong AutoCAD gõ `NETLOAD` rồi chọn `src\LynhCad
 |---|---|
 | `LCT_MANHOLE` | Mở hộp thoại nhập thông số (3 tab: General / Reinforcement / Pipes), bấm **Draw**, chọn điểm đặt (tâm hố trên mặt bằng). Tool nhớ thông số lần trước. |
 | `LCT_MANHOLE_JSON` | Vẽ từ file JSON. File có thể chứa **một** hố `{...}` hoặc **nhiều** hố `[{...}, {...}]`. Nhiều hố sẽ xếp cạnh nhau từ trái sang phải. |
+| `LCT_MANHOLE_EDIT` | **Cập nhật chi tiết đã vẽ.** Chọn một đối tượng bất kỳ của chi tiết, hộp thoại mở với thông số cũ, sửa rồi bấm **Update**: chi tiết cũ bị xoá và vẽ lại đúng chỗ (kể cả khi đã MOVE). |
+
+### Cập nhật bản vẽ
+
+Mỗi chi tiết là một **Group** (không phải block) tên `LCT_<mã hố>`. Thông số hố ga được lưu ngay trong group (trong file DWG), nên mở lại bản vẽ trên máy khác vẫn sửa được.
+
+1. Gõ `LCT_MANHOLE_EDIT`, chọn một nét bất kỳ của chi tiết.
+2. Sửa thông số (kích thước, thép, ống...) rồi bấm **Update**.
+3. Muốn huỷ: `U` (một lần undo là về như cũ).
+
+Lưu ý:
+- Mọi chỉnh sửa tay trên các đối tượng của chi tiết sẽ mất khi Update. Ghi chú thêm tay thì vẽ ngoài group (không bị xoá).
+- Chi tiết vẽ bằng v0.1, hoặc đã `EXPLODE`/`UNGROUP`, không còn thông số: xoá đi và vẽ lại bằng `LCT_MANHOLE`.
+- Chỉ theo được lệnh MOVE; nếu đã ROTATE/SCALE chi tiết thì Update sẽ vẽ lại ở hướng/tỉ lệ gốc.
 
 Hộp thoại có nút **Load JSON / Save JSON** để lưu cấu hình chuẩn của dự án, và 2 mẫu có sẵn để thử nhanh.
 
@@ -112,7 +126,7 @@ src/LynhCad.Manhole.Core      netstandard2.0, KHÔNG phụ thuộc AutoCAD
               → sinh "primitive" trung gian (polyline, hatch, text, dim, leader, table)
   Export/     SvgExporter (preview / kiểm tra không cần AutoCAD)
 src/LynhCad.Manhole.Plugin    net48 + WPF, plugin AutoCAD
-  Commands.cs     lệnh LCT_MANHOLE, LCT_MANHOLE_JSON
+  Commands.cs     lệnh LCT_MANHOLE, LCT_MANHOLE_JSON, LCT_MANHOLE_EDIT; lưu thông số vào group
   AcadSetup.cs    layer S-*, linetype, text style, dim style LCT_1-20
   AcadRenderer.cs primitive → entity AutoCAD
   UI/             hộp thoại WPF

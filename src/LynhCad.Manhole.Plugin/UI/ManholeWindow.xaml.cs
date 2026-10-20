@@ -18,9 +18,15 @@ namespace LynhCad.Manhole.Plugin.UI
         /// <summary>Thông số sau khi người dùng bấm Draw (đã kiểm tra hợp lệ).</summary>
         public ManholeParams Params { get; private set; }
 
-        public ManholeWindow(ManholeParams initial)
+        /// <param name="updateMode">true: sửa chi tiết đã vẽ (nút Draw đổi thành Update).</param>
+        public ManholeWindow(ManholeParams initial, bool updateMode = false)
         {
             InitializeComponent();
+            if (updateMode)
+            {
+                btnDraw.Content = "Update";
+                Title += " - Update " + (initial != null ? initial.Id : "");
+            }
 
             cbType.ItemsSource = Enum.GetValues(typeof(ManholeType));
             colRole.ItemsSource = Enum.GetValues(typeof(PipeRole));
