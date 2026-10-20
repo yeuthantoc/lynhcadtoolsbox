@@ -158,6 +158,7 @@ namespace LynhCad.Manhole.Plugin.UI
 
         private void OnSampleRect(object sender, RoutedEventArgs e) { Bind(ManholeParams.SampleRectangular()); }
         private void OnSampleCirc(object sender, RoutedEventArgs e) { Bind(ManholeParams.SampleCircular()); }
+        private void OnSampleCircCast(object sender, RoutedEventArgs e) { Bind(ManholeParams.SampleCircularCast()); }
 
         private void OnLoadJson(object sender, RoutedEventArgs e)
         {

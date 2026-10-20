@@ -103,7 +103,7 @@ Lưu ý:
 - Chi tiết vẽ bằng v0.1, hoặc đã `EXPLODE`/`UNGROUP`, không còn thông số: xoá đi và vẽ lại bằng `LCT_MANHOLE`.
 - Chỉ theo được lệnh MOVE; nếu đã ROTATE/SCALE chi tiết thì Update sẽ vẽ lại ở hướng/tỉ lệ gốc.
 
-Hộp thoại có nút **Load JSON / Save JSON** để lưu cấu hình chuẩn của dự án, và 2 mẫu có sẵn để thử nhanh.
+Hộp thoại có nút **Load JSON / Save JSON** để lưu cấu hình chuẩn của dự án, và 3 mẫu có sẵn để thử nhanh (Rectangular, Circular precast, Circular cast).
 
 ## Quy ước
 

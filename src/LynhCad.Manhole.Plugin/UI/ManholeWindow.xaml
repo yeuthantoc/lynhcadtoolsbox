@@ -41,7 +41,8 @@
                 <Button Content="Load JSON..." Padding="10,3" Margin="0,0,6,0" Click="OnLoadJson" />
                 <Button Content="Save JSON..." Padding="10,3" Margin="0,0,6,0" Click="OnSaveJson" />
                 <Button Content="Sample: Rectangular" Padding="10,3" Margin="0,0,6,0" Click="OnSampleRect" />
-                <Button Content="Sample: Circular" Padding="10,3" Click="OnSampleCirc" />
+                <Button Content="Sample: Circular precast" Padding="10,3" Margin="0,0,6,0" Click="OnSampleCirc" />
+                <Button Content="Sample: Circular cast" Padding="10,3" Click="OnSampleCircCast" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="btnDraw" Content="Draw" Width="90" Padding="10,3" Margin="0,0,6,0" IsDefault="True" Click="OnDraw" />
