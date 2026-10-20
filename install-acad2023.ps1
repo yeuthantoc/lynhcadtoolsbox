@@ -37,13 +37,15 @@ if (-not (Test-Path "HKLM:\SOFTWARE\Autodesk\AutoCAD\R24.2")) {
 }
 
 # không dùng %TEMP%: trên nhiều máy nó là đường dẫn 8.3 (C:\Users\HUYNH~1.LYN\...) mà PowerShell 5.1 xử lý lỗi
-$work = Join-Path $env:LOCALAPPDATA ("LynhCadToolsBox\install-" + [guid]::NewGuid().ToString("N"))
-[System.IO.Directory]::CreateDirectory($work) | Out-Null
+# Chỉ dùng cmdlet, không gọi .NET ([X]::Y): máy công ty hay bật Constrained Language Mode, cấm gọi .NET trong script.
+$work = Join-Path $env:LOCALAPPDATA ("LynhCadToolsBox\install-" + (New-Guid).Guid)
+New-Item -ItemType Directory -Force -Path $work | Out-Null
 try {
     if ($Zip -eq "") {
         $Zip = Join-Path $work "bundle.zip"
         Write-Host "Đang tải $url ..." -ForegroundColor Cyan
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        # bật TLS 1.2 cho máy cũ; bị cấm (Constrained Language Mode) thì bỏ qua, Windows 10/11 đã mặc định TLS 1.2
+        try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch { }
         $ProgressPreference = "SilentlyContinue"   # thanh tiến trình làm Invoke-WebRequest của PowerShell 5.1 rất chậm
         Invoke-WebRequest -Uri $url -OutFile $Zip -UseBasicParsing
     } elseif (-not (Test-Path -LiteralPath $Zip)) {
@@ -89,5 +91,5 @@ catch {
 }
 finally {
     # dọn thư mục tạm; lỗi ở đây không được che lỗi thật ở trên
-    try { [System.IO.Directory]::Delete($work, $true) } catch { }
+    try { Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction Stop } catch { }
 }

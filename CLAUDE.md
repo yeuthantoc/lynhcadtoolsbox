@@ -33,7 +33,7 @@ Plugin build (Windows only, WPF + net48):
 .\build.ps1 -AcadDir "C:\Program Files\Autodesk\AutoCAD 2024"   # reference AutoCAD's own DLLs instead of NuGet
 ```
 
-`.github/workflows/build.yml` builds the bundle on `windows-latest`, uploads it as an artifact and, on `main`, replaces `LynhCadToolsBox-AutoCAD2023.zip` on the `latest` GitHub release. `install-acad2023.ps1` (end-user installer, saved as UTF-8 with BOM + CRLF so Windows PowerShell 5.1 reads the Vietnamese text) downloads that zip and copies the bundle to `%APPDATA%\Autodesk\ApplicationPlugins`. The plugin project does not build on Linux (no WPF SDK); `src/LynhCad.Loader` does build on Linux; to type-check `Commands.cs`/`AcadRenderer.cs`/`AcadSetup.cs`, compile them in a throwaway net48 project that references `AutoCAD.NET` and stubs `ManholeWindow`.
+`.github/workflows/build.yml` builds the bundle on `windows-latest`, uploads it as an artifact and, on `main`, replaces `LynhCadToolsBox-AutoCAD2023.zip` on the `latest` GitHub release. `install-acad2023.ps1` (end-user installer, saved as UTF-8 with BOM + CRLF so Windows PowerShell 5.1 reads the Vietnamese text) downloads that zip and copies the bundle to `%APPDATA%\Autodesk\ApplicationPlugins`. The user's machine runs PowerShell in Constrained Language Mode and has an 8.3 short `%TEMP%` path: in that script use cmdlets only (no `[Type]::Method()` calls or `New-Object` of .NET types, except inside `try { } catch { }` as optional extras) and work under `%LOCALAPPDATA%`. The plugin project does not build on Linux (no WPF SDK); `src/LynhCad.Loader` does build on Linux; to type-check `Commands.cs`/`AcadRenderer.cs`/`AcadSetup.cs`, compile them in a throwaway net48 project that references `AutoCAD.NET` and stubs `ManholeWindow`.
 
 ## Architecture
 
