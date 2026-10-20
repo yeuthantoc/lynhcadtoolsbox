@@ -3,8 +3,6 @@
 <path d="M677.77,-175 A700,700 0 0 0 332.09,-616.21 A700,700 0 0 0 -226.52,-662.34 L-175.39,-573.79 A600,600 0 0 1 281.89,-529.66 A600,600 0 0 1 573.91,-175 L677.77,-175 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-460.34,-527.34 A700,700 0 0 0 -677.77,-175 L-573.91,-175 A600,600 0 0 1 -409.22,-438.79 L-460.34,-527.34 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-677.77,175 A700,700 0 0 0 -0,700 A700,700 0 0 0 677.77,175 L573.91,175 A600,600 0 0 1 -0,600 A600,600 0 0 1 -573.91,175 L-677.77,175 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M-1545,-120 L-1521,-60 L-1569,-60 L-1545,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
-<path d="M1545,-120 L1569,-60 L1521,-60 L1545,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M5475,2032.16 L7175,2032.16 L7175,1782.16 L5475,1782.16 L5475,2032.16 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M5475,-730.34 L6025,-730.34 L6025,-930.34 L5475,-930.34 L5475,-730.34 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6625,-730.34 L7175,-730.34 L7175,-930.34 L6625,-930.34 L6625,-730.34 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
@@ -20,10 +18,6 @@
 <path d="M5625,-617.84 L5725,-617.84 L5725,-730.34 L5625,-730.34 L5625,-617.84 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6925,-617.84 L7025,-617.84 L7025,-730.34 L6925,-730.34 L6925,-617.84 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M5725,1782.16 L6925,1782.16 L6925,1719.66 L5725,1689.66 L5725,1782.16 Z" fill="#efe6cc" fill-rule="evenodd" stroke="none"/>
-<path d="M7705,-1130.34 L7683.4,-1166.34 L7726.6,-1166.34 L7705,-1130.34 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M7705,-930.34 L7683.4,-966.34 L7726.6,-966.34 L7705,-930.34 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M7705,1782.16 L7683.4,1746.16 L7726.6,1746.16 L7705,1782.16 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M7705,2032.16 L7683.4,1996.16 L7726.6,1996.16 L7705,2032.16 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M677.77,-175 A700,700 0 0 0 -226.52,-662.34" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M573.91,-175 A600,600 0 0 0 -175.39,-573.79" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-460.34,-527.34 A700,700 0 0 0 -677.77,-175" stroke="#111111" stroke-width="7" fill="none"/>
@@ -89,13 +83,15 @@
 <path d="M-1568.03,866.97 L-1601.97,833.03" stroke="#2a8a2a" stroke-width="7" fill="none"/>
 <path d="M-1568.03,-833.03 L-1601.97,-866.97" stroke="#2a8a2a" stroke-width="7" fill="none"/>
 <text x="-1605" y="-0" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 -1605 -0)">1700</text>
-<path d="M-1545,-0 L-1385,-0" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M1545,-0 L1385,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-1385,-0 L1385,-0" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M-1545,-0 L-1385,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-1545,-120 L-1521,-60 L-1569,-60 L-1545,-120 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M-1545,-120 L-1521,-60 L-1569,-60 L-1545,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M-1545,-0 L-1545,-60" stroke="#111111" stroke-width="7" fill="none"/>
 <text x="-1545" y="120" font-size="138.89" text-anchor="middle" fill="#111111"><tspan x="-1545" dy="0">A</tspan></text>
+<path d="M1545,-0 L1385,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M1545,-120 L1569,-60 L1521,-60 L1545,-120 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M1545,-120 L1569,-60 L1521,-60 L1545,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M1545,-0 L1545,-60" stroke="#111111" stroke-width="7" fill="none"/>
 <text x="1545" y="120" font-size="138.89" text-anchor="middle" fill="#111111"><tspan x="1545" dy="0">A</tspan></text>
 <path d="M-603.61,-875.49 L-1675,-875.49 L-1689,-875.49" stroke="#a07800" stroke-width="3.6" fill="none"/>
@@ -187,15 +183,19 @@
 <path d="M5925,-930.34 L6725,-930.34 L6725,-1130.34 L5925,-1130.34 L5925,-930.34 Z" stroke="#888888" stroke-width="3.6" fill="none"/>
 <path d="M5925,-1090.34 L6725,-1090.34" stroke="#888888" stroke-width="3.6" fill="none"/>
 <path d="M7705,-1130.34 L7683.4,-1166.34 L7726.6,-1166.34 L7705,-1130.34 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7705,-1130.34 L7683.4,-1166.34 L7726.6,-1166.34 L7705,-1130.34 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M7705,-1166.34 L8225,-1166.34" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="7748.2" y="-1180.74" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="7748.2" dy="0">CL RL 14.200</tspan></text>
 <path d="M7705,-930.34 L7683.4,-966.34 L7726.6,-966.34 L7705,-930.34 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7705,-930.34 L7683.4,-966.34 L7726.6,-966.34 L7705,-930.34 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M7705,-966.34 L8225,-966.34" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="7748.2" y="-980.74" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="7748.2" dy="0">TOS RL 14.000</tspan></text>
 <path d="M7705,1782.16 L7683.4,1746.16 L7726.6,1746.16 L7705,1782.16 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7705,1782.16 L7683.4,1746.16 L7726.6,1746.16 L7705,1782.16 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M7705,1746.16 L8225,1746.16" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="7748.2" y="1731.76" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="7748.2" dy="0">TOB RL 11.288</tspan></text>
 <path d="M7705,2032.16 L7683.4,1996.16 L7726.6,1996.16 L7705,2032.16 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7705,2032.16 L7683.4,1996.16 L7726.6,1996.16 L7705,2032.16 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M7705,1996.16 L8225,1996.16" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="7748.2" y="1981.76" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="7748.2" dy="0">USB RL 11.038</tspan></text>
 <path d="M5445,2032.16 L4835,2032.16" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>

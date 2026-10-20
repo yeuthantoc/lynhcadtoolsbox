@@ -60,8 +60,10 @@ namespace LynhCad.Manhole.Core.Drawing
             {
                 var d = it as PDim;
                 if (d != null) { list.Add(Annot.DimTextRect(d, st)); continue; }
-                var t = it as PText;
-                if (t != null && !string.IsNullOrEmpty(t.Text)) list.Add(Annot.TextRect(t));
+                var blk = it as PBlock;
+                var texts = blk != null ? SymbolLibrary.Expand(blk).Items.OfType<PText>() : new[] { it as PText };
+                foreach (var t in texts)
+                    if (t != null && !string.IsNullOrEmpty(t.Text)) list.Add(Annot.TextRect(t));
             }
             return list;
         }

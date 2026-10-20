@@ -3,8 +3,6 @@
 <path d="M355.51,-603 A700,700 0 0 0 -599.26,-361.78 L-503.19,-326.81 A600,600 0 0 1 282.07,-529.56 L355.51,-603 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-691.61,-108.06 A700,700 0 0 0 -603,355.51 L-529.56,282.07 A600,600 0 0 1 -595.53,-73.09 L-691.61,-108.06 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-355.51,603 A700,700 0 0 0 494.97,494.97 A700,700 0 0 0 603,-355.51 L529.56,-282.07 A600,600 0 0 1 424.26,424.26 A600,600 0 0 1 -282.07,529.56 L-355.51,603 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M-1093.61,923.91 L-1034.21,949.36 L-1068.16,983.3 L-1093.61,923.91 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
-<path d="M923.91,-1093.61 L983.3,-1068.16 L949.36,-1034.21 L923.91,-1093.61 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M5004.52,2194.29 L7408.68,2194.29 L7408.68,1944.29 L5004.52,1944.29 L5004.52,2194.29 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M5004.52,-568.21 L5906.6,-568.21 L5906.6,-768.21 L5004.52,-768.21 L5004.52,-568.21 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6506.6,-568.21 L7408.68,-568.21 L7408.68,-768.21 L6506.6,-768.21 L6506.6,-568.21 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
@@ -20,10 +18,6 @@
 <path d="M5506.6,-455.71 L5606.6,-455.71 L5606.6,-568.21 L5506.6,-568.21 L5506.6,-455.71 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6806.6,-455.71 L6906.6,-455.71 L6906.6,-568.21 L6806.6,-568.21 L6806.6,-455.71 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M5606.6,1944.29 L6806.6,1944.29 L6806.6,1881.79 L5606.6,1851.79 L5606.6,1944.29 Z" fill="#efe6cc" fill-rule="evenodd" stroke="none"/>
-<path d="M7586.6,-968.21 L7565,-1004.21 L7608.2,-1004.21 L7586.6,-968.21 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M7586.6,-768.21 L7565,-804.21 L7608.2,-804.21 L7586.6,-768.21 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M7586.6,1944.29 L7565,1908.29 L7608.2,1908.29 L7586.6,1944.29 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M7586.6,2194.29 L7565,2158.29 L7608.2,2158.29 L7586.6,2194.29 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M355.51,-603 A700,700 0 0 0 -599.26,-361.78" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M282.07,-529.56 A600,600 0 0 0 -503.19,-326.81" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-691.61,-108.06 A700,700 0 0 0 -603,355.51" stroke="#111111" stroke-width="7" fill="none"/>
@@ -89,13 +83,15 @@
 <path d="M-1449.63,866.97 L-1483.57,833.03" stroke="#2a8a2a" stroke-width="7" fill="none"/>
 <path d="M-1449.63,-833.03 L-1483.57,-866.97" stroke="#2a8a2a" stroke-width="7" fill="none"/>
 <text x="-1486.6" y="-0" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 -1486.6 -0)">1700</text>
-<path d="M-1008.76,1008.76 L-895.62,895.62" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M1008.76,-1008.76 L895.62,-895.62" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-895.62,895.62 L895.62,-895.62" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M-1008.76,1008.76 L-895.62,895.62" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-1093.61,923.91 L-1034.21,949.36 L-1068.16,983.3 L-1093.61,923.91 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M-1093.61,923.91 L-1034.21,949.36 L-1068.16,983.3 L-1093.61,923.91 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M-1008.76,1008.76 L-1051.19,966.33" stroke="#111111" stroke-width="7" fill="none"/>
 <text x="-959.26" y="1108.26" font-size="138.89" text-anchor="middle" fill="#111111"><tspan x="-959.26" dy="0">A</tspan></text>
+<path d="M1008.76,-1008.76 L895.62,-895.62" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M923.91,-1093.61 L983.3,-1068.16 L949.36,-1034.21 L923.91,-1093.61 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M923.91,-1093.61 L983.3,-1068.16 L949.36,-1034.21 L923.91,-1093.61 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M1008.76,-1008.76 L966.33,-1051.19" stroke="#111111" stroke-width="7" fill="none"/>
 <text x="1058.26" y="-909.26" font-size="138.89" text-anchor="middle" fill="#111111"><tspan x="1058.26" dy="0">A</tspan></text>
 <path d="M-1025.15,-282.67 L-1556.6,-282.67 L-1570.6,-282.67" stroke="#a07800" stroke-width="3.6" fill="none"/>
@@ -211,15 +207,19 @@
 <path d="M5806.6,-768.21 L6606.6,-768.21 L6606.6,-968.21 L5806.6,-968.21 L5806.6,-768.21 Z" stroke="#888888" stroke-width="3.6" fill="none"/>
 <path d="M5806.6,-928.21 L6606.6,-928.21" stroke="#888888" stroke-width="3.6" fill="none"/>
 <path d="M7586.6,-968.21 L7565,-1004.21 L7608.2,-1004.21 L7586.6,-968.21 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7586.6,-968.21 L7565,-1004.21 L7608.2,-1004.21 L7586.6,-968.21 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M7586.6,-1004.21 L8106.6,-1004.21" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="7629.8" y="-1018.61" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="7629.8" dy="0">CL RL 14.200</tspan></text>
 <path d="M7586.6,-768.21 L7565,-804.21 L7608.2,-804.21 L7586.6,-768.21 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7586.6,-768.21 L7565,-804.21 L7608.2,-804.21 L7586.6,-768.21 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M7586.6,-804.21 L8106.6,-804.21" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="7629.8" y="-818.61" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="7629.8" dy="0">TOS RL 14.000</tspan></text>
 <path d="M7586.6,1944.29 L7565,1908.29 L7608.2,1908.29 L7586.6,1944.29 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7586.6,1944.29 L7565,1908.29 L7608.2,1908.29 L7586.6,1944.29 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M7586.6,1908.29 L8106.6,1908.29" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="7629.8" y="1893.89" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="7629.8" dy="0">TOB RL 11.288</tspan></text>
 <path d="M7586.6,2194.29 L7565,2158.29 L7608.2,2158.29 L7586.6,2194.29 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7586.6,2194.29 L7565,2158.29 L7608.2,2158.29 L7586.6,2194.29 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M7586.6,2158.29 L8106.6,2158.29" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="7629.8" y="2143.89" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="7629.8" dy="0">USB RL 11.038</tspan></text>
 <path d="M4974.52,2194.29 L4716.6,2194.29" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>

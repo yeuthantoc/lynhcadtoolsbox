@@ -32,6 +32,24 @@ namespace LynhCad.Manhole.Core.Drawing
         void Visit(PDim p);
         void Visit(PLeader p);
         void Visit(PTable p);
+        void Visit(PBlock p);
+    }
+
+    /// <summary>Phép đồng dạng: p' = Origin + quay(p·Scale, Rotation). Dùng để khai triển block định nghĩa theo mm giấy.</summary>
+    public struct Similarity
+    {
+        public readonly Vec2 Origin;
+        public readonly double Scale, Rotation;
+        public Similarity(Vec2 origin, double scale, double rotation) { Origin = origin; Scale = scale; Rotation = rotation; }
+
+        public Vec2 Apply(Vec2 p)
+        {
+            double c = Math.Cos(Rotation), s = Math.Sin(Rotation);
+            double x = p.X * Scale, y = p.Y * Scale;
+            return new Vec2(Origin.X + x * c - y * s, Origin.Y + x * s + y * c);
+        }
+
+        public double Length(double l) { return l * Scale; }
     }
 
     public abstract class Prim
@@ -39,6 +57,8 @@ namespace LynhCad.Manhole.Core.Drawing
         public string Layer;
         public abstract void AddBounds(Bounds b);
         public abstract void Translate(Vec2 d);
+        /// <summary>Biến đổi đồng dạng tại chỗ (dùng khi khai triển block).</summary>
+        public abstract void Transform(Similarity t);
         public abstract void Accept(IPrimVisitor v);
     }
 
@@ -101,6 +121,11 @@ namespace LynhCad.Manhole.Core.Drawing
         }
 
         public override void Translate(Vec2 d) { for (int i = 0; i < Points.Count; i++) Points[i] = Points[i] + d; }
+        public override void Transform(Similarity t)
+        {
+            for (int i = 0; i < Points.Count; i++) Points[i] = t.Apply(Points[i]);
+            ConstantWidth = t.Length(ConstantWidth);
+        }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -109,6 +134,7 @@ namespace LynhCad.Manhole.Core.Drawing
         public Vec2 Center; public double Radius;
         public override void AddBounds(Bounds b) { b.Add(Center.X - Radius, Center.Y - Radius); b.Add(Center.X + Radius, Center.Y + Radius); }
         public override void Translate(Vec2 d) { Center = Center + d; }
+        public override void Transform(Similarity t) { Center = t.Apply(Center); Radius = t.Length(Radius); }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -123,6 +149,11 @@ namespace LynhCad.Manhole.Core.Drawing
             for (int i = 0; i <= n; i++) b.Add(Center + Vec2.FromAngle(StartAngle + sweep * i / n) * Radius);
         }
         public override void Translate(Vec2 d) { Center = Center + d; }
+        public override void Transform(Similarity t)
+        {
+            Center = t.Apply(Center); Radius = t.Length(Radius);
+            StartAngle += t.Rotation; EndAngle += t.Rotation;
+        }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -132,6 +163,11 @@ namespace LynhCad.Manhole.Core.Drawing
         public Vec2 Center; public double RadiusX, RadiusY;
         public override void AddBounds(Bounds b) { b.Add(Center.X - RadiusX, Center.Y - RadiusY); b.Add(Center.X + RadiusX, Center.Y + RadiusY); }
         public override void Translate(Vec2 d) { Center = Center + d; }
+        public override void Transform(Similarity t)
+        {
+            if (Math.Abs(Math.Sin(t.Rotation)) > 1e-9) throw new NotSupportedException("PEllipse chỉ biến đổi được khi không quay.");
+            Center = t.Apply(Center); RadiusX = t.Length(RadiusX); RadiusY = t.Length(RadiusY);
+        }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -141,6 +177,7 @@ namespace LynhCad.Manhole.Core.Drawing
         public Vec2 Center; public double Diameter;
         public override void AddBounds(Bounds b) { b.Add(Center.X - Diameter / 2, Center.Y - Diameter / 2); b.Add(Center.X + Diameter / 2, Center.Y + Diameter / 2); }
         public override void Translate(Vec2 d) { Center = Center + d; }
+        public override void Transform(Similarity t) { Center = t.Apply(Center); Diameter = t.Length(Diameter); }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -153,6 +190,11 @@ namespace LynhCad.Manhole.Core.Drawing
         public double PatternAngle;
         public override void AddBounds(Bounds b) { foreach (var l in Loops) l.AddBounds(b); }
         public override void Translate(Vec2 d) { foreach (var l in Loops) l.Translate(d); }
+        public override void Transform(Similarity t)
+        {
+            foreach (var l in Loops) l.Transform(t);
+            PatternScale = t.Length(PatternScale); PatternAngle += t.Rotation;
+        }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -165,6 +207,10 @@ namespace LynhCad.Manhole.Core.Drawing
         public TextVAlign VAlign = TextVAlign.Middle;
         public double Rotation;
         public bool Underline;
+        /// <summary>Trong block định nghĩa: chữ này là attribute với tag này (Text = giá trị mặc định / prompt).</summary>
+        public string AttributeTag;
+        /// <summary>Attribute luôn đứng thẳng (không quay theo block) — chữ cái ký hiệu cắt.</summary>
+        public bool KeepUpright;
 
         public string[] Lines { get { return (Text ?? "").Split('\n'); } }
 
@@ -189,6 +235,11 @@ namespace LynhCad.Manhole.Core.Drawing
             b.Add(x0, y0); b.Add(x0 + w, y0 + h);
         }
         public override void Translate(Vec2 d) { Position = Position + d; }
+        public override void Transform(Similarity t)
+        {
+            Position = t.Apply(Position); Height = t.Length(Height);
+            if (!KeepUpright) Rotation += t.Rotation;
+        }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -211,6 +262,11 @@ namespace LynhCad.Manhole.Core.Drawing
 
         public override void AddBounds(Bounds b) { b.Add(P1); b.Add(P2); b.Add(DimLinePoint); }
         public override void Translate(Vec2 d) { P1 = P1 + d; P2 = P2 + d; DimLinePoint = DimLinePoint + d; }
+        public override void Transform(Similarity t)
+        {
+            P1 = t.Apply(P1); P2 = t.Apply(P2); DimLinePoint = t.Apply(DimLinePoint);
+            AngleDeg += t.Rotation / GeomUtil.Deg;
+        }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -235,6 +291,11 @@ namespace LynhCad.Manhole.Core.Drawing
             for (int i = 0; i < Points.Count; i++) Points[i] = Points[i] + d;
             TextPosition = TextPosition + d;
         }
+        public override void Transform(Similarity t)
+        {
+            for (int i = 0; i < Points.Count; i++) Points[i] = t.Apply(Points[i]);
+            TextPosition = t.Apply(TextPosition); TextHeight = t.Length(TextHeight);
+        }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
@@ -254,6 +315,38 @@ namespace LynhCad.Manhole.Core.Drawing
 
         public override void AddBounds(Bounds b) { b.Add(Origin); b.Add(Origin.X + Width, Origin.Y - Height); }
         public override void Translate(Vec2 d) { Origin = Origin + d; }
+        public override void Transform(Similarity t)
+        {
+            if (Math.Abs(Math.Sin(t.Rotation)) > 1e-9) throw new NotSupportedException("PTable chỉ biến đổi được khi không quay.");
+            Origin = t.Apply(Origin);
+            for (int i = 0; i < ColumnWidths.Length; i++) ColumnWidths[i] = t.Length(ColumnWidths[i]);
+            RowHeight = t.Length(RowHeight); TextHeight = t.Length(TextHeight);
+        }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
+    }
+
+    /// <summary>
+    /// Chèn block có attribute (ký hiệu cao độ, ký hiệu cắt). Định nghĩa block lấy từ SymbolLibrary theo Name,
+    /// vẽ theo mm giấy, gốc = điểm chèn; chèn với Scale (= tỉ lệ bản vẽ) và Rotation (radian).
+    /// Renderer không có block (SVG, preview) thì vẽ bản khai triển (SymbolLibrary.Expand).
+    /// </summary>
+    public class PBlock : Prim
+    {
+        public string Name;
+        public Vec2 Position;
+        public double Rotation;
+        public double Scale = 1;
+        /// <summary>Giá trị attribute theo tag.</summary>
+        public Dictionary<string, string> Attributes = new Dictionary<string, string>();
+
+        public Similarity Placement { get { return new Similarity(Position, Scale, Rotation); } }
+
+        public override void AddBounds(Bounds b) { foreach (var p in SymbolLibrary.Expand(this).Items) p.AddBounds(b); }
+        public override void Translate(Vec2 d) { Position = Position + d; }
+        public override void Transform(Similarity t)
+        {
+            Position = t.Apply(Position); Scale = t.Length(Scale); Rotation += t.Rotation;
+        }
         public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 

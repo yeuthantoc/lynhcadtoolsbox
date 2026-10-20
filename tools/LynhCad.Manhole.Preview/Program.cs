@@ -103,6 +103,7 @@ namespace LynhCad.Manhole.Preview
             Json();
             Naming();
             Overlap();
+            Blocks();
             Catalog();
             Snapshot();
             Console.WriteLine("{0} passed, {1} failed", passed, failed);
@@ -389,7 +390,8 @@ namespace LynhCad.Manhole.Preview
                 if (!res.Ok) { True("overlap sample " + p.Id + " composes", false); continue; }
                 var st = new DrawStyle(p.Scale);
                 var dims = res.Model.Items.OfType<PDim>().Select(d => Annot.DimTextRect(d, st)).ToList();
-                var texts = res.Model.Items.OfType<PText>().Where(t => t.Layer == Layers.Text).Select(Annot.TextRect).ToList();
+                var texts = res.Model.Items.SelectMany(i => i is PBlock ? SymbolLibrary.Expand((PBlock)i).Items : new List<Prim> { i })
+                    .OfType<PText>().Where(t => t.Layer == Layers.Text).Select(Annot.TextRect).ToList();
                 foreach (var l in res.Model.Items.OfType<PLeader>())
                 {
                     var box = Annot.TextRect(new PText { Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align });
@@ -400,6 +402,50 @@ namespace LynhCad.Manhole.Preview
                         True(name + " line clear of dim text", !dims.Any(r => GeomUtil.SegmentIntersectsRect(l.Points[i], l.Points[i + 1], r)));
                 }
             }
+        }
+
+        /// <summary>Block ký hiệu (cao độ, ký hiệu cắt): khai triển đúng vị trí, attribute thay giá trị, chữ cái đứng thẳng.</summary>
+        private static void Blocks()
+        {
+            var st = new DrawStyle(20);
+            var m = new DrawingModel();
+            var lv = Annot.Level(m, st, 100, 200, "TOB", 12.313, 1);
+            True("level is a block", m.Items.Count == 1 && lv.Name == SymbolLibrary.LevelRight);
+            var ex = SymbolLibrary.Expand(lv).Items;
+            var tri = ex.OfType<PPolyline>().First(p => p.Closed);
+            Eq("level apex x", 100, tri.Points[0].X);
+            Eq("level apex y", 200, tri.Points[0].Y);
+            var txt = ex.OfType<PText>().Single();
+            True("level attribute substituted", txt.Text == "TOB RL 12.313" && txt.AttributeTag == SymbolLibrary.LevelTag);
+            Eq("level text x", 100 + 1.8 * 1.2 * 20, txt.Position.X);
+            Eq("level text y", 200 + 1.8 * 1.4 * 20, txt.Position.Y);
+            Eq("level text height", st.TextSmall, txt.Height);
+            True("expansion uses block layer", ex.All(p => p.Layer == Layers.Text));
+            True("library definition untouched", SymbolLibrary.Get(SymbolLibrary.LevelRight).Items.OfType<PText>().Single().Text == "RL 0.000");
+
+            // ký hiệu cắt: đường cắt dọc trục X, nhìn về +Y → không quay; đầu trái nét đậm về +X, đầu phải về -X
+            var m2 = new DrawingModel();
+            Annot.SectionMarker(m2, st, new Vec2(-1000, 0), new Vec2(1000, 0), new Vec2(0, 1), "A");
+            var blocks = m2.Items.OfType<PBlock>().ToList();
+            Eq("section marker: 2 blocks", 2, blocks.Count);
+            True("section marker names", blocks[0].Name == SymbolLibrary.SectionRight && blocks[1].Name == SymbolLibrary.SectionLeft);
+            Eq("section marker rotation", 0, blocks[0].Rotation);
+            var letter = SymbolLibrary.Expand(blocks[1]).Items.OfType<PText>().Single();
+            True("section letter", letter.Text == "A" && letter.KeepUpright);
+            Eq("section letter y", -3.5 * 20, letter.Position.Y);
+
+            // nhìn về -X (mặt cắt dọc trục Y): block quay 90°, mũi tên chỉ -X, chữ cái vẫn đứng thẳng
+            var m3 = new DrawingModel();
+            Annot.SectionMarker(m3, st, new Vec2(0, -1000), new Vec2(0, 1000), new Vec2(-1, 0), "A");
+            var b3 = m3.Items.OfType<PBlock>().First();
+            var e3 = SymbolLibrary.Expand(b3).Items;
+            var arrow = e3.OfType<PPolyline>().First(p => p.Closed);
+            Eq("rotated arrow tip x", -6 * 20, arrow.Points[0].X);
+            Eq("rotated arrow tip y", -1000, arrow.Points[0].Y);
+            var tick = e3.OfType<PPolyline>().First(p => !p.Closed && p.Points.Count == 2 && p.Points[0].X == 0 && p.Points[0].Y == -1000 && Math.Abs(p.Points[1].X) < 1e-6);
+            Eq("rotated tick towards other end", -1000 + 8 * 20, tick.Points[1].Y);
+            Eq("rotated letter upright", 0, e3.OfType<PText>().Single().Rotation);
+            Eq("rotated letter x", 3.5 * 20, e3.OfType<PText>().Single().Position.X);
         }
 
         /// <summary>Danh mục ống cho hộp thoại (DN / OD / vật liệu dạng danh sách).</summary>

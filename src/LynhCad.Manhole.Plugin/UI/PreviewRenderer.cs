@@ -165,5 +165,10 @@ namespace LynhCad.Manhole.Plugin.UI
         }
 
         public void Visit(PTable t) { }
+
+        public void Visit(PBlock b)
+        {
+            foreach (var p in SymbolLibrary.Expand(b).Items) p.Accept(this);
+        }
     }
 }

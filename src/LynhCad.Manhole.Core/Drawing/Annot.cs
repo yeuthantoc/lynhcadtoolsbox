@@ -38,25 +38,18 @@ namespace LynhCad.Manhole.Core.Drawing
         }
 
         /// <summary>
-        /// Ký hiệu cao độ: tam giác chỉ xuống tại (x, z), gạch ngang, chữ "label RL xx.xxx".
-        /// side = +1 chữ bên phải, -1 bên trái.
+        /// Ký hiệu cao độ = block LCT_LEVEL có attribute LEVEL ("label RL xx.xxx"): tam giác chỉ xuống tại (x, z),
+        /// gạch ngang, chữ phía trên. side = +1 chữ bên phải, -1 bên trái.
         /// </summary>
-        public static void Level(DrawingModel m, DrawStyle st, double x, double z, string label, double rl, int side, double lineLength)
+        public static PBlock Level(DrawingModel m, DrawStyle st, double x, double z, string label, double rl, int side)
         {
-            double t = 1.8 * st.Scale;
-            var tri = new PPolyline { Layer = Layers.Text, Closed = true };
-            tri.Add(new Vec2(x, z)).Add(new Vec2(x - t * 0.6, z + t)).Add(new Vec2(x + t * 0.6, z + t));
-            m.Add(tri);
-            m.Add(new PHatch { Layer = Layers.Text, Pattern = "SOLID", Loops = { Clone(tri) } });
-            double xEnd = x + side * lineLength;
-            m.Add(PPolyline.Line(new Vec2(x, z + t), new Vec2(xEnd, z + t), Layers.Text));
-            m.Add(new PText
+            var b = new PBlock
             {
-                Layer = Layers.Text, Height = st.TextSmall, VAlign = TextVAlign.Bottom,
-                Position = new Vec2(x + side * t * 1.2, z + t * 1.4),
-                Align = side > 0 ? TextAlign.Left : TextAlign.Right,
-                Text = string.Format("{0} RL {1:0.000}", label, rl),
-            });
+                Layer = Layers.Text, Name = side > 0 ? SymbolLibrary.LevelRight : SymbolLibrary.LevelLeft,
+                Position = new Vec2(x, z), Scale = st.Scale,
+            };
+            b.Attributes[SymbolLibrary.LevelTag] = string.Format("{0} RL {1:0.000}", label, rl);
+            return m.Add(b);
         }
 
         private static PPolyline Clone(PPolyline p)
@@ -151,27 +144,28 @@ namespace LynhCad.Manhole.Core.Drawing
         }
 
         /// <summary>
-        /// Ký hiệu đường cắt trên mặt bằng: nét đậm ở hai đầu, mũi tên chỉ hướng nhìn, chữ cái.
+        /// Ký hiệu đường cắt trên mặt bằng: tim mảnh nối hai đầu; mỗi đầu là block LCT_SECTION (nét đậm, mũi tên chỉ hướng nhìn,
+        /// attribute LETTER = chữ cái, luôn đứng thẳng).
         /// </summary>
         public static void SectionMarker(DrawingModel m, DrawStyle st, Vec2 a, Vec2 b, Vec2 viewDir, string letter)
         {
             var dir = (b - a).Normalized();
             double seg = 8 * st.Scale;
-            m.Add(PPolyline.Line(a, a + dir * seg, Layers.SectionMark));
-            m.Add(PPolyline.Line(b, b - dir * seg, Layers.SectionMark));
             m.Add(PPolyline.Line(a + dir * seg, b - dir * seg, Layers.Centre));
-            foreach (var p in new[] { a, b })
+            // quay block sao cho +Y của block = hướng nhìn; nét đậm (+X hoặc -X của block) phải hướng về đầu kia
+            double rot = viewDir.Angle() - Math.PI / 2;
+            var xl = Vec2.FromAngle(rot);
+            for (int i = 0; i < 2; i++)
             {
-                var tip = p + viewDir * (6 * st.Scale);
-                var arrow = new PPolyline { Layer = Layers.SectionMark, Closed = true };
-                var side = dir * (1.2 * st.Scale);
-                var baseP = p + viewDir * (3 * st.Scale);
-                arrow.Add(tip).Add(baseP + side).Add(baseP - side);
-                m.Add(arrow);
-                m.Add(new PHatch { Layer = Layers.SectionMark, Pattern = "SOLID", Loops = { Clone(arrow) } });
-                m.Add(PPolyline.Line(p, baseP, Layers.SectionMark));
-                var tp = p - viewDir * (3.5 * st.Scale);
-                m.Add(new PText { Layer = Layers.Title, Position = tp, Text = letter, Height = st.TextTitle, Align = TextAlign.Center });
+                var p = i == 0 ? a : b;
+                var toOther = i == 0 ? dir : -dir;
+                var blk = new PBlock
+                {
+                    Layer = Layers.SectionMark, Name = toOther.Dot(xl) >= 0 ? SymbolLibrary.SectionRight : SymbolLibrary.SectionLeft,
+                    Position = p, Scale = st.Scale, Rotation = rot,
+                };
+                blk.Attributes[SymbolLibrary.SectionTag] = letter;
+                m.Add(blk);
             }
         }
 

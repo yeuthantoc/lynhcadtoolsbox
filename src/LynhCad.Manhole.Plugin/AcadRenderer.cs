@@ -18,6 +18,8 @@ namespace LynhCad.Manhole.Plugin
         private readonly ObjectIdCollection created = new ObjectIdCollection();
         private readonly ObjectIdCollection hatches = new ObjectIdCollection();
         private readonly List<string> skipped = new List<string>();
+        /// <summary>Đang vẽ vào một BlockTableRecord định nghĩa block: PText có AttributeTag → AttributeDefinition.</summary>
+        private bool inBlockDefinition;
 
         public AcadRenderer(Database db, Transaction tr, BlockTableRecord space, AcadSetup setup)
         {
@@ -57,14 +59,16 @@ namespace LynhCad.Manhole.Plugin
         private ObjectId Add(Entity e, string layer)
         {
             var mt = e as MText;
+            var dt = e as DBText;
             var dim = e as Dimension;
             var ld = e as Leader;
-            ObjectId keepStyle = mt != null ? mt.TextStyleId : dim != null ? dim.DimensionStyle : ld != null ? ld.DimensionStyle : ObjectId.Null;
-            double keepHeight = mt != null ? mt.TextHeight : 0;
+            ObjectId keepStyle = mt != null ? mt.TextStyleId : dt != null ? dt.TextStyleId : dim != null ? dim.DimensionStyle : ld != null ? ld.DimensionStyle : ObjectId.Null;
+            double keepHeight = mt != null ? mt.TextHeight : dt != null ? dt.Height : 0;
 
             e.SetDatabaseDefaults(db);
 
             if (mt != null) { if (!keepStyle.IsNull) mt.TextStyleId = keepStyle; mt.TextHeight = keepHeight; }
+            if (dt != null) { if (!keepStyle.IsNull) dt.TextStyleId = keepStyle; dt.Height = keepHeight; }
             if (dim != null && !keepStyle.IsNull) dim.DimensionStyle = keepStyle;
             if (ld != null && !keepStyle.IsNull) ld.DimensionStyle = keepStyle;
             return Append(e, layer);
@@ -86,7 +90,81 @@ namespace LynhCad.Manhole.Plugin
 
         public void Visit(PArc arc) { Add(new Arc(P3(arc.Center), arc.Radius, arc.StartAngle, arc.EndAngle), arc.Layer); }
 
-        public void Visit(PText t) { Add(ToMText(t.Position, t.Text, t.Height, t.Align, t.VAlign, t.Rotation, t.Underline), t.Layer); }
+        public void Visit(PText t)
+        {
+            if (inBlockDefinition && t.AttributeTag != null) { Add(ToAttributeDefinition(t), t.Layer); return; }
+            Add(ToMText(t.Position, t.Text, t.Height, t.Align, t.VAlign, t.Rotation, t.Underline), t.Layer);
+        }
+
+        private AttributeDefinition ToAttributeDefinition(PText t)
+        {
+            var ad = new AttributeDefinition(P3(t.Position), t.Text ?? "", t.AttributeTag, t.AttributeTag, setup.TextStyleId)
+            {
+                Height = t.Height,
+                Rotation = t.Rotation,
+                Justify = Attachment(t.Align, t.VAlign),
+                LockPositionInBlock = false,
+            };
+            ad.AlignmentPoint = P3(t.Position);
+            try { ad.AdjustAlignment(db); } catch (Autodesk.AutoCAD.Runtime.Exception) { }
+            return ad;
+        }
+
+        /// <summary>
+        /// Ký hiệu cao độ / ký hiệu cắt = BlockReference thật có attribute (định nghĩa trong SymbolLibrary, tạo nếu bản vẽ chưa có).
+        /// AutoCAD từ chối thì vẽ bản khai triển (polyline + hatch + MText) để không mất ký hiệu.
+        /// </summary>
+        public void Visit(PBlock src)
+        {
+            try { AddBlockReference(src); }
+            catch (Autodesk.AutoCAD.Runtime.Exception)
+            {
+                foreach (var p in SymbolLibrary.Expand(src).Items) p.Accept(this);
+            }
+        }
+
+        private ObjectId EnsureBlockDefinition(string name)
+        {
+            var bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+            if (bt.Has(name)) return bt[name]; // giữ block người dùng đã chỉnh
+            var btr = new BlockTableRecord { Name = name, Origin = Point3d.Origin };
+            bt.UpgradeOpen();
+            var id = bt.Add(btr);
+            tr.AddNewlyCreatedDBObject(btr, true);
+            var sub = new AcadRenderer(db, tr, btr, setup) { inBlockDefinition = true };
+            sub.Render(SymbolLibrary.Get(name));
+            skipped.AddRange(sub.Skipped);
+            return id;
+        }
+
+        private void AddBlockReference(PBlock src)
+        {
+            var defId = EnsureBlockDefinition(src.Name);
+            var upright = new HashSet<string>(SymbolLibrary.Get(src.Name).Items.OfType<PText>()
+                .Where(t => t.AttributeTag != null && t.KeepUpright).Select(t => t.AttributeTag));
+
+            var br = new BlockReference(P3(src.Position), defId) { Rotation = src.Rotation, ScaleFactors = new Scale3d(src.Scale) };
+            Add(br, src.Layer);
+
+            var btr = (BlockTableRecord)tr.GetObject(defId, OpenMode.ForRead);
+            foreach (ObjectId eid in btr)
+            {
+                var ad = tr.GetObject(eid, OpenMode.ForRead) as AttributeDefinition;
+                if (ad == null || ad.Constant) continue;
+                var ar = new AttributeReference();
+                ar.SetAttributeFromBlock(ad, br.BlockTransform);
+                string value;
+                if (src.Attributes.TryGetValue(ad.Tag, out value)) ar.TextString = value;
+                if (upright.Contains(ad.Tag))
+                {
+                    // chữ cái ký hiệu cắt luôn đứng thẳng dù block quay theo đường cắt
+                    ar.Rotation = 0;
+                    try { ar.AdjustAlignment(db); } catch (Autodesk.AutoCAD.Runtime.Exception) { }
+                }
+                br.AttributeCollection.AppendAttribute(ar);
+                tr.AddNewlyCreatedDBObject(ar, true);
+            }
+        }
 
         private static Polyline ToPolyline(PPolyline src)
         {

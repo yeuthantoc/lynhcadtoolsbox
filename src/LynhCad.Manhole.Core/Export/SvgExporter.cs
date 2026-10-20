@@ -211,6 +211,11 @@ namespace LynhCad.Manhole.Core.Export
                 Visit(new PText { Layer = l.Layer, Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align });
             }
 
+            public void Visit(PBlock b)
+            {
+                foreach (var p in SymbolLibrary.Expand(b).Items) p.Accept(this);
+            }
+
             public void Visit(PTable t)
             {
                 string s = Stroke(t);

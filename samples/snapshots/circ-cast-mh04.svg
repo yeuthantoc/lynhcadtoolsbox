@@ -3,18 +3,12 @@
 <path d="M896.26,-315 A950,950 0 0 0 230,-921.74 L230,-713.86 A750,750 0 0 1 680.64,-315 L896.26,-315 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-230,-921.74 A950,950 0 0 0 -909.33,-275 L-697.76,-275 A750,750 0 0 1 -230,-713.86 L-230,-921.74 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-909.33,275 A950,950 0 0 0 -21.04,949.77 A950,950 0 0 0 896.26,315 L680.64,315 A750,750 0 0 1 -21.76,749.68 A750,750 0 0 1 -697.76,275 L-909.33,275 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M-1935,-120 L-1911,-60 L-1959,-60 L-1935,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
-<path d="M1935,-120 L1959,-60 L1911,-60 L1935,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M5865,1315.4 L8065,1315.4 L8065,1065.4 L5865,1065.4 L5865,1315.4 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6015,1065.4 L6215,1065.4 L6215,1012.9 L6015,1012.9 L6015,1065.4 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6015,462.9 L6215,462.9 L6215,-1174.6 L6015,-1174.6 L6015,462.9 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M7715,435.4 L7915,435.4 L7915,-1174.6 L7715,-1174.6 L7715,435.4 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6015,-1174.6 L7915,-1174.6 L7915,-1374.6 L6015,-1374.6 L6015,-1174.6 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6215,1065.4 L7715,1065.4 L7715,975.4 L6215,925.4 L6215,1065.4 Z" fill="#efe6cc" fill-rule="evenodd" stroke="none"/>
-<path d="M8595,-1574.6 L8573.4,-1610.6 L8616.6,-1610.6 L8595,-1574.6 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8595,-1374.6 L8573.4,-1410.6 L8616.6,-1410.6 L8595,-1374.6 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8595,1065.4 L8573.4,1029.4 L8616.6,1029.4 L8595,1065.4 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8595,1315.4 L8573.4,1279.4 L8616.6,1279.4 L8595,1315.4 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M896.26,-315 A950,950 0 0 0 230,-921.74" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M680.64,-315 A750,750 0 0 0 230,-713.86" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-230,-921.74 A950,950 0 0 0 -909.33,-275" stroke="#111111" stroke-width="7" fill="none"/>
@@ -124,13 +118,15 @@
 <path d="M-1958.03,1116.97 L-1991.97,1083.03" stroke="#2a8a2a" stroke-width="7" fill="none"/>
 <path d="M-1958.03,-1083.03 L-1991.97,-1116.97" stroke="#2a8a2a" stroke-width="7" fill="none"/>
 <text x="-1995" y="-0" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 -1995 -0)">2200</text>
-<path d="M-1935,-0 L-1775,-0" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M1935,-0 L1775,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-1775,-0 L1775,-0" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M-1935,-0 L-1775,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-1935,-120 L-1911,-60 L-1959,-60 L-1935,-120 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M-1935,-120 L-1911,-60 L-1959,-60 L-1935,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M-1935,-0 L-1935,-60" stroke="#111111" stroke-width="7" fill="none"/>
 <text x="-1935" y="120" font-size="138.89" text-anchor="middle" fill="#111111"><tspan x="-1935" dy="0">A</tspan></text>
+<path d="M1935,-0 L1775,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M1935,-120 L1959,-60 L1911,-60 L1935,-120 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M1935,-120 L1959,-60 L1911,-60 L1935,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M1935,-0 L1935,-60" stroke="#111111" stroke-width="7" fill="none"/>
 <text x="1935" y="120" font-size="138.89" text-anchor="middle" fill="#111111"><tspan x="1935" dy="0">A</tspan></text>
 <path d="M-180,-1310 L-2065,-1310 L-2079,-1310" stroke="#a07800" stroke-width="3.6" fill="none"/>
@@ -274,15 +270,19 @@
 <path d="M7547,1233.4 L7847,1233.4 L7847,1115.4" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M7847,385.4 L7847,-1324.6" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M8595,-1574.6 L8573.4,-1610.6 L8616.6,-1610.6 L8595,-1574.6 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8595,-1574.6 L8573.4,-1610.6 L8616.6,-1610.6 L8595,-1574.6 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8595,-1610.6 L9115,-1610.6" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8638.2" y="-1625" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8638.2" dy="0">CL RL 15.000</tspan></text>
 <path d="M8595,-1374.6 L8573.4,-1410.6 L8616.6,-1410.6 L8595,-1374.6 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8595,-1374.6 L8573.4,-1410.6 L8616.6,-1410.6 L8595,-1374.6 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8595,-1410.6 L9115,-1410.6" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8638.2" y="-1425" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8638.2" dy="0">TOS RL 14.800</tspan></text>
 <path d="M8595,1065.4 L8573.4,1029.4 L8616.6,1029.4 L8595,1065.4 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8595,1065.4 L8573.4,1029.4 L8616.6,1029.4 L8595,1065.4 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8595,1029.4 L9115,1029.4" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8638.2" y="1015" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8638.2" dy="0">TOB RL 12.360</tspan></text>
 <path d="M8595,1315.4 L8573.4,1279.4 L8616.6,1279.4 L8595,1315.4 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8595,1315.4 L8573.4,1279.4 L8616.6,1279.4 L8595,1315.4 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8595,1279.4 L9115,1279.4" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8638.2" y="1265" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8638.2" dy="0">USB RL 12.110</tspan></text>
 <path d="M5835,1315.4 L5225,1315.4" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>

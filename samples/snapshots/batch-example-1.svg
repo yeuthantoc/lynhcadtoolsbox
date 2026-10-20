@@ -7,8 +7,6 @@
 <path d="M750,-275 L950,-275 L950,-600 L750,-600 L750,-275 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-950,600 L-750,600 L-750,230 L-950,230 L-950,600 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-950,-230 L-750,-230 L-750,-600 L-950,-600 L-950,-230 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M-1895,-120 L-1871,-60 L-1919,-60 L-1895,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
-<path d="M1895,-120 L1919,-60 L1871,-60 L1895,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M5945,1512.9 L8145,1512.9 L8145,1262.9 L5945,1262.9 L5945,1512.9 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6095,1262.9 L6295,1262.9 L6295,1205.4 L6095,1205.4 L6095,1262.9 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6095,745.4 L6295,745.4 L6295,-1024.6 L6095,-1024.6 L6095,745.4 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
@@ -16,10 +14,6 @@
 <path d="M6095,-1024.6 L6595,-1024.6 L6595,-1224.6 L6095,-1224.6 L6095,-1024.6 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M7495,-1024.6 L7995,-1024.6 L7995,-1224.6 L7495,-1224.6 L7495,-1024.6 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6295,1262.9 L7795,1262.9 L7795,1175.4 L6295,1125.4 L6295,1262.9 Z" fill="#efe6cc" fill-rule="evenodd" stroke="none"/>
-<path d="M8675,-1424.6 L8653.4,-1460.6 L8696.6,-1460.6 L8675,-1424.6 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8675,-1224.6 L8653.4,-1260.6 L8696.6,-1260.6 L8675,-1224.6 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8675,1262.9 L8653.4,1226.9 L8696.6,1226.9 L8675,1262.9 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8675,1512.9 L8653.4,1476.9 L8696.6,1476.9 L8675,1512.9 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M-950,800 L950,800" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-750,600 L750,600" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M750,275 L950,275" stroke="#111111" stroke-width="7" fill="none"/>
@@ -187,13 +181,15 @@
 <path d="M-2198.03,966.97 L-2231.97,933.03" stroke="#2a8a2a" stroke-width="7" fill="none"/>
 <path d="M-2198.03,-933.03 L-2231.97,-966.97" stroke="#2a8a2a" stroke-width="7" fill="none"/>
 <text x="-2235" y="-0" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 -2235 -0)">1900</text>
-<path d="M-1895,-0 L-1735,-0" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M1895,-0 L1735,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-1735,-0 L1735,-0" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M-1895,-0 L-1735,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-1895,-120 L-1871,-60 L-1919,-60 L-1895,-120 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M-1895,-120 L-1871,-60 L-1919,-60 L-1895,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M-1895,-0 L-1895,-60" stroke="#111111" stroke-width="7" fill="none"/>
 <text x="-1895" y="120" font-size="138.89" text-anchor="middle" fill="#111111"><tspan x="-1895" dy="0">A</tspan></text>
+<path d="M1895,-0 L1735,-0" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M1895,-120 L1919,-60 L1871,-60 L1895,-120 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M1895,-120 L1919,-60 L1871,-60 L1895,-120 Z" fill="#111111" fill-rule="evenodd" stroke="none"/>
 <path d="M1895,-0 L1895,-60" stroke="#111111" stroke-width="7" fill="none"/>
 <text x="1895" y="120" font-size="138.89" text-anchor="middle" fill="#111111"><tspan x="1895" dy="0">A</tspan></text>
 <path d="M-337.5,-1160 L-2305,-1160 L-2319,-1160" stroke="#a07800" stroke-width="3.6" fill="none"/>
@@ -336,15 +332,19 @@
 <path d="M6495,-1224.6 L7595,-1224.6 L7595,-1424.6 L6495,-1424.6 L6495,-1224.6 Z" stroke="#888888" stroke-width="3.6" fill="none"/>
 <path d="M6495,-1384.6 L7595,-1384.6" stroke="#888888" stroke-width="3.6" fill="none"/>
 <path d="M8675,-1424.6 L8653.4,-1460.6 L8696.6,-1460.6 L8675,-1424.6 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8675,-1424.6 L8653.4,-1460.6 L8696.6,-1460.6 L8675,-1424.6 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8675,-1460.6 L9195,-1460.6" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8718.2" y="-1475" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8718.2" dy="0">CL RL 15.000</tspan></text>
 <path d="M8675,-1224.6 L8653.4,-1260.6 L8696.6,-1260.6 L8675,-1224.6 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8675,-1224.6 L8653.4,-1260.6 L8696.6,-1260.6 L8675,-1224.6 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8675,-1260.6 L9195,-1260.6" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8718.2" y="-1275" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8718.2" dy="0">TOS RL 14.800</tspan></text>
 <path d="M8675,1262.9 L8653.4,1226.9 L8696.6,1226.9 L8675,1262.9 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8675,1262.9 L8653.4,1226.9 L8696.6,1226.9 L8675,1262.9 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8675,1226.9 L9195,1226.9" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8718.2" y="1212.5" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8718.2" dy="0">TOB RL 12.313</tspan></text>
 <path d="M8675,1512.9 L8653.4,1476.9 L8696.6,1476.9 L8675,1512.9 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8675,1512.9 L8653.4,1476.9 L8696.6,1476.9 L8675,1512.9 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8675,1476.9 L9195,1476.9" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8718.2" y="1462.5" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8718.2" dy="0">USB RL 12.063</tspan></text>
 <path d="M5915,1512.9 L5305,1512.9" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>

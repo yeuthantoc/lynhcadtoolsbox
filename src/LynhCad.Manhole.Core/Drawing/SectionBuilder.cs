@@ -393,11 +393,10 @@ namespace LynhCad.Manhole.Core.Drawing
         {
             // đặt ngoài đoạn ống ra thò ra bên phải để nhãn TOB/USB không đè lên ống
             double x = RightExtent + 4 * st.Scale;
-            double len = 26 * st.Scale;
-            Annot.Level(m, st, x, zCL, "CL", g.P.CoverLevel, 1, len);
-            Annot.Level(m, st, x, zTopRoof, "TOS", g.RoofTopRL, 1, len);
-            Annot.Level(m, st, x, 0, "TOB", g.FloorRL, 1, len);
-            Annot.Level(m, st, x, -g.Tb, "USB", g.BaseBottomRL, 1, len);
+            Annot.Level(m, st, x, zCL, "CL", g.P.CoverLevel, 1);
+            Annot.Level(m, st, x, zTopRoof, "TOS", g.RoofTopRL, 1);
+            Annot.Level(m, st, x, 0, "TOB", g.FloorRL, 1);
+            Annot.Level(m, st, x, -g.Tb, "USB", g.BaseBottomRL, 1);
         }
 
         // ---------------------------------------------------------------- kích thước
