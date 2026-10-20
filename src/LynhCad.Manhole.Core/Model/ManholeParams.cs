@@ -172,6 +172,24 @@ namespace LynhCad.Manhole.Core.Model
         [DataMember(Name = "pipeClearance")] public double PipeClearance { get; set; }
         [DataMember(Name = "pipes")] public List<PipeSpec> Pipes { get; set; }
 
+        // ---------- Bậc thang (step irons) ----------
+        /// <summary>Vẽ bậc thang lên xuống trên mặt trong tường.</summary>
+        [DataMember(Name = "stepIrons")] public bool StepIrons { get; set; }
+        /// <summary>Khoảng cách đứng giữa các bậc (mm).</summary>
+        [DataMember(Name = "stepSpacing")] public double StepSpacing { get; set; }
+        /// <summary>Bề rộng bậc (mm).</summary>
+        [DataMember(Name = "stepWidth")] public double StepWidth { get; set; }
+        /// <summary>Bậc nhô ra khỏi mặt trong tường (mm).</summary>
+        [DataMember(Name = "stepProjection")] public double StepProjection { get; set; }
+        /// <summary>Khoảng từ đáy bản nắp xuống bậc trên cùng (mm).</summary>
+        [DataMember(Name = "stepTopGap")] public double StepTopGap { get; set; }
+        /// <summary>Bậc dưới cùng cao hơn mặt benching tối thiểu (mm).</summary>
+        [DataMember(Name = "stepBottomClear")] public double StepBottomClear { get; set; }
+        /// <summary>true: tự chọn vị trí gần lỗ thăm, tránh lỗ ống. false: dùng StepAngle.</summary>
+        [DataMember(Name = "stepAuto")] public bool StepAuto { get; set; }
+        /// <summary>Hướng từ tâm hố tới bức tường đặt bậc (độ, 0 = +X, ngược chiều kim đồng hồ) khi StepAuto = false.</summary>
+        [DataMember(Name = "stepAngle")] public double StepAngle { get; set; }
+
         // ---------- Bản vẽ ----------
         /// <summary>Mẫu số tỉ lệ, 20 = 1:20.</summary>
         [DataMember(Name = "scale")] public double Scale { get; set; }
@@ -210,6 +228,8 @@ namespace LynhCad.Manhole.Core.Model
             TrimmerDiameter = 16; TrimmerCount = 2;
             LapFactor = 50; VerticalBarLeg = 300;
             PipeClearance = 50;
+            StepIrons = false; StepSpacing = 300; StepWidth = 350; StepProjection = 150;
+            StepTopGap = 300; StepBottomClear = 300; StepAuto = true; StepAngle = 0;
             Pipes = new List<PipeSpec>();
             Scale = 20;
             ConcreteGrade = "N40";
@@ -245,6 +265,8 @@ namespace LynhCad.Manhole.Core.Model
             {
                 Id = "MH04", Type = ManholeType.CircularCast, InternalDiameter = 1500, WallThickness = 200,
                 RoofProjection = 0, BaseProjection = 150, OpeningDiameter = 600, CoverLevel = 15.000,
+                // lỗ thăm lệch về phía Nam (không có ống) để bậc thang nằm ngay dưới lỗ
+                OpeningOffsetY = -350, StepIrons = true,
             };
             p.Pipes.Add(new PipeSpec { Mark = "P1", Role = PipeRole.Inlet, NominalDiameter = 375, OutsideDiameter = 450, InvertLevel = 12.500, AngleDeg = 180 });
             p.Pipes.Add(new PipeSpec { Mark = "P2", Role = PipeRole.Inlet, NominalDiameter = 300, OutsideDiameter = 360, InvertLevel = 12.600, AngleDeg = 90 });

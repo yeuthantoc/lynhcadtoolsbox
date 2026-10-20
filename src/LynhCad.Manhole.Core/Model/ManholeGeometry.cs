@@ -70,6 +70,9 @@ namespace LynhCad.Manhole.Core.Model
         /// <summary>Khoảng lệch của đường cắt so với tâm hố, đo theo ViewDir.</summary>
         public double SectionOffset;
 
+        /// <summary>Bậc thang (null nếu không bật hoặc không đặt được).</summary>
+        public StepLayout Steps;
+
         public bool IsValid { get { return Errors.Count == 0; } }
 
         public ManholeGeometry(ManholeParams p)
@@ -212,6 +215,8 @@ namespace LynhCad.Manhole.Core.Model
             SectionDir = Outlet.Dir;
             ViewDir = SectionDir.Perp();
             SectionOffset = Outlet.AxisPoint.Dot(ViewDir);
+
+            if (P.StepIrons) Steps = StepPlanner.Plan(this);
         }
 
         private void CheckPenetrationClashes()

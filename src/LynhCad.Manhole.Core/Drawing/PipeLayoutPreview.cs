@@ -74,10 +74,11 @@ namespace LynhCad.Manhole.Core.Drawing
             else
                 m.Add(PPolyline.Rect(Rect2.Centered(o.X, o.Y, 2 * g.OpeningHalfX, 2 * g.OpeningHalfY), Layers.ConcreteHidden));
 
-            // ---- hướng: tên tường (hố chữ nhật) hoặc góc (hố tròn), đặt bên trong lòng hố ----
+            // ---- hướng: tên tường (hố chữ nhật) hoặc góc (hố tròn), đặt bên trong lòng hố, lùi khỏi bậc thang ----
+            double inset = h + (g.Steps != null ? g.Steps.Projection : 0);
             if (g.IsRect)
             {
-                double ix = g.Li / 2 - h, iy = g.Wi / 2 - h;
+                double ix = g.Li / 2 - inset, iy = g.Wi / 2 - inset;
                 Label(m, new Vec2(0, iy), "N", h, TextAlign.Center, HintLayer);
                 Label(m, new Vec2(0, -iy), "S", h, TextAlign.Center, HintLayer);
                 Label(m, new Vec2(ix, 0), "E", h, TextAlign.Center, HintLayer);
@@ -85,10 +86,13 @@ namespace LynhCad.Manhole.Core.Drawing
             }
             else
             {
-                double r = g.Ri - h;
+                double r = g.Ri - inset;
                 foreach (var deg in new[] { 0, 90, 180, 270 })
                     Label(m, Vec2.FromAngle(deg * GeomUtil.Deg) * r, deg + "°", h * 0.8, TextAlign.Center, HintLayer);
             }
+
+            // ---- bậc thang ----
+            if (g.Steps != null) m.Add(StepsDraw.PlanU(g.Steps, Layers.Steps));
 
             // ---- ống ----
             foreach (var f in g.Pipes)

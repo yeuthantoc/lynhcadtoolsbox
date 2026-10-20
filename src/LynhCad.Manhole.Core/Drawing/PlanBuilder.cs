@@ -23,6 +23,7 @@ namespace LynhCad.Manhole.Core.Drawing
             BuildPipes();
             if (g.IsRect) BuildWallRebar();
             else if (g.HasCastWalls) BuildRingWallRebar();
+            BuildSteps();
             BuildDims();
             BuildSectionMarker();
             PlaceCallouts();
@@ -187,6 +188,14 @@ namespace LynhCad.Manhole.Core.Drawing
             var outer = horizLoops[1];
             callouts.Add(new Annot.Callout(new Vec2(-outer.X, -g.Wi / 4), rd.Schedule.Callout(BarSets.WallHoriz)));
             if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
+        }
+
+        private void BuildSteps()
+        {
+            var s = g.Steps;
+            if (s == null) return;
+            m.Add(StepsDraw.PlanU(s, Layers.Steps));
+            callouts.Add(new Annot.Callout(s.RungCentre, StepsDraw.Callout(s), false));
         }
 
         /// <summary>Hố tròn đổ tại chỗ: thép ngang là các vòng tròn (đứt tại lỗ ống), thép đứng là chấm trên hai vòng.</summary>

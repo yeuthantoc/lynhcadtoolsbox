@@ -28,6 +28,7 @@ Tool đầu tiên: **Manhole Detail**, vẽ tự động chi tiết hố ga BTCT
 - **SECTION A-A**: tự cắt dọc theo trục **ống ra**. Ống bị cắt vẽ dọc, ống phía sau vẽ ellipse đúng phối cảnh, benching và máng, thép bản đáy/nắp/tường (đường và chấm), cao độ CL / TOS / TOB / USB, kích thước.
 - **ROOF SLAB REINFORCEMENT**: lưới dưới, thanh bị lỗ thăm cắt, trimmer quanh lỗ.
 - **BAR SCHEDULE** (AutoCAD Table) + **NOTES**.
+- **Bậc thang (step irons)**, tuỳ chọn: một hàng bậc trên mặt trong tường, tự đặt dưới lỗ thăm và tránh lỗ ống (hoặc chỉ định góc). Mặt bằng vẽ hình chữ U; mặt cắt vẽ nhìn nghiêng (tường bị cắt) hoặc chính diện (tường phía sau); thêm ghi chú. Layer `S-STEP`.
 
 **Thép (AS/NZS 4671 D500N)**
 - Tường đổ tại chỗ: thép đứng chân L neo vào đáy, hai mặt (EF). Thép ngang: hố chữ nhật 2 thanh U mỗi lớp, nối chồng giữa cạnh ngắn; hố tròn 1 vòng kín mỗi lớp (`RING` trong bảng: A = đường kính tim vòng, B = chiều dài nối chồng).
@@ -141,6 +142,8 @@ Ví dụ đầy đủ trong [`samples/`](samples). Trường bị thiếu sẽ l
 
 Hố tròn đúc sẵn: `"type": "CircularPrecast"`, dùng `internalDiameter`, `precastWallThickness`, `ringHeight`, `openingDiameter`, `roofProjection`, và ống dùng `"angle"` thay cho `wall/offset`.
 
+Bậc thang: `"stepIrons": true`, tuỳ chọn `stepSpacing` (300), `stepWidth` (350), `stepProjection` (150), `stepTopGap` (300, từ đáy bản nắp tới bậc trên cùng), `stepBottomClear` (300, bậc dưới cùng trên mặt benching), `stepAuto` (true) hoặc `"stepAuto": false` + `stepAngle` (độ, hướng từ tâm hố tới tường đặt bậc, 0° = +X).
+
 Hố tròn đổ tại chỗ: `"type": "CircularCast"`, dùng `internalDiameter`, `wallThickness` (≥ 150), `openingDiameter`, `roofProjection`, thép tường `wallVertical` / `wallHorizontal`, và ống dùng `"angle"`. Ví dụ: [`samples/circ-cast-mh04.json`](samples/circ-cast-mh04.json).
 
 ## Cấu trúc mã nguồn
@@ -178,7 +181,8 @@ dotnet run --project tools/LynhCad.Manhole.Preview -- svg samples/rect-mh01.json
 - Hố chữ nhật: ống phải vuông góc tường.
 - Thép tường tại lỗ ống: thống kê thanh nguyên (cắt tại chỗ) + trimmer, chưa tách thanh ngắn.
 - Lỗ thăm tròn: thanh bản nắp cắt theo hình vuông bao quanh lỗ.
-- Chưa có: bậc thang (step irons), chi tiết khung nắp, hố sâu nhiều đoạn, mặt cắt B-B, layer/style theo template công ty.
+- Bậc thang: một hàng thẳng đứng; vị trí tự động chỉ xét lỗ thăm và lỗ ống (không xét máng giữa hố). Trên mặt cắt, bậc ở tường phía trước mặt cắt không thể hiện.
+- Chưa có: chi tiết khung nắp, hố sâu nhiều đoạn, mặt cắt B-B, layer/style theo template công ty.
 
 ## Lộ trình
 

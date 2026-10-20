@@ -98,6 +98,7 @@ namespace LynhCad.Manhole.Preview
             CircularSample();
             CircularCastSample();
             PipePreview();
+            Steps();
             Validation();
             Json();
             Naming();
@@ -276,6 +277,62 @@ namespace LynhCad.Manhole.Preview
             junk = ManholeParams.SampleCircular();
             junk.Pipes.Clear();
             True("pipe preview with no pipes", PipeLayoutPreview.Build(junk).Model.Items.Count > 0);
+        }
+
+        private static void Steps()
+        {
+            // mặc định tắt: không có bậc, không có layer S-STEP
+            var off = ManholeParams.SampleRectangular();
+            True("steps off by default", !off.StepIrons && new ManholeGeometry(off).Steps == null);
+            True("steps off draws nothing", DetailComposer.Compose(off).Model.Items.All(i => i.Layer != Layers.Steps));
+
+            // hố chữ nhật: tự chọn tường Nam (không có ống), giữa lỗ thăm
+            var p = ManholeParams.SampleRectangular();
+            p.StepIrons = true;
+            var g = new ManholeGeometry(p);
+            var s = g.Steps;
+            True("rect steps placed", s != null && g.IsValid);
+            True("rect steps on south wall, facing in", Math.Abs(s.Normal.Y - 1) < 1e-9 && Math.Abs(s.WallPoint.Y + 600) < 1e-6);
+            Eq("rect steps centred under opening", 0, s.WallPoint.X, 1e-6);
+            Eq("rect top step = soffit - 300", g.H - 300, s.Levels[0], 1e-6);
+            True("rect steps spaced 300", s.Levels.Zip(s.Levels.Skip(1), (a, b) => a - b).All(d => Math.Abs(d - 300) < 1e-6));
+            True("rect bottom step >= benching + 300", s.Levels.Last() >= g.Outlet.ZInvert + g.Outlet.DN + 300 - 1e-6);
+            True("rect steps no warning", g.Warnings.All(w => !w.Contains("Bậc thang")));
+            var res = DetailComposer.Compose(p);
+            True("rect steps in plan", res.Model.Items.Any(i => i.Layer == Layers.Steps));
+            True("rect steps note", res.Model.Items.OfType<PText>().Any(t => t.Text.Contains("STEP IRONS GALVANISED")));
+
+            // đặt tay lên tường Đông (có ống ra P3): vẫn vẽ nhưng cảnh báo trùng ống
+            p.StepAuto = false; p.StepAngle = 0;
+            g = new ManholeGeometry(p);
+            True("manual east wall", g.Steps != null && Math.Abs(g.Steps.Normal.X + 1) < 1e-9);
+            True("manual over outlet warns", g.Warnings.Any(w => w.Contains("trùng vị trí lỗ ống P3")));
+            // góc vào sát góc tường: không vừa → bỏ, có cảnh báo
+            p.StepAngle = 45;
+            g = new ManholeGeometry(p);
+            True("corner angle skipped", g.Steps == null && g.Warnings.Any(w => w.Contains("quá sát góc")));
+
+            // hố tròn đổ tại chỗ (mẫu bật bậc thang): dưới lỗ thăm lệch Nam
+            var c = new ManholeGeometry(ManholeParams.SampleCircularCast());
+            True("circ cast steps at 270", c.Steps != null && Math.Abs(c.Steps.AngleDeg - 270) < 1e-6);
+            True("circ cast steps no warning", c.Warnings.All(w => !w.Contains("Bậc thang")));
+
+            // section: bậc trên tường bị cắt → nhìn nghiêng; xoay hố sao cho bậc nằm ở tường Tây (song song phương nhìn)
+            var west = ManholeParams.SampleRectangular();
+            west.StepIrons = true; west.StepAuto = false; west.StepAngle = 180; west.Pipes[0].Wall = WallSide.South; // P1 sang tường Nam
+            var rw = DetailComposer.Compose(west);
+            True("west steps compose ok: " + string.Join("; ", rw.Errors), rw.Ok);
+            int stepPrims = rw.Model.Items.Count(i => i.Layer == Layers.Steps);
+            Eq("west steps: 1 plan U + one profile per step", 1 + rw.Geometry.Steps.Levels.Count, stepPrims);
+
+            // thông số sai
+            var bad = ManholeParams.SampleRectangular();
+            bad.StepIrons = true; bad.StepSpacing = 50;
+            True("bad step spacing error", !new ManholeGeometry(bad).IsValid);
+
+            // JSON thiếu trường bậc thang → mặc định
+            var partial = ParamsJson.Deserialize("{\"id\":\"X\",\"pipes\":[{\"mark\":\"A\",\"il\":10.0,\"role\":\"outlet\"}]}");
+            True("json default steps", !partial.StepIrons && partial.StepAuto && Math.Abs(partial.StepSpacing - 300) < 1e-9);
         }
 
         private static void Validation()

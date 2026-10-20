@@ -28,6 +28,7 @@ namespace LynhCad.Manhole.Core.Drawing
             BuildConcrete();
             BuildBenching();
             BuildPipes();
+            BuildSteps();
             BuildRebar();
             BuildCoverFrame();
             BuildLevels();
@@ -207,6 +208,39 @@ namespace LynhCad.Manhole.Core.Drawing
                 m.Add(new PEllipse { Layer = Layers.Pipe, Center = new Vec2(sc, zc), RadiusX = f.OD / 2 * k, RadiusY = f.OD / 2 });
                 callouts.Add(new Annot.Callout(new Vec2(sc, zc + f.OD / 2), label + " (BEYOND)", false));
             }
+        }
+
+        // ---------------------------------------------------------------- bậc thang
+        /// <summary>
+        /// Bậc trên tường song song phương nhìn (tường bị cắt hoặc ngay sau mặt cắt) → nhìn nghiêng (thanh nhô + mấu).
+        /// Bậc trên tường phía sau, đối diện người nhìn → nhìn chính diện (thanh ngang). Tường phía trước mặt cắt → không thấy.
+        /// </summary>
+        private void BuildSteps()
+        {
+            var st8 = g.Steps;
+            if (st8 == null) return;
+            var outward = -st8.Normal;
+            double depth = (st8.WallPoint - origin).Dot(d); // > 0: phía sau mặt cắt
+            double lip = 25;
+            Vec2 target;
+            if (Math.Abs(outward.Dot(u)) > 0.7 && depth > -st8.Width / 2)
+            {
+                double s0 = S(st8.WallPoint), s1 = S(st8.RungCentre);
+                foreach (var z in st8.Levels)
+                    m.Add(new PPolyline { Layer = Layers.Steps }
+                        .Add(new Vec2(s0, z)).Add(new Vec2(s1, z)).Add(new Vec2(s1, z + lip)));
+                target = new Vec2(s1, st8.Levels[0]);
+            }
+            else if (outward.Dot(d) > 0.3 && depth > 0)
+            {
+                var t = st8.Tangent * (st8.Width / 2);
+                double sa = S(st8.RungCentre - t), sb = S(st8.RungCentre + t);
+                foreach (var z in st8.Levels)
+                    m.Add(PPolyline.Line(new Vec2(sa, z), new Vec2(sb, z), Layers.Steps));
+                target = new Vec2(Math.Max(sa, sb), st8.Levels[0]);
+            }
+            else return;
+            callouts.Add(new Annot.Callout(target, StepsDraw.Callout(st8), false));
         }
 
         // ---------------------------------------------------------------- thép

@@ -56,6 +56,7 @@ namespace LynhCad.Manhole.Core.Drawing
         public const string Title = "S-TITL";
         public const string SectionMark = "S-SECT";
         public const string Table = "S-SCHD";
+        public const string Steps = "S-STEP";
 
         public static readonly List<LayerDef> All = new List<LayerDef>
         {
@@ -73,6 +74,7 @@ namespace LynhCad.Manhole.Core.Drawing
             new LayerDef { Name = Title,          Color = 7,   Linetype = "Continuous", LineWeight = 35, Description = "View titles" },
             new LayerDef { Name = SectionMark,    Color = 7,   Linetype = "Continuous", LineWeight = 35, Description = "Section markers" },
             new LayerDef { Name = Table,          Color = 7,   Linetype = "Continuous", LineWeight = 18, Description = "Bar schedule" },
+            new LayerDef { Name = Steps,          Color = 5,   Linetype = "Continuous", LineWeight = 35, Description = "Step irons" },
         };
     }
 }
