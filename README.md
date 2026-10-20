@@ -50,9 +50,14 @@ cd lynhcadtoolsbox
 # Build + cài bundle tự nạp mỗi lần mở AutoCAD
 .\build.ps1 -Install
 
+# Build với API của đúng một bản AutoCAD (2021 / 2022 / 2023 / 2024)
+.\build.ps1 -Acad 2023 -Install
+
 # Mạng công ty chặn NuGet? Tham chiếu thẳng DLL trong thư mục cài AutoCAD:
 .\build.ps1 -AcadDir "C:\Program Files\Autodesk\AutoCAD 2024"
 ```
+
+Không có máy build: mỗi lần push, GitHub Actions (tab **Actions** → *Build plugin*) build sẵn bundle cho AutoCAD 2023, tải ở mục **Artifacts**, giải nén `LynhCadToolsBox.bundle` vào `%APPDATA%\Autodesk\ApplicationPlugins`.
 
 Không muốn cài bundle: trong AutoCAD gõ `NETLOAD` rồi chọn `src\LynhCad.Manhole.Plugin\bin\Release\net48\LynhCad.Manhole.dll`.
 

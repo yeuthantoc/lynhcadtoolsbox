@@ -4,6 +4,7 @@
     Plugin AutoCAD 2021-2024 (.NET Framework 4.8, x64).
     Tham chiếu API:
       - Mặc định: NuGet "AutoCAD.NET" 24.0.0 (API của AutoCAD 2021, chạy được trên 2021-2024).
+        Build riêng cho một bản: -p:AcadNetVersion=24.2.0 (2023), 24.1.51000 (2022), 24.3.0 (2024).
       - Không có mạng / bị chặn NuGet: build với  -p:AcadDir="C:\Program Files\Autodesk\AutoCAD 2024"
         để tham chiếu thẳng accoremgd.dll, acdbmgd.dll, acmgd.dll trong thư mục cài AutoCAD.
     Kết quả: bin\Release\net48\LynhCad.Manhole.dll (+ LynhCad.Manhole.Core.dll) → NETLOAD trong AutoCAD.
@@ -19,10 +20,11 @@
     <Company>LynhCadToolsBox</Company>
     <Product>LynhCadToolsBox - Manhole Detail</Product>
     <GenerateResourceUsePreserializedResources>false</GenerateResourceUsePreserializedResources>
+    <AcadNetVersion Condition="'$(AcadNetVersion)' == ''">24.0.0</AcadNetVersion>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AcadDir)' == ''">
-    <PackageReference Include="AutoCAD.NET" Version="24.0.0" ExcludeAssets="runtime" />
+    <PackageReference Include="AutoCAD.NET" Version="$(AcadNetVersion)" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(AcadDir)' != ''">

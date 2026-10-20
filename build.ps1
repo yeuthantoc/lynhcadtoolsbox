@@ -6,10 +6,13 @@
   .\build.ps1                       # build Release, tạo bundle trong .\dist
   .\build.ps1 -Install              # build + copy bundle vào %APPDATA%\Autodesk\ApplicationPlugins
   .\build.ps1 -AcadDir "C:\Program Files\Autodesk\AutoCAD 2024"   # build không cần NuGet AutoCAD.NET
+  .\build.ps1 -Acad 2023            # build với API AutoCAD 2023 (AutoCAD.NET 24.2.0)
 #>
 param(
     [switch]$Install,
-    [string]$AcadDir = ""
+    [string]$AcadDir = "",
+    [ValidateSet("", "2021", "2022", "2023", "2024")]
+    [string]$Acad = ""
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -17,6 +20,8 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $proj = Join-Path $root "src\LynhCad.Manhole.Plugin\LynhCad.Manhole.Plugin.csproj"
 $props = @("-c", "Release")
 if ($AcadDir -ne "") { $props += "-p:AcadDir=$AcadDir" }
+$acadNet = @{ "2021" = "24.0.0"; "2022" = "24.1.51000"; "2023" = "24.2.0"; "2024" = "24.3.0" }
+if ($Acad -ne "") { $props += "-p:AcadNetVersion=$($acadNet[$Acad])" }
 
 Write-Host "== Build plugin ==" -ForegroundColor Cyan
 dotnet build $proj @props

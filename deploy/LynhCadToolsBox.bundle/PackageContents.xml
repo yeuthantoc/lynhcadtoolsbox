@@ -21,6 +21,7 @@
       <Commands GroupName="LCT">
         <Command Local="LCT_MANHOLE" Global="LCT_MANHOLE" />
         <Command Local="LCT_MANHOLE_JSON" Global="LCT_MANHOLE_JSON" />
+        <Command Local="LCT_MANHOLE_EDIT" Global="LCT_MANHOLE_EDIT" />
       </Commands>
     </ComponentEntry>
   </Components>
