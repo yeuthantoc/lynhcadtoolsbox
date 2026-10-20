@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Plugin AutoCAD 2021-2024 (.NET Framework 4.8, x64).
+    Tham chiếu API:
+      - Mặc định: NuGet "AutoCAD.NET" 24.0.0 (API của AutoCAD 2021, chạy được trên 2021-2024).
+      - Không có mạng / bị chặn NuGet: build với  -p:AcadDir="C:\Program Files\Autodesk\AutoCAD 2024"
+        để tham chiếu thẳng accoremgd.dll, acdbmgd.dll, acmgd.dll trong thư mục cài AutoCAD.
+    Kết quả: bin\Release\net48\LynhCad.Manhole.dll (+ LynhCad.Manhole.Core.dll) → NETLOAD trong AutoCAD.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>7.3</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>LynhCad.Manhole</AssemblyName>
+    <RootNamespace>LynhCad.Manhole.Plugin</RootNamespace>
+    <Version>0.1.0</Version>
+    <Company>LynhCadToolsBox</Company>
+    <Product>LynhCadToolsBox - Manhole Detail</Product>
+    <GenerateResourceUsePreserializedResources>false</GenerateResourceUsePreserializedResources>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(AcadDir)' == ''">
+    <PackageReference Include="AutoCAD.NET" Version="24.0.0" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(AcadDir)' != ''">
+    <Reference Include="accoremgd"><HintPath>$(AcadDir)\accoremgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="acdbmgd"><HintPath>$(AcadDir)\acdbmgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="acmgd"><HintPath>$(AcadDir)\acmgd.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LynhCad.Manhole.Core\LynhCad.Manhole.Core.csproj" />
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+
+</Project>

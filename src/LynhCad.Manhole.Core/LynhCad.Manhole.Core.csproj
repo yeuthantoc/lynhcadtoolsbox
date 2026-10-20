@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Lõi tính toán & dựng hình cho tool hố ga.
+    KHÔNG tham chiếu AutoCAD, để test / xuất SVG preview được ở bất kỳ đâu.
+    netstandard2.0 => dùng được từ plugin .NET Framework 4.8 (AutoCAD 2021–2024).
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <RootNamespace>LynhCad.Manhole.Core</RootNamespace>
+    <AssemblyName>LynhCad.Manhole.Core</AssemblyName>
+    <Nullable>disable</Nullable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>

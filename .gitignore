@@ -1,0 +1,12 @@
+bin/
+obj/
+dist/
+.vs/
+*.user
+*.suo
+*.DotSettings.user
+packages/
+TestResults/
+*.bak
+*.dwl
+*.dwl2

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Công cụ dòng lệnh không cần AutoCAD:
+      dotnet run check                    chạy bộ kiểm tra lõi tính toán
+      dotnet run svg params.json out.svg  xuất preview SVG từ file thông số
+      dotnet run sample out-folder        ghi JSON + SVG của 2 hố ga mẫu
+    Lõi được biên dịch trực tiếp từ mã nguồn (LangVersion 7.3) để đảm bảo vẫn tương thích .NET Framework 4.8.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>LynhCad.Manhole.Preview</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\LynhCad.Manhole.Core\**\*.cs" Exclude="..\..\src\LynhCad.Manhole.Core\obj\**;..\..\src\LynhCad.Manhole.Core\bin\**" LinkBase="Core" />
+  </ItemGroup>
+
+</Project>

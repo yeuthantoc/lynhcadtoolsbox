@@ -1,0 +1,289 @@
+<Window x:Class="LynhCad.Manhole.Plugin.UI.ManholeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LynhCadToolsBox - Manhole Detail (AU)"
+        Width="820" Height="660" MinWidth="700" MinHeight="560"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="False" FontSize="12">
+
+    <Window.Resources>
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="Margin" Value="4,3,8,3" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="Unit" TargetType="TextBlock">
+            <Setter Property="Margin" Value="2,3,12,3" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="Gray" />
+        </Style>
+        <Style x:Key="Num" TargetType="TextBox">
+            <Setter Property="Margin" Value="2,3" />
+            <Setter Property="Width" Value="90" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="TextAlignment" Value="Right" />
+        </Style>
+        <Style x:Key="Dia" TargetType="ComboBox">
+            <Setter Property="Margin" Value="2,3" />
+            <Setter Property="Width" Value="70" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style x:Key="Head" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="4,10,4,4" />
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Margin="10">
+
+        <!-- Nút lệnh -->
+        <Grid DockPanel.Dock="Bottom" Margin="0,10,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="Load JSON..." Padding="10,3" Margin="0,0,6,0" Click="OnLoadJson" />
+                <Button Content="Save JSON..." Padding="10,3" Margin="0,0,6,0" Click="OnSaveJson" />
+                <Button Content="Sample: Rectangular" Padding="10,3" Margin="0,0,6,0" Click="OnSampleRect" />
+                <Button Content="Sample: Circular" Padding="10,3" Click="OnSampleCirc" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Draw" Width="90" Padding="10,3" Margin="0,0,6,0" IsDefault="True" Click="OnDraw" />
+                <Button Content="Cancel" Width="90" Padding="10,3" IsCancel="True" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Trạng thái kiểm tra -->
+        <TextBlock x:Name="txtStatus" DockPanel.Dock="Bottom" Margin="4,8,4,0" TextWrapping="Wrap" Foreground="DarkRed" />
+
+        <TabControl>
+
+            <!-- ===================== CHUNG ===================== -->
+            <TabItem Header="General">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition /><RowDefinition /><RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Lbl}" Text="Manhole ID" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource Num}" TextAlignment="Left" Text="{Binding Id}" />
+                            <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="Type" />
+                            <ComboBox x:Name="cbType" Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Width="160" Margin="2,3"
+                                      HorizontalAlignment="Left" SelectedItem="{Binding Type}" SelectionChanged="OnTypeChanged" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Drawing scale  1 :" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding Scale}" />
+                            <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource Lbl}" Text="Concrete grade" />
+                            <TextBox Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" TextAlignment="Left" Text="{Binding ConcreteGrade}" />
+
+                            <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="4,6" Content="Roof slab reinforcement plan" IsChecked="{Binding DrawRoofPlan}" />
+                            <CheckBox Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Margin="4,6" Content="Bar schedule + notes" IsChecked="{Binding DrawSchedule}" />
+                        </Grid>
+
+                        <!-- Hố chữ nhật -->
+                        <GroupBox x:Name="grpRect" Header="Rectangular cast in-situ" Margin="0,8,0,0" Padding="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Lbl}" Text="Internal length (X)" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding InternalLength}" />
+                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="Internal width (Y)" />
+                                <TextBox Grid.Row="0" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding InternalWidth}" />
+                                <TextBlock Grid.Row="0" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Wall thickness" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding WallThickness}" />
+                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Hố tròn -->
+                        <GroupBox x:Name="grpCirc" Header="Circular precast" Margin="0,8,0,0" Padding="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Lbl}" Text="Internal diameter" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding InternalDiameter}" />
+                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="Precast wall" />
+                                <TextBox Grid.Row="0" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding PrecastWallThickness}" />
+                                <TextBlock Grid.Row="0" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Ring height (joints)" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding RingHeight}" />
+                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource Lbl}" Text="Access opening Ø" />
+                                <TextBox Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding OpeningDiameter}" />
+                                <TextBlock Grid.Row="1" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Bản & lỗ thăm -->
+                        <GroupBox Header="Slabs &amp; access opening" Margin="0,8,0,0" Padding="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Lbl}" Text="Base thickness" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding BaseThickness}" />
+                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="Base projection" />
+                                <TextBox Grid.Row="0" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding BaseProjection}" />
+                                <TextBlock Grid.Row="0" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Roof thickness" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding RoofThickness}" />
+                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource Lbl}" Text="Roof projection" />
+                                <TextBox Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding RoofProjection}" />
+                                <TextBlock Grid.Row="1" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+
+                                <TextBlock x:Name="lblOpenX" Grid.Row="2" Grid.Column="0" Style="{StaticResource Lbl}" Text="Opening size X" />
+                                <TextBox x:Name="txtOpenX" Grid.Row="2" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding OpeningX}" />
+                                <TextBlock x:Name="unitOpenX" Grid.Row="2" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock x:Name="lblOpenY" Grid.Row="2" Grid.Column="3" Style="{StaticResource Lbl}" Text="Opening size Y" />
+                                <TextBox x:Name="txtOpenY" Grid.Row="2" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding OpeningY}" />
+                                <TextBlock x:Name="unitOpenY" Grid.Row="2" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Lbl}" Text="Opening offset X" />
+                                <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding OpeningOffsetX}" />
+                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource Lbl}" Text="Opening offset Y" />
+                                <TextBox Grid.Row="3" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding OpeningOffsetY}" />
+                                <TextBlock Grid.Row="3" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Cao độ -->
+                        <GroupBox Header="Levels (m AHD)" Margin="0,8,0,0" Padding="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Lbl}" Text="Cover level (CL)" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding CoverLevel, StringFormat=0.000}" />
+                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource Unit}" Text="m" />
+                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="CL to top of roof" ToolTip="Cover, frame and adjustment rings" />
+                                <TextBox Grid.Row="0" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding CoverAllowance}" />
+                                <TextBlock Grid.Row="0" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Sump below pipes" ToolTip="Lowest pipe outside bottom to top of base slab" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding SumpDepth}" />
+                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource Lbl}" Text="Pipe clearance" ToolTip="Gap around pipe in wall penetration, each side" />
+                                <TextBox Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding PipeClearance}" />
+                                <TextBlock Grid.Row="1" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===================== THÉP ===================== -->
+            <TabItem Header="Reinforcement">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
+                            <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="5" Style="{StaticResource Head}" Text="Bars: N (D500N, AS/NZS 4671) — size / spacing (mm)" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Wall vertical (EF)" />
+                        <ComboBox x:Name="cbWallV" Grid.Row="1" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding WallVertical.Diameter}" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
+                        <TextBox Grid.Row="1" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding WallVertical.Spacing}" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Lbl}" Text="Wall horizontal (EF)" />
+                        <ComboBox x:Name="cbWallH" Grid.Row="2" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding WallHorizontal.Diameter}" />
+                        <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
+                        <TextBox Grid.Row="2" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding WallHorizontal.Spacing}" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Lbl}" Text="Base bottom (EW)" />
+                        <ComboBox x:Name="cbBaseB" Grid.Row="3" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding BaseBottom.Diameter}" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
+                        <TextBox Grid.Row="3" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseBottom.Spacing}" />
+
+                        <CheckBox Grid.Row="4" Grid.Column="0" Margin="4,6" Content="Base top mat (EW)" IsChecked="{Binding BaseTopMat}" />
+                        <ComboBox x:Name="cbBaseT" Grid.Row="4" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding BaseTop.Diameter}" />
+                        <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
+                        <TextBox Grid.Row="4" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseTop.Spacing}" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource Lbl}" Text="Roof bottom (EW)" />
+                        <ComboBox x:Name="cbRoofB" Grid.Row="5" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding RoofBottom.Diameter}" />
+                        <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
+                        <TextBox Grid.Row="5" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofBottom.Spacing}" />
+
+                        <CheckBox Grid.Row="6" Grid.Column="0" Margin="4,6" Content="Roof top mat (EW)" IsChecked="{Binding RoofTopMat}" />
+                        <ComboBox x:Name="cbRoofT" Grid.Row="6" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding RoofTop.Diameter}" />
+                        <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
+                        <TextBox Grid.Row="6" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofTop.Spacing}" />
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource Lbl}" Text="Trimmers (size / no. each side)" />
+                        <ComboBox x:Name="cbTrim" Grid.Row="7" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding TrimmerDiameter}" />
+                        <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource Unit}" Text="x" />
+                        <TextBox Grid.Row="7" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding TrimmerCount}" />
+
+                        <TextBlock Grid.Row="8" Grid.ColumnSpan="5" Style="{StaticResource Head}" Text="Detailing" />
+
+                        <TextBlock Grid.Row="9" Grid.Column="0" Style="{StaticResource Lbl}" Text="Cover" />
+                        <TextBox Grid.Row="9" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding Cover}" />
+                        <TextBlock Grid.Row="9" Grid.Column="4" Style="{StaticResource Unit}" Text="mm" />
+
+                        <TextBlock Grid.Row="10" Grid.Column="0" Style="{StaticResource Lbl}" Text="Lap length factor (× d)" />
+                        <TextBox Grid.Row="10" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding LapFactor}" />
+                        <TextBlock Grid.Row="10" Grid.Column="4" Style="{StaticResource Unit}" Text="d" />
+
+                        <TextBlock Grid.Row="11" Grid.Column="0" Style="{StaticResource Lbl}" Text="Wall vertical bar leg into base" />
+                        <TextBox Grid.Row="11" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding VerticalBarLeg}" />
+                        <TextBlock Grid.Row="11" Grid.Column="4" Style="{StaticResource Unit}" Text="mm" />
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===================== ỐNG ===================== -->
+            <TabItem Header="Pipes">
+                <DockPanel Margin="6">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                        <Button Content="+ Add pipe" Padding="8,2" Margin="0,0,6,0" Click="OnAddPipe" />
+                        <Button Content="− Remove selected" Padding="8,2" Click="OnRemovePipe" />
+                        <TextBlock x:Name="txtPipeHint" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="Gray" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <DataGrid x:Name="gridPipes" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                              HeadersVisibility="Column" SelectionMode="Extended" RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mark" Width="60" Binding="{Binding Mark}" />
+                            <DataGridComboBoxColumn x:Name="colRole" Header="Role" Width="80" SelectedItemBinding="{Binding Role}" />
+                            <DataGridTextColumn Header="DN (mm)" Width="70" Binding="{Binding NominalDiameter}" />
+                            <DataGridTextColumn Header="OD (mm)" Width="70" Binding="{Binding OutsideDiameter}" />
+                            <DataGridTextColumn Header="Material" Width="80" Binding="{Binding Material}" />
+                            <DataGridTextColumn Header="IL (m)" Width="80" Binding="{Binding InvertLevel, StringFormat=0.000}" />
+                            <DataGridTextColumn x:Name="colAngle" Header="Angle (°)" Width="70" Binding="{Binding AngleDeg}" />
+                            <DataGridComboBoxColumn x:Name="colWall" Header="Wall" Width="80" SelectedItemBinding="{Binding Wall}" />
+                            <DataGridTextColumn x:Name="colOffset" Header="Offset (mm)" Width="85" Binding="{Binding Offset}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bundle tự nạp cho AutoCAD 2021-2024 (R24.0 - R24.3).
+  build.ps1 copy DLL vào Contents\ và cài bundle vào %APPDATA%\Autodesk\ApplicationPlugins.
+-->
+<ApplicationPackage SchemaVersion="1.0"
+                    AppVersion="0.1.0"
+                    Name="LynhCadToolsBox"
+                    Description="Structural detailing tools for AutoCAD - Australian manhole details (plan, section, reinforcement, bar schedule)."
+                    Author="Lynh"
+                    ProductCode="{6F1C9E2A-4B7D-4E31-9A55-2D8C7B4E1A10}"
+                    UpgradeCode="{0B7E4F63-3C1A-4D2B-8E9F-5A6C1D2E3F40}">
+  <CompanyDetails Name="LynhCadToolsBox" />
+  <RuntimeRequirements OS="Win64" Platform="AutoCAD*" SeriesMin="R24.0" SeriesMax="R24.3" />
+  <Components>
+    <RuntimeRequirements OS="Win64" Platform="AutoCAD*" SeriesMin="R24.0" SeriesMax="R24.3" />
+    <ComponentEntry AppName="LynhCadToolsBox.Manhole"
+                    ModuleName="./Contents/LynhCad.Manhole.dll"
+                    AppDescription="Manhole detail generator"
+                    LoadOnAutoCADStartup="True">
+      <Commands GroupName="LCT">
+        <Command Local="LCT_MANHOLE" Global="LCT_MANHOLE" />
+        <Command Local="LCT_MANHOLE_JSON" Global="LCT_MANHOLE_JSON" />
+      </Commands>
+    </ComponentEntry>
+  </Components>
+</ApplicationPackage>
