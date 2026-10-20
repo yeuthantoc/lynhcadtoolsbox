@@ -21,19 +21,23 @@ namespace LynhCad.Loader
         public void Terminate() { }
     }
 
-    /// <summary>Lệnh cố định của AutoCAD; mỗi lệnh chuyển sang Entry.Run trong bản plugin đang nạp.</summary>
+    /// <summary>
+    /// Lệnh cố định của AutoCAD; mỗi lệnh chuyển sang Entry.Run trong bản plugin đang nạp.
+    /// Chỉ dùng dạng CommandMethod("TÊN", flags): dạng (group, global, localizedNameId, flags) tra tên địa phương
+    /// trong resource của DLL, không có resource thì lệnh không gõ được.
+    /// </summary>
     public class LoaderCommands
     {
-        [CommandMethod("LCT", "LCT_MANHOLE", "LCT_MANHOLE", CommandFlags.Modal)]
+        [CommandMethod("LCT_MANHOLE", CommandFlags.Modal)]
         public void Manhole() { PluginHost.Run("LCT_MANHOLE"); }
 
-        [CommandMethod("LCT", "LCT_MANHOLE_JSON", "LCT_MANHOLE_JSON", CommandFlags.Modal)]
+        [CommandMethod("LCT_MANHOLE_JSON", CommandFlags.Modal)]
         public void ManholeJson() { PluginHost.Run("LCT_MANHOLE_JSON"); }
 
-        [CommandMethod("LCT", "LCT_MANHOLE_EDIT", "LCT_MANHOLE_EDIT", CommandFlags.Modal)]
+        [CommandMethod("LCT_MANHOLE_EDIT", CommandFlags.Modal)]
         public void ManholeEdit() { PluginHost.Run("LCT_MANHOLE_EDIT"); }
 
-        [CommandMethod("LCT", "LCT_RELOAD", "LCT_RELOAD", CommandFlags.Modal)]
+        [CommandMethod("LCT_RELOAD", CommandFlags.Modal)]
         public void Reload() { PluginHost.Load(true); }
     }
 
