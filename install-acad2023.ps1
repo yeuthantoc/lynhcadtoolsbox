@@ -75,7 +75,20 @@ try {
         }
     }
 
+    # kiểm tra lại: phần mềm diệt virus / chính sách công ty có thể xoá DLL ngay sau khi chép
+    Start-Sleep -Seconds 2
+    $missing = @()
+    foreach ($f in Get-ChildItem -LiteralPath $bundle -Recurse -File) {
+        $to = Join-Path $target ($f.FullName.Substring($bundle.Length).TrimStart('\'))
+        if (-not (Test-Path -LiteralPath $to)) { $missing += $to }
+    }
+    if ($missing.Count -gt 0) {
+        Write-Host "Cài xong nhưng các file sau không còn (có thể bị diệt virus hoặc chính sách công ty xoá/chặn):" -ForegroundColor Red
+        $missing | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+        exit 1
+    }
     Write-Host "Đã cài vào $target" -ForegroundColor Green
+    Get-ChildItem -LiteralPath $target -Recurse -File | ForEach-Object { Write-Host ("  " + $_.FullName) }
     if ($loaderLocked) {
         Write-Host "LynhCad.Loader.dll đang được AutoCAD dùng nên giữ bản cũ (chỉ cần thay khi loader thay đổi: đóng AutoCAD rồi chạy lại)." -ForegroundColor Yellow
     }
