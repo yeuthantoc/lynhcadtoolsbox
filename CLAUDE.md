@@ -18,11 +18,15 @@ dotnet run --project tools/LynhCad.Manhole.Preview -- check
 # SVG preview of a parameter file (no AutoCAD needed) - use this to eyeball drawing changes
 dotnet run --project tools/LynhCad.Manhole.Preview -- svg samples/rect-mh01.json out.svg
 
+# Rewrite the golden SVGs in samples/snapshots (checked by `check`; every samples/*.json is rendered).
+# Run after an intended drawing change and review the SVG diff before committing.
+dotnet run --project tools/LynhCad.Manhole.Preview -- snapshot
+
 # Regenerate the two sample JSON + SVG files
 dotnet run --project tools/LynhCad.Manhole.Preview -- sample <folder>
 ```
 
-There is no per-test filter; to run one area, temporarily call only that method (`Geometry`, `RectangularSample`, `CircularSample`, `Validation`, `Json`) from `Checks.Run`.
+There is no per-test filter; to run one area, temporarily call only that method (`Geometry`, `RectangularSample`, `CircularSample`, `Validation`, `Json`, `Snapshot`) from `Checks.Run`. `Snapshot` compares text exactly and numbers within 0.015, so a pure refactor must leave the snapshots passing unchanged.
 
 Plugin build (Windows only, WPF + net48):
 

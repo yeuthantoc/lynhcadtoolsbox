@@ -33,8 +33,12 @@ namespace LynhCad.Manhole.Preview
                             WriteSvg(p, Path.Combine(dir, name + ".svg"));
                         }
                         return 0;
+                    case "snapshot":
+                        string samples = Snapshots.FindSamplesDir();
+                        if (samples == null) { Console.WriteLine("samples/ not found"); return 2; }
+                        return Snapshots.Write(samples);
                     default:
-                        Console.WriteLine("commands: check | svg <json> <svg> | sample <folder>");
+                        Console.WriteLine("commands: check | svg <json> <svg> | sample <folder> | snapshot");
                         return 2;
                 }
             }
@@ -87,6 +91,7 @@ namespace LynhCad.Manhole.Preview
             CircularSample();
             Validation();
             Json();
+            Snapshot();
             Console.WriteLine("{0} passed, {1} failed", passed, failed);
             return failed == 0 ? 0 : 1;
         }
@@ -202,6 +207,25 @@ namespace LynhCad.Manhole.Preview
             p.Pipes.ForEach(x => x.Role = PipeRole.Inlet);
             var g = new ManholeGeometry(p);
             True("no outlet -> warning + lowest", g.IsValid && g.Outlet.Spec.Mark == "P3" && g.Warnings.Count > 0);
+        }
+
+        /// <summary>SVG của samples/*.json phải khớp samples/snapshots (ghi lại bằng lệnh "snapshot").</summary>
+        private static void Snapshot()
+        {
+            string samples = Snapshots.FindSamplesDir();
+            if (samples == null) { True("samples/ folder found", false); return; }
+            string dir = Snapshots.SnapshotDir(samples);
+            var rendered = Snapshots.Render(samples);
+            var stored = Directory.Exists(dir) ? Directory.GetFiles(dir, "*.svg").Select(Path.GetFileName).ToList() : new List<string>();
+            foreach (var name in stored.Where(n => !rendered.ContainsKey(n)))
+                True("snapshot " + name + " has a matching sample", false);
+            foreach (var kv in rendered)
+            {
+                string path = Path.Combine(dir, kv.Key);
+                if (!File.Exists(path)) { True("snapshot " + kv.Key + " exists (run: snapshot)", false); continue; }
+                string diff = Snapshots.Diff(File.ReadAllText(path), kv.Value);
+                True("snapshot " + kv.Key + (diff == null ? "" : " differs (run: snapshot, then review the SVG diff)\n" + diff), diff == null);
+            }
         }
 
         private static void Json()
