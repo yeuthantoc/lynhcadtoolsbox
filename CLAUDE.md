@@ -7,7 +7,8 @@ AutoCAD .NET plugin (C#) that draws Australian reinforced-concrete manhole detai
 ## Always
 
 - Reply to the user in Vietnamese.
-- **Record every runtime incident.** Whenever something fails at runtime (in AutoCAD, the installer, the loader, CI, or on the user's machine), add an entry to "Runtime incidents" below in the same commit as the fix — or on its own if there is no fix yet. One entry per incident: symptom (exact error text if any), root cause, fix / rule to follow. Read that section before touching the affected area, and never reintroduce a pattern it forbids.
+- **Read `docs/lessons/` before writing or changing the add-in** (`src/`, `install-acad2023.ps1`, `build.ps1`, `deploy/`, `.github/workflows/`): every file there is a past runtime failure with a "Quy tắc" (rule) section; follow those rules and never reintroduce a pattern they forbid.
+- **Record every runtime incident** (in AutoCAD, the installer, the loader, CI, or on the user's machine) as a new file in `docs/lessons/`: copy `_TEMPLATE.md` to `YYYY-MM-DD-short-name.md`, fill it in (exact error text if any, cause, fix, rule) in Vietnamese, add a row to the index in `docs/lessons/README.md`, and commit it with the fix — or on its own if there is no fix yet.
 
 ## Git workflow
 
@@ -70,13 +71,3 @@ Plugin specifics:
 - `AcadRenderer.Add` re-applies text/dim styles after `SetDatabaseDefaults`; hatch `PatternScale`/`PatternAngle` must be set before `SetHatchPattern`. A failing primitive is skipped and reported ("Bỏ qua ...") rather than aborting the detail.
 
 The tool does not do structural design: bar sizes/spacings are user inputs; output needs engineer review.
-
-## Runtime incidents
-
-Newest first. Format: **symptom** — cause — fix / rule.
-
-- **LCT_* commands could not be typed in AutoCAD** (loader loaded, "Unknown command") — `[CommandMethod(group, global, localizedNameId, flags)]` looks up the local name in the assembly's resources and the loader has none — use only `[CommandMethod("NAME", flags)]` (commit 384493b).
-- **Installer failed on the user's machine with a confusing path error** — `%TEMP%` is an 8.3 short path there — work under `%LOCALAPPDATA%`, never `%TEMP%`, and print the real exception (3a9c6e4).
-- **Installer failed under Constrained Language Mode** — `[Type]::Method()` calls and `New-Object` of .NET types are blocked — cmdlets only; .NET calls only as optional extras inside `try { } catch { }` (f77e277).
-- **LCT_RELOAD showed the old dialog** — WPF caches XAML by assembly name+version — the plugin gets a unique `AssemblyVersion` per build; CI checks the generated XAML URI carries it (a7ad510).
-- **Plugin DLLs could not be replaced while AutoCAD was open** — AutoCAD locked the loaded DLL — the loader loads the plugin with `Assembly.Load(byte[])`; installers copy files one by one so they work with AutoCAD running (a7ad510).
