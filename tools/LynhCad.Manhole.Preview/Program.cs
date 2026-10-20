@@ -145,14 +145,19 @@ namespace LynhCad.Manhole.Preview
             True("W1 is L", w1.Shape == BarShape.L);
             Eq("W1 leg", 300, w1.B);
             True("has W2/W3 U-bars", sch.Marks.Count(m => m.Shape == BarShape.U) == 2);
-            True("WallHoriz callout", sch.Callout("WallHoriz").StartsWith("W2/W3 N12-200 EF HORIZ"));
+            True("WallHoriz callout", sch.Callout(BarSets.WallHoriz).StartsWith("W2/W3 N12-200 EF HORIZ"));
+            True("base mat callout", sch.MatCallout(BarSets.BaseBot, false).EndsWith(" N16-200 BOT EW"));
+            True("missing roof top mat -> null", sch.MatCallout(BarSets.RoofTop, true) == null);
+            bool threw = false;
+            try { sch.Callout("NoSuchSet"); } catch (KeyNotFoundException) { threw = true; }
+            True("unknown bar set throws", threw);
 
             // bản đáy: 1500+400+300 = 2200 x 1900 → thanh theo X dài 2100
             var bx = sch.Marks.First(m => m.Mark.StartsWith("B") && Math.Abs(m.Length - 2100) < 1e-6);
             Eq("base X count", GeomUtil.CountBars(1900 - 100 - 16, 200) * 2, bx.Count);
 
             // bản nắp: thanh bị lỗ cắt phải ngắn hơn thanh nguyên
-            var roofX = rd.Layout.RoofLayers.First(l => l.Key == "RoofBotX");
+            var roofX = rd.Layout.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofBot));
             var cut = roofX.Positions.Where(y => roofX.Pieces(y).Count == 2).ToList();
             True("roof has cut bars", cut.Count > 0);
             foreach (var y in cut)

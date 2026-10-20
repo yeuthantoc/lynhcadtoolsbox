@@ -208,8 +208,8 @@ namespace LynhCad.Manhole.Core.Drawing
                 }
 
             var hb = RebarDesigner.HorizontalLoops(g, L)[1];
-            callouts.Add(new Annot.Callout(new Vec2(-hb.Item1, -g.Wi / 4), rd.Schedule.Callout("WallHoriz")));
-            if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout("WallVert")));
+            callouts.Add(new Annot.Callout(new Vec2(-hb.Item1, -g.Wi / 4), rd.Schedule.Callout(BarSets.WallHoriz)));
+            if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
         }
 
         private void DrawLoopSide(Vec2 a, Vec2 b, WallSide side, bool alongX, double c)

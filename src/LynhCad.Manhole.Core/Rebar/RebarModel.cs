@@ -7,6 +7,27 @@ namespace LynhCad.Manhole.Core.Rebar
 {
     public enum BarShape { Straight, L, U }
 
+    /// <summary>
+    /// Tên các bộ thép logic: khoá nối RebarDesigner (bảng thống kê) với các builder (ký hiệu trên bản vẽ).
+    /// Luôn dùng hằng số ở đây, không gõ chuỗi tay.
+    /// </summary>
+    public static class BarSets
+    {
+        public const string WallVert = "WallVert";
+        public const string WallHoriz = "WallHoriz";
+        public const string PipeTrim = "PipeTrim";
+        public const string RoofTrim = "RoofTrim";
+
+        // Lưới bản đáy / bản nắp: mỗi lưới gồm 2 bộ, X (lớp ngoài cùng) và Y.
+        public const string BaseBot = "BaseBot";
+        public const string BaseTop = "BaseTop";
+        public const string RoofBot = "RoofBot";
+        public const string RoofTop = "RoofTop";
+
+        public static string X(string mat) { return mat + "X"; }
+        public static string Y(string mat) { return mat + "Y"; }
+    }
+
     /// <summary>Bảng khối lượng thép thanh gân D500N theo AS/NZS 4671 (kg/m = 0.00785 × diện tích danh định).</summary>
     public static class RebarCatalog
     {
@@ -86,16 +107,16 @@ namespace LynhCad.Manhole.Core.Rebar
         public int FixedCount;
 
         /// <summary>Ký hiệu trên bản vẽ, vd "W1 N12-200 EF VERT" hoặc "T1 2-N16 TRIMMERS".</summary>
-        public string Callout
+        public string Callout { get { return CalloutWith(" " + Suffix); } }
+
+        /// <summary>Như Callout nhưng thay hậu tố (đã gồm ký tự ngăn cách đầu, vd " TOP" hoặc "\nEACH SIDE ...").</summary>
+        public string CalloutWith(string suffix)
         {
-            get
-            {
-                string marks = string.Join("/", Marks);
-                string bar = FixedCount > 0
-                    ? string.Format("{0}-N{1}", FixedCount, Dia)
-                    : string.Format("N{0}-{1:0}", Dia, Spacing);
-                return (marks.Length > 0 ? marks + " " : "") + bar + (string.IsNullOrEmpty(Suffix) ? "" : " " + Suffix);
-            }
+            string marks = string.Join("/", Marks);
+            string bar = FixedCount > 0
+                ? string.Format("{0}-N{1}", FixedCount, Dia)
+                : string.Format("N{0}-{1:0}", Dia, Spacing);
+            return (marks.Length > 0 ? marks + " " : "") + bar + (string.IsNullOrWhiteSpace(suffix) ? "" : suffix);
         }
     }
 
@@ -112,10 +133,23 @@ namespace LynhCad.Manhole.Core.Rebar
             return Sets.TryGetValue(key, out s) ? s : null;
         }
 
+        /// <summary>Ký hiệu của bộ thép. Khoá không tồn tại là lỗi lập trình → báo ngay thay vì để ghi chú biến mất.</summary>
         public string Callout(string key)
         {
             var s = Set(key);
-            return s == null ? "" : s.Callout;
+            if (s == null) throw new KeyNotFoundException("Bảng thống kê không có bộ thép '" + key + "'.");
+            return s.Callout;
+        }
+
+        /// <summary>
+        /// Ký hiệu một lưới 2 phương, vd "B1/B2 N16-200 BOT EW". Null nếu lưới không có trong bảng (vd không có lưới trên).
+        /// </summary>
+        public string MatCallout(string mat, bool top)
+        {
+            var sx = Set(BarSets.X(mat));
+            var sy = Set(BarSets.Y(mat));
+            if (sx == null || sy == null) return null;
+            return string.Format("{0} N{1}-{2:0} {3} EW", string.Join("/", sx.Marks.Concat(sy.Marks).Distinct()), sx.Dia, sx.Spacing, top ? "TOP" : "BOT");
         }
 
         /// <summary>Gộp các BarItem giống nhau và đánh số hiệu W1, W2, B1...</summary>

@@ -243,14 +243,14 @@ namespace LynhCad.Manhole.Core.Drawing
             }
 
             // Ghi chú lưới (gộp 2 phương)
-            AddMatCallout("BaseBot", false);
-            if (g.P.BaseTopMat) AddMatCallout("BaseTop", false);
-            AddMatCallout("RoofBot", true);
-            if (g.P.RoofTopMat) AddMatCallout("RoofTop", true);
+            AddMatCallout(BarSets.BaseBot, false);
+            if (g.P.BaseTopMat) AddMatCallout(BarSets.BaseTop, false);
+            AddMatCallout(BarSets.RoofBot, true);
+            if (g.P.RoofTopMat) AddMatCallout(BarSets.RoofTop, true);
             if (L.RoofTrimmers.Count > 0 && openingS.HasValue)
             {
                 var tz = L.RoofTrimmers[0].Z;
-                callouts.Add(new Annot.Callout(new Vec2(openingS.Value.Max + g.P.Cover + 20, tz), sch.Callout("RoofTrim")));
+                callouts.Add(new Annot.Callout(new Vec2(openingS.Value.Max + g.P.Cover + 20, tz), sch.Callout(BarSets.RoofTrim)));
             }
 
             if (g.IsRect) DrawWallRebar();
@@ -296,14 +296,12 @@ namespace LynhCad.Manhole.Core.Drawing
             }
         }
 
-        private void AddMatCallout(string prefix, bool roof)
+        private void AddMatCallout(string mat, bool roof)
         {
-            var sx = rd.Schedule.Set(prefix + "X");
-            var sy = rd.Schedule.Set(prefix + "Y");
-            if (sx == null || sy == null) return;
-            var layer = rd.Layout.AllLayers.First(l => l.Key == prefix + "X");
-            var marks = sx.Marks.Concat(sy.Marks).Distinct();
-            string text = string.Format("{0} N{1}-{2:0} {3} EW", string.Join("/", marks), sx.Dia, sx.Spacing, layer.IsTop ? "TOP" : "BOT");
+            var layer = rd.Layout.AllLayers.FirstOrDefault(l => l.Key == BarSets.X(mat));
+            if (layer == null) return;
+            string text = rd.Schedule.MatCallout(mat, layer.IsTop);
+            if (text == null) return;
             var range = roof ? roofS : baseS;
             double sTarget = range.Min + Math.Min(250, range.Length * 0.15);
             callouts.Add(new Annot.Callout(new Vec2(sTarget, layer.Z), text));
@@ -342,14 +340,14 @@ namespace LynhCad.Manhole.Core.Drawing
                 }
             }
             double zv = g.H * 0.7;
-            callouts.Add(new Annot.Callout(new Vec2(innerS.Min - L.VertOffset, zv), rd.Schedule.Callout("WallVert")));
+            callouts.Add(new Annot.Callout(new Vec2(innerS.Min - L.VertOffset, zv), rd.Schedule.Callout(BarSets.WallVert)));
             double zh = L.HorizLevels.OrderBy(z => Math.Abs(z - g.H * 0.45)).FirstOrDefault();
-            callouts.Add(new Annot.Callout(new Vec2(outerS.Min + L.HorizOffset, zh), rd.Schedule.Callout("WallHoriz")));
-            if (cutRight.Count + cutLeft.Count > 0 && rd.Schedule.Set("PipeTrim") != null)
+            callouts.Add(new Annot.Callout(new Vec2(outerS.Min + L.HorizOffset, zh), rd.Schedule.Callout(BarSets.WallHoriz)));
+            if (cutRight.Count + cutLeft.Count > 0 && rd.Schedule.Set(BarSets.PipeTrim) != null)
             {
                 var f = cutRight.Count > 0 ? cutRight[0] : cutLeft[0];
                 double s = f.Dir.Dot(u) > 0 ? innerS.Max + g.Tw / 2 : innerS.Min - g.Tw / 2;
-                callouts.Add(new Annot.Callout(new Vec2(s, f.GapZ.Min - c), rd.Schedule.Callout("PipeTrim").Replace(" EACH SIDE OF PENETRATION EF", "\nEACH SIDE OF PENETRATIONS EF")));
+                callouts.Add(new Annot.Callout(new Vec2(s, f.GapZ.Min - c), rd.Schedule.Set(BarSets.PipeTrim).CalloutWith(" TRIMMERS\nEACH SIDE OF PENETRATIONS EF")));
             }
         }
 

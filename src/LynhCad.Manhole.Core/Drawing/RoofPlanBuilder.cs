@@ -74,14 +74,13 @@ namespace LynhCad.Manhole.Core.Drawing
                 m.Add(PPolyline.Line(a, b, Layers.Rebar));
                 if (trimSample == null && t.AlongX && t.Pos > o.Y) trimSample = new Vec2(t.Run.Max - 50, t.Pos);
             }
-            if (trimSample != null) callouts.Add(new Annot.Callout(trimSample.Value, rd.Schedule.Callout("RoofTrim")));
+            if (trimSample != null) callouts.Add(new Annot.Callout(trimSample.Value, rd.Schedule.Callout(BarSets.RoofTrim)));
 
             if (g.P.RoofTopMat)
             {
-                var sx = rd.Schedule.Set("RoofTopX"); var sy = rd.Schedule.Set("RoofTopY");
-                if (sx != null && sy != null)
-                    callouts.Add(new Annot.Callout(new Vec2(hx * 0.6, -hy * 0.6),
-                        string.Format("{0} N{1}-{2:0} TOP EW\n(NOT SHOWN FOR CLARITY)", string.Join("/", sx.Marks.Concat(sy.Marks).Distinct()), sx.Dia, sx.Spacing), false));
+                string top = rd.Schedule.MatCallout(BarSets.RoofTop, true);
+                if (top != null)
+                    callouts.Add(new Annot.Callout(new Vec2(hx * 0.6, -hy * 0.6), top + "\n(NOT SHOWN FOR CLARITY)", false));
             }
 
             // kích thước

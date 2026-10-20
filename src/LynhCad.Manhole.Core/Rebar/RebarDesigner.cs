@@ -93,20 +93,20 @@ namespace LynhCad.Manhole.Core.Rebar
             double c = P.Cover;
 
             // ---------------- Bản đáy ----------------
-            AddMat(L.BaseLayers, items, sets, "BaseBot", P.BaseBottom, false, 'B', c,
+            AddMat(L.BaseLayers, items, sets, BarSets.BaseBot, P.BaseBottom, false, 'B', c,
                    g.BaseHalfX, g.BaseHalfY, -g.Tb, null, null);
             if (P.BaseTopMat)
-                AddMat(L.BaseLayers, items, sets, "BaseTop", P.BaseTop, true, 'B', c,
+                AddMat(L.BaseLayers, items, sets, BarSets.BaseTop, P.BaseTop, true, 'B', c,
                        g.BaseHalfX, g.BaseHalfY, 0, null, null);
 
             // ---------------- Bản nắp ----------------
             var o = g.OpeningCenter;
             var cutX = new Interval(o.X - g.OpeningHalfX - c, o.X + g.OpeningHalfX + c);
             var cutY = new Interval(o.Y - g.OpeningHalfY - c, o.Y + g.OpeningHalfY + c);
-            AddMat(L.RoofLayers, items, sets, "RoofBot", P.RoofBottom, false, 'R', c,
+            AddMat(L.RoofLayers, items, sets, BarSets.RoofBot, P.RoofBottom, false, 'R', c,
                    g.RoofHalfX, g.RoofHalfY, g.H, cutX, cutY);
             if (P.RoofTopMat)
-                AddMat(L.RoofLayers, items, sets, "RoofTop", P.RoofTop, true, 'R', c,
+                AddMat(L.RoofLayers, items, sets, BarSets.RoofTop, P.RoofTop, true, 'R', c,
                        g.RoofHalfX, g.RoofHalfY, g.H + g.Ts, cutX, cutY);
 
             AddRoofTrimmers(g, L, items, sets);
@@ -134,7 +134,7 @@ namespace LynhCad.Manhole.Core.Rebar
                 bool alongX = k == 0;
                 var layer = new MatLayer
                 {
-                    Key = keyPrefix + (alongX ? "X" : "Y"),
+                    Key = alongX ? BarSets.X(keyPrefix) : BarSets.Y(keyPrefix),
                     Dia = d, Spacing = s, AlongX = alongX, IsTop = isTop, Z = alongX ? z1 : z2,
                 };
                 double hRun = alongX ? hx : hy, hPerp = alongX ? hy : hx;
@@ -173,7 +173,7 @@ namespace LynhCad.Manhole.Core.Rebar
                 double oAlong = ax ? o.X : o.Y, oPerp = ax ? o.Y : o.X;
                 double hAlong = ax ? g.OpeningHalfX : g.OpeningHalfY, hPerp = ax ? g.OpeningHalfY : g.OpeningHalfX;
                 var run = new Interval(Math.Max(layer.Run.Min, oAlong - hAlong - lap), Math.Min(layer.Run.Max, oAlong + hAlong + lap));
-                string key = "RoofTrim";
+                string key = BarSets.RoofTrim;
                 for (int side = -1; side <= 1; side += 2)
                     for (int k = 0; k < n; k++)
                     {
@@ -182,7 +182,7 @@ namespace LynhCad.Manhole.Core.Rebar
                         items.Add(new BarItem { SetKey = key, Group = 'T', Dia = dt, Shape = BarShape.Straight, A = run.Length, Count = 1 });
                     }
             }
-            sets.Add(new BarSetInfo { Key = "RoofTrim", Dia = dt, FixedCount = n, Suffix = "TRIMMERS EACH SIDE OF OPENING" + (P.RoofTopMat ? " T&B" : "") });
+            sets.Add(new BarSetInfo { Key = BarSets.RoofTrim, Dia = dt, FixedCount = n, Suffix = "TRIMMERS EACH SIDE OF OPENING" + (P.RoofTopMat ? " T&B" : "") });
         }
 
         private static void AddWalls(ManholeGeometry g, RebarLayout L, List<BarItem> items, List<BarSetInfo> sets)
@@ -207,18 +207,18 @@ namespace LynhCad.Manhole.Core.Rebar
             int vertCount = 0;
             foreach (var loop in VerticalLoops(g, L))
                 vertCount += LoopPositions(loop.Item1, loop.Item2, L.SV).Count;
-            sets.Add(new BarSetInfo { Key = "WallVert", Dia = L.DV, Spacing = L.SV, Suffix = "EF VERT" });
-            items.Add(new BarItem { SetKey = "WallVert", Group = 'W', Dia = L.DV, Shape = BarShape.L, A = vertA, B = L.VertLeg, Count = vertCount });
+            sets.Add(new BarSetInfo { Key = BarSets.WallVert, Dia = L.DV, Spacing = L.SV, Suffix = "EF VERT" });
+            items.Add(new BarItem { SetKey = BarSets.WallVert, Group = 'W', Dia = L.DV, Shape = BarShape.L, A = vertA, B = L.VertLeg, Count = vertCount });
 
             // ---- Thép ngang: mỗi cao độ, mỗi mặt = 2 thanh U nối chồng ở giữa cạnh ngắn ----
             L.HorizLevels = GeomUtil.Distribute(50, g.H - 50, L.SH);
             int nLevels = L.HorizLevels.Count;
-            sets.Add(new BarSetInfo { Key = "WallHoriz", Dia = L.DH, Spacing = L.SH, Suffix = "EF HORIZ" });
+            sets.Add(new BarSetInfo { Key = BarSets.WallHoriz, Dia = L.DH, Spacing = L.SH, Suffix = "EF HORIZ" });
             foreach (var loop in HorizontalLoops(g, L))
             {
                 double bx = loop.Item1, by = loop.Item2;
                 double leg = Math.Min(2 * by, by + L.Lap / 2);
-                items.Add(new BarItem { SetKey = "WallHoriz", Group = 'W', Dia = L.DH, Shape = BarShape.U, A = leg, B = 2 * bx, C = leg, Count = 2 * nLevels });
+                items.Add(new BarItem { SetKey = BarSets.WallHoriz, Group = 'W', Dia = L.DH, Shape = BarShape.U, A = leg, B = 2 * bx, C = leg, Count = 2 * nLevels });
             }
 
             // ---- Trimmer quanh lỗ ống xuyên tường ----
@@ -233,10 +233,10 @@ namespace LynhCad.Manhole.Core.Rebar
                     double vLen = Math.Min(maxVert, f.GapZ.Length + 2 * lap);
                     double hLen = 2 * f.HalfGap + 2 * lap;
                     // 2 mặt × (n mỗi bên × 2 bên)
-                    items.Add(new BarItem { SetKey = "PipeTrim", Group = 'T', Dia = dt, Shape = BarShape.Straight, A = vLen, Count = 2 * 2 * n });
-                    items.Add(new BarItem { SetKey = "PipeTrim", Group = 'T', Dia = dt, Shape = BarShape.Straight, A = hLen, Count = 2 * 2 * n });
+                    items.Add(new BarItem { SetKey = BarSets.PipeTrim, Group = 'T', Dia = dt, Shape = BarShape.Straight, A = vLen, Count = 2 * 2 * n });
+                    items.Add(new BarItem { SetKey = BarSets.PipeTrim, Group = 'T', Dia = dt, Shape = BarShape.Straight, A = hLen, Count = 2 * 2 * n });
                 }
-                sets.Add(new BarSetInfo { Key = "PipeTrim", Dia = dt, FixedCount = n, Suffix = "TRIMMERS EACH SIDE OF PENETRATION EF" });
+                sets.Add(new BarSetInfo { Key = BarSets.PipeTrim, Dia = dt, FixedCount = n, Suffix = "TRIMMERS EACH SIDE OF PENETRATION EF" });
             }
         }
 
