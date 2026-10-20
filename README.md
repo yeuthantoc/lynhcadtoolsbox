@@ -57,14 +57,13 @@ cd lynhcadtoolsbox
 .\build.ps1 -AcadDir "C:\Program Files\Autodesk\AutoCAD 2024"
 ```
 
-**Cài nhanh cho AutoCAD 2023 (không cần build):** tải [`install-acad2023.ps1`](install-acad2023.ps1), đóng AutoCAD, rồi chạy
+**Cài nhanh cho AutoCAD 2023 (không cần build).** Mở PowerShell, chạy:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\install-acad2023.ps1             # tải bản mới nhất và cài
-powershell -ExecutionPolicy Bypass -File .\install-acad2023.ps1 -Uninstall  # gỡ
+powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/yeuthantoc/lynhcadtoolsbox/main/install-acad2023.ps1 -OutFile $env:TEMP\install-acad2023.ps1 -UseBasicParsing; & $env:TEMP\install-acad2023.ps1"
 ```
 
-Bản build mới nhất nằm ở release [`latest`](https://github.com/yeuthantoc/lynhcadtoolsbox/releases/tag/latest); GitHub Actions build lại mỗi lần push lên `main`. Repo private nên script lấy file theo thứ tự: `-Zip <file>` → `LynhCadToolsBox-AutoCAD2023.zip` cạnh script hoặc trong thư mục **Downloads** (tải bằng trình duyệt đã đăng nhập) → tải qua GitHub API bằng `-Token`, `GITHUB_TOKEN` hoặc `gh auth token`. Không có file và không có token thì script mở trang release để bạn tải.
+Hoặc tải [`install-acad2023.ps1`](install-acad2023.ps1) rồi chạy `powershell -ExecutionPolicy Bypass -File .\install-acad2023.ps1` (thêm `-Uninstall` để gỡ, `-Zip <file>` để cài từ file zip có sẵn). Script tải bản mới nhất ở release [`latest`](https://github.com/yeuthantoc/lynhcadtoolsbox/releases/tag/latest); GitHub Actions build lại release này mỗi lần push lên `main`.
 
 Không muốn cài bundle: trong AutoCAD gõ `NETLOAD` rồi chọn `src\LynhCad.Loader\bin\Release\net48\LynhCad.Loader.dll` và đặt biến môi trường `LYNHCAD_PLUGIN_DIR` = `<repo>\src\LynhCad.Manhole.Plugin\bin\Release\net48` (trước khi mở AutoCAD).
 
