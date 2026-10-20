@@ -54,6 +54,20 @@ namespace LynhCad.Manhole.Core.Drawing
 
         public PPolyline Add(Vec2 p, double bulge = 0) { Points.Add(p); Bulges.Add(bulge); return this; }
 
+        /// <summary>
+        /// Thêm cung tròn tâm center, bán kính r, từ góc a0 tới a1 (radian; a1 &lt; a0 = chiều kim đồng hồ),
+        /// chia ≤ 90° mỗi đoạn có bulge. Thêm cả điểm cuối cung (bulge 0).
+        /// </summary>
+        public PPolyline AddArc(Vec2 center, double r, double a0, double a1)
+        {
+            double sweep = a1 - a0;
+            int n = Math.Max(1, (int)Math.Ceiling(Math.Abs(sweep) / (Math.PI / 2) - 1e-9));
+            double step = sweep / n;
+            for (int i = 0; i < n; i++)
+                Add(center + Vec2.FromAngle(a0 + i * step) * r, GeomUtil.Bulge(step));
+            return Add(center + Vec2.FromAngle(a1) * r);
+        }
+
         public static PPolyline Line(Vec2 a, Vec2 b, string layer)
         {
             return new PPolyline { Layer = layer }.Add(a).Add(b);

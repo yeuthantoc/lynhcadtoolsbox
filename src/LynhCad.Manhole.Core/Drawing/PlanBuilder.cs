@@ -89,8 +89,8 @@ namespace LynhCad.Manhole.Core.Drawing
                 if (o1 - o0 < 1e-6) continue;
 
                 var loop = new PPolyline { Layer = Layers.Hatch, Closed = true };
-                AppendArc(loop, g.Ro, o0, o1);
-                AppendArc(loop, g.Ri, i1, i0);
+                loop.AddArc(Vec2.Zero, g.Ro, o0, o1);
+                loop.AddArc(Vec2.Zero, g.Ri, i1, i0);
                 m.Add(ConcreteHatch(loop));
 
                 m.Add(new PArc { Layer = Layers.Concrete, Center = Vec2.Zero, Radius = g.Ro, StartAngle = o0, EndAngle = o1 });
@@ -104,17 +104,6 @@ namespace LynhCad.Manhole.Core.Drawing
             }
             callouts.Add(new Annot.Callout(Vec2.FromAngle(1.25 * Math.PI) * (g.Ri + g.Tw / 2),
                 string.Format("PRECAST MANHOLE SHAFT\nID {0:0}, WALL {1:0}", g.P.InternalDiameter, g.Tw), false));
-        }
-
-        /// <summary>Thêm cung tròn tâm gốc từ a0 tới a1 vào polyline (chia nhỏ ≤ 90° mỗi đoạn). Điểm cuối KHÔNG thêm.</summary>
-        internal static void AppendArc(PPolyline pl, double r, double a0, double a1)
-        {
-            double sweep = a1 - a0;
-            int n = Math.Max(1, (int)Math.Ceiling(Math.Abs(sweep) / (Math.PI / 2) - 1e-9));
-            double step = sweep / n;
-            for (int i = 0; i < n; i++)
-                pl.Add(Vec2.FromAngle(a0 + i * step) * r, GeomUtil.Bulge(step));
-            pl.Add(Vec2.FromAngle(a1) * r);
         }
 
         // ---------------------------------------------------------------- nét khuất
