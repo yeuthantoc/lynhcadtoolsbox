@@ -9,7 +9,7 @@ using LynhCad.Manhole.Core.Geometry;
 namespace LynhCad.Manhole.Plugin
 {
     /// <summary>Vẽ DrawingModel (lõi) thành entity AutoCAD trong một BlockTableRecord.</summary>
-    internal class AcadRenderer
+    internal class AcadRenderer : IPrimVisitor
     {
         private readonly Database db;
         private readonly Transaction tr;
@@ -29,7 +29,7 @@ namespace LynhCad.Manhole.Plugin
         {
             foreach (var p in model.Items)
             {
-                try { RenderOne(p); }
+                try { p.Accept(this); }
                 catch (Autodesk.AutoCAD.Runtime.Exception ex)
                 {
                     // một primitive lỗi (vd hatch không đóng) không làm hỏng cả chi tiết
@@ -70,38 +70,13 @@ namespace LynhCad.Manhole.Plugin
             return id;
         }
 
-        private void RenderOne(Prim p)
-        {
-            var pl = p as PPolyline;
-            if (pl != null) { Add(ToPolyline(pl), p.Layer); return; }
+        public void Visit(PPolyline pl) { Add(ToPolyline(pl), pl.Layer); }
 
-            var ci = p as PCircle;
-            if (ci != null) { Add(new Circle(P3(ci.Center), Vector3d.ZAxis, ci.Radius), p.Layer); return; }
+        public void Visit(PCircle ci) { Add(new Circle(P3(ci.Center), Vector3d.ZAxis, ci.Radius), ci.Layer); }
 
-            var arc = p as PArc;
-            if (arc != null) { Add(new Arc(P3(arc.Center), arc.Radius, arc.StartAngle, arc.EndAngle), p.Layer); return; }
+        public void Visit(PArc arc) { Add(new Arc(P3(arc.Center), arc.Radius, arc.StartAngle, arc.EndAngle), arc.Layer); }
 
-            var el = p as PEllipse;
-            if (el != null) { RenderEllipse(el); return; }
-
-            var dot = p as PDot;
-            if (dot != null) { RenderDot(dot); return; }
-
-            var h = p as PHatch;
-            if (h != null) { RenderHatch(h); return; }
-
-            var t = p as PText;
-            if (t != null) { Add(ToMText(t.Position, t.Text, t.Height, t.Align, t.VAlign, t.Rotation, t.Underline), p.Layer); return; }
-
-            var d = p as PDim;
-            if (d != null) { RenderDim(d); return; }
-
-            var ld = p as PLeader;
-            if (ld != null) { RenderLeader(ld); return; }
-
-            var tb = p as PTable;
-            if (tb != null) { RenderTable(tb); return; }
-        }
+        public void Visit(PText t) { Add(ToMText(t.Position, t.Text, t.Height, t.Align, t.VAlign, t.Rotation, t.Underline), t.Layer); }
 
         private static Polyline ToPolyline(PPolyline src)
         {
@@ -112,7 +87,7 @@ namespace LynhCad.Manhole.Plugin
             return pl;
         }
 
-        private void RenderEllipse(PEllipse e)
+        public void Visit(PEllipse e)
         {
             double a = Math.Max(e.RadiusX, e.RadiusY), b = Math.Min(e.RadiusX, e.RadiusY);
             if (a < 1e-6 || b < 1e-6) return;
@@ -126,7 +101,7 @@ namespace LynhCad.Manhole.Plugin
         }
 
         /// <summary>Chấm thép = polyline 2 đỉnh, bulge 1, bề rộng = D/2 (giống lệnh DONUT).</summary>
-        private void RenderDot(PDot d)
+        public void Visit(PDot d)
         {
             double r4 = d.Diameter / 4;
             var pl = new Polyline();
@@ -136,7 +111,7 @@ namespace LynhCad.Manhole.Plugin
             Add(pl, d.Layer);
         }
 
-        private void RenderHatch(PHatch src)
+        public void Visit(PHatch src)
         {
             var h = new Hatch();
             var id = Add(h, src.Layer);
@@ -204,13 +179,13 @@ namespace LynhCad.Manhole.Plugin
             }
         }
 
-        private void RenderDim(PDim d)
+        public void Visit(PDim d)
         {
             var dim = new RotatedDimension(d.AngleDeg * GeomUtil.Deg, P3(d.P1), P3(d.P2), P3(d.DimLinePoint), d.TextOverride ?? "", setup.DimStyleId);
             Add(dim, d.Layer);
         }
 
-        private void RenderLeader(PLeader src)
+        public void Visit(PLeader src)
         {
             var ld = new Leader();
             foreach (var pt in src.Points) ld.AppendVertex(P3(pt));
@@ -228,7 +203,7 @@ namespace LynhCad.Manhole.Plugin
             Add(ToMText(src.TextPosition, src.Text, src.TextHeight, src.Align, TextVAlign.Middle, 0, false), src.Layer);
         }
 
-        private void RenderTable(PTable src)
+        public void Visit(PTable src)
         {
             bool hasTitle = !string.IsNullOrEmpty(src.Title);
             int rows = src.Rows.Count + (hasTitle ? 1 : 0);

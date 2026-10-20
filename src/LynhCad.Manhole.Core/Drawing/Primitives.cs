@@ -16,11 +16,30 @@ namespace LynhCad.Manhole.Core.Drawing
     /// <summary>Neo dọc của chữ: Middle = giữa khối chữ, Bottom = chân dòng cuối, Top = đỉnh dòng đầu.</summary>
     public enum TextVAlign { Middle, Bottom, Top }
 
+    /// <summary>
+    /// Mỗi renderer (SvgExporter, AcadRenderer) cài interface này. Thêm primitive mới = thêm một Visit ở đây,
+    /// trình biên dịch sẽ báo mọi renderer chưa xử lý (thay vì primitive lặng lẽ biến mất khỏi bản vẽ).
+    /// </summary>
+    public interface IPrimVisitor
+    {
+        void Visit(PPolyline p);
+        void Visit(PCircle p);
+        void Visit(PArc p);
+        void Visit(PEllipse p);
+        void Visit(PDot p);
+        void Visit(PHatch p);
+        void Visit(PText p);
+        void Visit(PDim p);
+        void Visit(PLeader p);
+        void Visit(PTable p);
+    }
+
     public abstract class Prim
     {
         public string Layer;
         public abstract void AddBounds(Bounds b);
         public abstract void Translate(Vec2 d);
+        public abstract void Accept(IPrimVisitor v);
     }
 
     /// <summary>Polyline 2D có bulge (cung tròn).</summary>
@@ -68,6 +87,7 @@ namespace LynhCad.Manhole.Core.Drawing
         }
 
         public override void Translate(Vec2 d) { for (int i = 0; i < Points.Count; i++) Points[i] = Points[i] + d; }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     public class PCircle : Prim
@@ -75,6 +95,7 @@ namespace LynhCad.Manhole.Core.Drawing
         public Vec2 Center; public double Radius;
         public override void AddBounds(Bounds b) { b.Add(Center.X - Radius, Center.Y - Radius); b.Add(Center.X + Radius, Center.Y + Radius); }
         public override void Translate(Vec2 d) { Center = Center + d; }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     /// <summary>Cung tròn CCW từ StartAngle tới EndAngle (radian).</summary>
@@ -88,6 +109,7 @@ namespace LynhCad.Manhole.Core.Drawing
             for (int i = 0; i <= n; i++) b.Add(Center + Vec2.FromAngle(StartAngle + sweep * i / n) * Radius);
         }
         public override void Translate(Vec2 d) { Center = Center + d; }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     /// <summary>Ellipse trục song song X/Y.</summary>
@@ -96,6 +118,7 @@ namespace LynhCad.Manhole.Core.Drawing
         public Vec2 Center; public double RadiusX, RadiusY;
         public override void AddBounds(Bounds b) { b.Add(Center.X - RadiusX, Center.Y - RadiusY); b.Add(Center.X + RadiusX, Center.Y + RadiusY); }
         public override void Translate(Vec2 d) { Center = Center + d; }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     /// <summary>Chấm thép đặc (donut) đường kính Diameter.</summary>
@@ -104,6 +127,7 @@ namespace LynhCad.Manhole.Core.Drawing
         public Vec2 Center; public double Diameter;
         public override void AddBounds(Bounds b) { b.Add(Center.X - Diameter / 2, Center.Y - Diameter / 2); b.Add(Center.X + Diameter / 2, Center.Y + Diameter / 2); }
         public override void Translate(Vec2 d) { Center = Center + d; }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     public class PHatch : Prim
@@ -115,6 +139,7 @@ namespace LynhCad.Manhole.Core.Drawing
         public double PatternAngle;
         public override void AddBounds(Bounds b) { foreach (var l in Loops) l.AddBounds(b); }
         public override void Translate(Vec2 d) { foreach (var l in Loops) l.Translate(d); }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     public class PText : Prim
@@ -150,6 +175,7 @@ namespace LynhCad.Manhole.Core.Drawing
             b.Add(x0, y0); b.Add(x0 + w, y0 + h);
         }
         public override void Translate(Vec2 d) { Position = Position + d; }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     /// <summary>Kích thước tuyến tính. Angle = 0 đo ngang, 90 đo đứng.</summary>
@@ -171,6 +197,7 @@ namespace LynhCad.Manhole.Core.Drawing
 
         public override void AddBounds(Bounds b) { b.Add(P1); b.Add(P2); b.Add(DimLinePoint); }
         public override void Translate(Vec2 d) { P1 = P1 + d; P2 = P2 + d; DimLinePoint = DimLinePoint + d; }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     /// <summary>Đường dẫn ghi chú: Points[0] là đầu mũi tên, chữ đặt tại TextPosition.</summary>
@@ -194,6 +221,7 @@ namespace LynhCad.Manhole.Core.Drawing
             for (int i = 0; i < Points.Count; i++) Points[i] = Points[i] + d;
             TextPosition = TextPosition + d;
         }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     /// <summary>Bảng (bảng thống kê thép). Origin = góc trên trái.</summary>
@@ -212,6 +240,7 @@ namespace LynhCad.Manhole.Core.Drawing
 
         public override void AddBounds(Bounds b) { b.Add(Origin); b.Add(Origin.X + Width, Origin.Y - Height); }
         public override void Translate(Vec2 d) { Origin = Origin + d; }
+        public override void Accept(IPrimVisitor v) { v.Visit(this); }
     }
 
     /// <summary>Tập primitive của một hình chiếu / cả bản vẽ.</summary>
