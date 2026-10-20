@@ -4,6 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AutoCAD .NET plugin (C#) that draws Australian reinforced-concrete manhole details: plan, section A-A, roof slab reinforcement, bar schedule (AS/NZS 4671 D500N) and notes. User-facing text, comments and README are in Vietnamese; drawing text is English.
 
+## Git workflow
+
+- Never open a pull request. Work, commit and push directly on `main`.
+- If a session starts on another branch, bring the work onto `main` (fast-forward or merge) and push `main`.
+
 ## Commands
 
 ```bash
