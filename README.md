@@ -64,7 +64,7 @@ powershell -ExecutionPolicy Bypass -File .\install-acad2023.ps1             # t�
 powershell -ExecutionPolicy Bypass -File .\install-acad2023.ps1 -Uninstall  # gỡ
 ```
 
-Script tải bản build mới nhất ở release [`latest`](https://github.com/yeuthantoc/lynhcadtoolsbox/releases/tag/latest). GitHub Actions tự build lại release này mỗi lần push lên `main`.
+Bản build mới nhất nằm ở release [`latest`](https://github.com/yeuthantoc/lynhcadtoolsbox/releases/tag/latest); GitHub Actions build lại mỗi lần push lên `main`. Repo private nên script lấy file theo thứ tự: `-Zip <file>` → `LynhCadToolsBox-AutoCAD2023.zip` cạnh script hoặc trong thư mục **Downloads** (tải bằng trình duyệt đã đăng nhập) → tải qua GitHub API bằng `-Token`, `GITHUB_TOKEN` hoặc `gh auth token`. Không có file và không có token thì script mở trang release để bạn tải.
 
 Không muốn cài bundle: trong AutoCAD gõ `NETLOAD` rồi chọn `src\LynhCad.Manhole.Plugin\bin\Release\net48\LynhCad.Manhole.dll`.
 
