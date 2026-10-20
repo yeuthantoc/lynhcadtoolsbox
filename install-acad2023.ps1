@@ -36,8 +36,9 @@ if (-not (Test-Path "HKLM:\SOFTWARE\Autodesk\AutoCAD\R24.2")) {
     Write-Host "Cảnh báo: không thấy AutoCAD 2023 (R24.2) trên máy này. Vẫn tiếp tục cài." -ForegroundColor Yellow
 }
 
-$work = Join-Path $env:TEMP ("LynhCadToolsBox-" + [guid]::NewGuid().ToString("N"))
-New-Item -ItemType Directory -Force -Path $work | Out-Null
+# không dùng %TEMP%: trên nhiều máy nó là đường dẫn 8.3 (C:\Users\HUYNH~1.LYN\...) mà PowerShell 5.1 xử lý lỗi
+$work = Join-Path $env:LOCALAPPDATA ("LynhCadToolsBox\install-" + [guid]::NewGuid().ToString("N"))
+[System.IO.Directory]::CreateDirectory($work) | Out-Null
 try {
     if ($Zip -eq "") {
         $Zip = Join-Path $work "bundle.zip"
@@ -45,25 +46,27 @@ try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         $ProgressPreference = "SilentlyContinue"   # thanh tiến trình làm Invoke-WebRequest của PowerShell 5.1 rất chậm
         Invoke-WebRequest -Uri $url -OutFile $Zip -UseBasicParsing
-    } elseif (-not (Test-Path $Zip)) {
+    } elseif (-not (Test-Path -LiteralPath $Zip)) {
         throw "Không thấy file $Zip"
+    } else {
+        $Zip = (Resolve-Path -LiteralPath $Zip).ProviderPath
     }
 
     $extract = Join-Path $work "x"
-    Expand-Archive -Path $Zip -DestinationPath $extract -Force
-    $manifest = Get-ChildItem $extract -Recurse -Filter PackageContents.xml | Select-Object -First 1
+    Expand-Archive -LiteralPath $Zip -DestinationPath $extract -Force
+    $manifest = Get-ChildItem -LiteralPath $extract -Recurse -Filter PackageContents.xml | Select-Object -First 1
     if ($null -eq $manifest) { throw "File zip không chứa LynhCadToolsBox.bundle (thiếu PackageContents.xml)." }
     $bundle = $manifest.Directory.FullName
 
     # file tải từ Internet bị Windows đánh dấu chặn -> AutoCAD không nạp được DLL
-    Get-ChildItem $bundle -Recurse -File | Unblock-File
+    Get-ChildItem -LiteralPath $bundle -Recurse -File | Unblock-File
 
     # chép đè từng file: chạy được cả khi AutoCAD đang mở (chỉ LynhCad.Loader.dll bị khoá)
     $loaderLocked = $false
-    foreach ($f in Get-ChildItem $bundle -Recurse -File) {
+    foreach ($f in Get-ChildItem -LiteralPath $bundle -Recurse -File) {
         $to = Join-Path $target ($f.FullName.Substring($bundle.Length).TrimStart('\'))
         New-Item -ItemType Directory -Force -Path (Split-Path $to) | Out-Null
-        try { Copy-Item $f.FullName $to -Force -ErrorAction Stop }
+        try { Copy-Item -LiteralPath $f.FullName -Destination $to -Force -ErrorAction Stop }
         catch {
             if ($f.Name -eq "LynhCad.Loader.dll") { $loaderLocked = $true }
             else { throw "Không ghi được $to (AutoCAD đang dùng bản cũ chưa có loader?). Hãy đóng AutoCAD rồi chạy lại." }
@@ -80,6 +83,11 @@ try {
         Write-Host "Mở AutoCAD 2023, gõ LCT_MANHOLE (vẽ), LCT_MANHOLE_JSON (từ file), LCT_MANHOLE_EDIT (sửa), LCT_RELOAD (nạp bản mới)." -ForegroundColor Green
     }
 }
+catch {
+    Write-Host ("Cài đặt lỗi: " + $_.Exception.Message) -ForegroundColor Red
+    exit 1
+}
 finally {
-    Remove-Item $work -Recurse -Force -ErrorAction SilentlyContinue
+    # dọn thư mục tạm; lỗi ở đây không được che lỗi thật ở trên
+    try { [System.IO.Directory]::Delete($work, $true) } catch { }
 }
