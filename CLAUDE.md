@@ -33,7 +33,7 @@ Plugin build (Windows only, WPF + net48):
 .\build.ps1 -AcadDir "C:\Program Files\Autodesk\AutoCAD 2024"   # reference AutoCAD's own DLLs instead of NuGet
 ```
 
-`.github/workflows/build.yml` builds the bundle on `windows-latest`, uploads it as an artifact and, on `main`, replaces `LynhCadToolsBox-AutoCAD2023.zip` on the `latest` GitHub release. `install-acad2023.ps1` (end-user installer, saved as UTF-8 with BOM + CRLF so Windows PowerShell 5.1 reads the Vietnamese text) downloads that zip and copies the bundle to `%APPDATA%\Autodesk\ApplicationPlugins`. The plugin project does not build on Linux (no WPF SDK); to type-check `Commands.cs`/`AcadRenderer.cs`/`AcadSetup.cs` there, compile them in a throwaway net48 project that references `AutoCAD.NET` and stubs `ManholeWindow`.
+`.github/workflows/build.yml` builds the bundle on `windows-latest`, uploads it as an artifact and, on `main`, replaces `LynhCadToolsBox-AutoCAD2023.zip` on the `latest` GitHub release. `install-acad2023.ps1` (end-user installer, saved as UTF-8 with BOM + CRLF so Windows PowerShell 5.1 reads the Vietnamese text) downloads that zip and copies the bundle to `%APPDATA%\Autodesk\ApplicationPlugins`. The plugin project does not build on Linux (no WPF SDK); `src/LynhCad.Loader` does build on Linux; to type-check `Commands.cs`/`AcadRenderer.cs`/`AcadSetup.cs`, compile them in a throwaway net48 project that references `AutoCAD.NET` and stubs `ManholeWindow`.
 
 ## Architecture
 
@@ -52,7 +52,10 @@ Key conventions:
 - JSON (`ParamsJson`, DataContract) is the parameter format for the dialog's Load/Save, `LCT_MANHOLE_JSON` (single object or array), and the last-used settings in `%APPDATA%\LynhCadToolsBox\manhole-last.json`. Missing fields take defaults, so new `[DataMember]` fields must have sensible defaults.
 
 Plugin specifics:
-- Commands: `LCT_MANHOLE` (dialog), `LCT_MANHOLE_JSON` (batch from file), `LCT_MANHOLE_EDIT` (update a drawn detail). New commands must also be listed in `deploy/LynhCadToolsBox.bundle/PackageContents.xml`.
+- AutoCAD loads only `src/LynhCad.Loader` (`LynhCad.Loader.dll`). It registers the fixed `[CommandMethod]`s and forwards each to `LynhCad.Manhole.Plugin.Entry.Run(name)` via reflection on a copy of `LynhCad.Manhole.dll` + `LynhCad.Manhole.Core.dll` loaded with `Assembly.Load(byte[])` (files stay unlocked; `AssemblyResolve` maps each plugin generation to its Core). Before every command it reloads if the DLLs on disk are newer; `LCT_RELOAD` forces it. DLL folder = `LYNHCAD_PLUGIN_DIR` env var or the loader's folder.
+- Consequences: the plugin must not declare `[CommandMethod]`/`ExtensionApplication` or reference the loader, and the loader must not reference the plugin/Core. Adding a command = case in `Entry.Run` + `[CommandMethod]` in `Loader.cs` + entry in `deploy/LynhCadToolsBox.bundle/PackageContents.xml`. Keep the loader minimal: changing it needs an AutoCAD restart.
+- The plugin gets a unique `AssemblyVersion` per build (csproj `BuildDay`/`BuildRev`); WPF caches XAML by assembly name+version, so without it a reload would show the old dialog. CI fails if the generated `ManholeWindow.g.cs` URI lacks the version.
+- Commands: `LCT_MANHOLE` (dialog), `LCT_MANHOLE_JSON` (batch from file), `LCT_MANHOLE_EDIT` (update a drawn detail), `LCT_RELOAD`.
 - Each detail is a named **Group** `LCT_<id>` (not a block). `DetailData` in `Commands.cs` stores the params JSON (chunked strings), the centre point and an anchor curve in an Xrecord on the group's extension dictionary; `LCT_MANHOLE_EDIT` reads it, offsets by how far the anchor moved, erases the group's entities and redraws in place.
 - `AcadSetup.EnsureArrow` sets DIMBLK and must run outside a transaction. Layers (`Drawing/Layers.cs`, `S-*`), text style `LCT_ROMANS` and dim style are created only if missing; existing user-edited layers are kept.
 - `AcadRenderer.Add` re-applies text/dim styles after `SetDatabaseDefaults`; hatch `PatternScale`/`PatternAngle` must be set before `SetHatchPattern`. A failing primitive is skipped and reported ("Bỏ qua ...") rather than aborting the detail.

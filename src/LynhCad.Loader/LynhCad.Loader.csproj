@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    DLL nhỏ mà AutoCAD nạp (bundle / NETLOAD). Đăng ký lệnh LCT_* một lần, rồi đọc
+    LynhCad.Manhole.dll + LynhCad.Manhole.Core.dll vào bộ nhớ (không khoá file) và chuyển lệnh sang đó.
+    Build lại plugin + chép đè DLL khi AutoCAD đang mở → lệnh kế tiếp tự nạp bản mới (hoặc gõ LCT_RELOAD).
+    Bản thân loader chỉ thay được khi đóng AutoCAD, nên giữ nó thật đơn giản và ít thay đổi.
+    KHÔNG tham chiếu plugin hay Core.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>LynhCad.Loader</AssemblyName>
+    <RootNamespace>LynhCad.Loader</RootNamespace>
+    <Version>0.1.0</Version>
+    <Company>LynhCadToolsBox</Company>
+    <Product>LynhCadToolsBox - Loader</Product>
+    <AcadNetVersion Condition="'$(AcadNetVersion)' == ''">24.0.0</AcadNetVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(AcadDir)' == ''">
+    <PackageReference Include="AutoCAD.NET" Version="$(AcadNetVersion)" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(AcadDir)' != ''">
+    <Reference Include="accoremgd"><HintPath>$(AcadDir)\accoremgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="acdbmgd"><HintPath>$(AcadDir)\acdbmgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="acmgd"><HintPath>$(AcadDir)\acmgd.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+</Project>

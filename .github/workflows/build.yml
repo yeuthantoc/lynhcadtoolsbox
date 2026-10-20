@@ -27,6 +27,14 @@ jobs:
         shell: pwsh
         run: .\build.ps1 -Acad ${{ matrix.acad }}
 
+      # LCT_RELOAD cần URI của XAML có phiên bản (WPF cache theo tên;phiên bản), nếu không sẽ mở hộp thoại của bản cũ
+      - name: Check XAML resource URI carries the assembly version
+        shell: pwsh
+        run: |
+          $g = Get-ChildItem src/LynhCad.Manhole.Plugin/obj -Recurse -Filter ManholeWindow.g.cs | Select-Object -First 1
+          Select-String -Path $g.FullName -Pattern 'component/' | ForEach-Object { $_.Line.Trim() }
+          if (-not (Select-String -Path $g.FullName -Pattern ';V0\.1\.' -Quiet)) { throw "XAML URI has no assembly version" }
+
       - uses: actions/upload-artifact@v4
         with:
           name: LynhCadToolsBox-AutoCAD${{ matrix.acad }}

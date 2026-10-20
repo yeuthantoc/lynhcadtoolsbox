@@ -2,6 +2,8 @@
 <!--
   Bundle tự nạp cho AutoCAD 2021-2024 (R24.0 - R24.3).
   build.ps1 copy DLL vào Contents\ và cài bundle vào %APPDATA%\Autodesk\ApplicationPlugins.
+  AutoCAD chỉ nạp LynhCad.Loader.dll; loader đọc LynhCad.Manhole*.dll vào bộ nhớ, nên chép đè
+  được khi AutoCAD đang mở rồi gõ LCT_RELOAD (hoặc chạy lệnh, loader tự thấy bản mới).
 -->
 <ApplicationPackage SchemaVersion="1.0"
                     AppVersion="0.1.0"
@@ -15,13 +17,14 @@
   <Components>
     <RuntimeRequirements OS="Win64" Platform="AutoCAD*" SeriesMin="R24.0" SeriesMax="R24.3" />
     <ComponentEntry AppName="LynhCadToolsBox.Manhole"
-                    ModuleName="./Contents/LynhCad.Manhole.dll"
+                    ModuleName="./Contents/LynhCad.Loader.dll"
                     AppDescription="Manhole detail generator"
                     LoadOnAutoCADStartup="True">
       <Commands GroupName="LCT">
         <Command Local="LCT_MANHOLE" Global="LCT_MANHOLE" />
         <Command Local="LCT_MANHOLE_JSON" Global="LCT_MANHOLE_JSON" />
         <Command Local="LCT_MANHOLE_EDIT" Global="LCT_MANHOLE_EDIT" />
+        <Command Local="LCT_RELOAD" Global="LCT_RELOAD" />
       </Commands>
     </ComponentEntry>
   </Components>

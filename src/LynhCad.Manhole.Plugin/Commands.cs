@@ -13,27 +13,32 @@ using LynhCad.Manhole.Core.Model;
 using LynhCad.Manhole.Plugin.UI;
 using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
-[assembly: ExtensionApplication(typeof(LynhCad.Manhole.Plugin.PluginApp))]
-[assembly: CommandClass(typeof(LynhCad.Manhole.Plugin.Commands))]
-
 namespace LynhCad.Manhole.Plugin
 {
-    public class PluginApp : IExtensionApplication
+    /// <summary>
+    /// Điểm vào duy nhất, được LynhCad.Loader.dll gọi qua reflection.
+    /// Plugin KHÔNG khai báo [CommandMethod]: lệnh AutoCAD do loader đăng ký một lần,
+    /// nhờ vậy loader nạp lại được DLL mới (LCT_RELOAD) mà không cần khởi động lại AutoCAD.
+    /// Thêm lệnh mới: thêm case ở đây + [CommandMethod] trong src/LynhCad.Loader/Loader.cs + PackageContents.xml.
+    /// </summary>
+    public static class Entry
     {
-        public void Initialize()
+        public static void Run(string command)
         {
-            var doc = AcApp.DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
-            doc.Editor.WriteMessage("\nLynhCadToolsBox - Manhole Detail đã nạp. Lệnh: LCT_MANHOLE (hộp thoại), LCT_MANHOLE_JSON (từ file JSON), LCT_MANHOLE_EDIT (sửa chi tiết đã vẽ).\n");
+            var c = new Commands();
+            switch ((command ?? "").ToUpperInvariant())
+            {
+                case "LCT_MANHOLE": c.DrawManhole(); break;
+                case "LCT_MANHOLE_JSON": c.DrawManholeFromJson(); break;
+                case "LCT_MANHOLE_EDIT": c.EditManhole(); break;
+                default: throw new ArgumentException("Lệnh không có trong plugin: " + command);
+            }
         }
-
-        public void Terminate() { }
     }
 
     public class Commands
     {
         /// <summary>Mở hộp thoại nhập thông số rồi vẽ chi tiết hố ga.</summary>
-        [CommandMethod("LCT_MANHOLE", CommandFlags.Modal)]
         public void DrawManhole()
         {
             var doc = AcApp.DocumentManager.MdiActiveDocument;
@@ -50,7 +55,6 @@ namespace LynhCad.Manhole.Plugin
         }
 
         /// <summary>Vẽ từ file JSON: một hố ga {...} hoặc nhiều hố ga [{...},{...}] đặt cạnh nhau.</summary>
-        [CommandMethod("LCT_MANHOLE_JSON", CommandFlags.Modal)]
         public void DrawManholeFromJson()
         {
             var doc = AcApp.DocumentManager.MdiActiveDocument;
@@ -140,7 +144,6 @@ namespace LynhCad.Manhole.Plugin
         /// Sửa chi tiết hố ga đã vẽ: chọn một đối tượng bất kỳ của chi tiết, hộp thoại mở với thông số cũ,
         /// bấm Update → xoá các đối tượng cũ của chi tiết và vẽ lại tại đúng vị trí (kể cả khi đã MOVE).
         /// </summary>
-        [CommandMethod("LCT_MANHOLE_EDIT", CommandFlags.Modal)]
         public void EditManhole()
         {
             var doc = AcApp.DocumentManager.MdiActiveDocument;

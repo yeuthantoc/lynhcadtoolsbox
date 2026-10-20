@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LynhCad.Manhole.Preview", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LynhCad.Manhole.Plugin", "src\LynhCad.Manhole.Plugin\LynhCad.Manhole.Plugin.csproj", "{8E3B1F7A-2C4D-4A6B-9F01-3D5E7C9A1B24}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LynhCad.Loader", "src\LynhCad.Loader\LynhCad.Loader.csproj", "{BA4269CB-C96C-4BD2-940C-1C531B310220}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +36,15 @@ Global
 		{6C270435-C260-4C62-B6EF-33EF0629C689}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C270435-C260-4C62-B6EF-33EF0629C689}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C270435-C260-4C62-B6EF-33EF0629C689}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA4269CB-C96C-4BD2-940C-1C531B310220}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA4269CB-C96C-4BD2-940C-1C531B310220}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA4269CB-C96C-4BD2-940C-1C531B310220}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA4269CB-C96C-4BD2-940C-1C531B310220}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B4DDBFF8-CD89-4DFB-A16A-51F623A1BCB4} = {F04FF23D-12F2-4039-9158-087C7260A44D}
 		{8E3B1F7A-2C4D-4A6B-9F01-3D5E7C9A1B24} = {F04FF23D-12F2-4039-9158-087C7260A44D}
 		{6C270435-C260-4C62-B6EF-33EF0629C689} = {6B74FA58-7ABA-4E03-BB95-A701815601EE}
+		{BA4269CB-C96C-4BD2-940C-1C531B310220} = {F04FF23D-12F2-4039-9158-087C7260A44D}
 	EndGlobalSection
 EndGlobal

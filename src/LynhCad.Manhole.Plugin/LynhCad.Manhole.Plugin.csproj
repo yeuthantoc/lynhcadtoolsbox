@@ -7,7 +7,7 @@
         Build riêng cho một bản: -p:AcadNetVersion=24.2.0 (2023), 24.1.51000 (2022), 24.3.0 (2024).
       - Không có mạng / bị chặn NuGet: build với  -p:AcadDir="C:\Program Files\Autodesk\AutoCAD 2024"
         để tham chiếu thẳng accoremgd.dll, acdbmgd.dll, acmgd.dll trong thư mục cài AutoCAD.
-    Kết quả: bin\Release\net48\LynhCad.Manhole.dll (+ LynhCad.Manhole.Core.dll) → NETLOAD trong AutoCAD.
+    Kết quả: bin\Release\net48\LynhCad.Manhole.dll (+ LynhCad.Manhole.Core.dll). AutoCAD KHÔNG nạp DLL này trực tiếp mà qua LynhCad.Loader.dll.
   -->
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
@@ -21,6 +21,14 @@
     <Product>LynhCadToolsBox - Manhole Detail</Product>
     <GenerateResourceUsePreserializedResources>false</GenerateResourceUsePreserializedResources>
     <AcadNetVersion Condition="'$(AcadNetVersion)' == ''">24.0.0</AcadNetVersion>
+    <!--
+      Mỗi lần build một AssemblyVersion khác (0.1.yyDDD.giây/2). Bắt buộc cho LCT_RELOAD:
+      WPF tìm XAML theo "tên;phiên bản" và cache theo đó, trùng phiên bản sẽ mở hộp thoại của bản cũ.
+    -->
+    <BuildDay>$([System.DateTime]::UtcNow.ToString("yy"))$([System.DateTime]::UtcNow.DayOfYear.ToString("000"))</BuildDay>
+    <BuildRev>$([System.Convert]::ToInt32($([MSBuild]::Divide($([System.DateTime]::UtcNow.TimeOfDay.TotalSeconds), 2))))</BuildRev>
+    <AssemblyVersion>0.1.$(BuildDay).$(BuildRev)</AssemblyVersion>
+    <FileVersion>0.1.$(BuildDay).$(BuildRev)</FileVersion>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AcadDir)' == ''">

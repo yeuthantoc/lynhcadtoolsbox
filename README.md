@@ -66,7 +66,16 @@ powershell -ExecutionPolicy Bypass -File .\install-acad2023.ps1 -Uninstall  # g�
 
 Bản build mới nhất nằm ở release [`latest`](https://github.com/yeuthantoc/lynhcadtoolsbox/releases/tag/latest); GitHub Actions build lại mỗi lần push lên `main`. Repo private nên script lấy file theo thứ tự: `-Zip <file>` → `LynhCadToolsBox-AutoCAD2023.zip` cạnh script hoặc trong thư mục **Downloads** (tải bằng trình duyệt đã đăng nhập) → tải qua GitHub API bằng `-Token`, `GITHUB_TOKEN` hoặc `gh auth token`. Không có file và không có token thì script mở trang release để bạn tải.
 
-Không muốn cài bundle: trong AutoCAD gõ `NETLOAD` rồi chọn `src\LynhCad.Manhole.Plugin\bin\Release\net48\LynhCad.Manhole.dll`.
+Không muốn cài bundle: trong AutoCAD gõ `NETLOAD` rồi chọn `src\LynhCad.Loader\bin\Release\net48\LynhCad.Loader.dll` và đặt biến môi trường `LYNHCAD_PLUGIN_DIR` = `<repo>\src\LynhCad.Manhole.Plugin\bin\Release\net48` (trước khi mở AutoCAD).
+
+### Cập nhật không cần mở lại AutoCAD
+
+AutoCAD chỉ nạp `LynhCad.Loader.dll`. Loader đọc `LynhCad.Manhole.dll` và `LynhCad.Manhole.Core.dll` vào bộ nhớ, nên file không bị khoá:
+
+1. Để AutoCAD mở, chạy `.\build.ps1 -Acad 2023 -Install` (hoặc `install-acad2023.ps1`) để chép đè bản mới.
+2. Chạy lại lệnh (`LCT_MANHOLE`...): loader thấy DLL mới hơn và tự nạp. Gõ `LCT_RELOAD` để nạp ngay.
+
+Lưu ý: mỗi lần nạp lại, bản cũ vẫn chiếm RAM đến khi đóng AutoCAD (vài MB, không sao khi phát triển). Bản thân `LynhCad.Loader.dll` vẫn bị khoá; nó ít khi đổi, khi đổi thì phải đóng AutoCAD rồi cài lại. Lần đầu nâng cấp từ bản chưa có loader cũng phải đóng AutoCAD.
 
 ## Lệnh
 
@@ -74,6 +83,7 @@ Không muốn cài bundle: trong AutoCAD gõ `NETLOAD` rồi chọn `src\LynhCad
 |---|---|
 | `LCT_MANHOLE` | Mở hộp thoại nhập thông số (3 tab: General / Reinforcement / Pipes), bấm **Draw**, chọn điểm đặt (tâm hố trên mặt bằng). Tool nhớ thông số lần trước. |
 | `LCT_MANHOLE_JSON` | Vẽ từ file JSON. File có thể chứa **một** hố `{...}` hoặc **nhiều** hố `[{...}, {...}]`. Nhiều hố sẽ xếp cạnh nhau từ trái sang phải. |
+| `LCT_RELOAD` | Nạp lại DLL plugin mới (sau khi build/cài đè) mà không cần mở lại AutoCAD. |
 | `LCT_MANHOLE_EDIT` | **Cập nhật chi tiết đã vẽ.** Chọn một đối tượng bất kỳ của chi tiết, hộp thoại mở với thông số cũ, sửa rồi bấm **Update**: chi tiết cũ bị xoá và vẽ lại đúng chỗ (kể cả khi đã MOVE). |
 
 ### Cập nhật bản vẽ
@@ -137,7 +147,8 @@ src/LynhCad.Manhole.Core      netstandard2.0, KHÔNG phụ thuộc AutoCAD
   Drawing/    PlanBuilder, SectionBuilder, RoofPlanBuilder, ScheduleBuilder, DetailComposer
               → sinh "primitive" trung gian (polyline, hatch, text, dim, leader, table)
   Export/     SvgExporter (preview / kiểm tra không cần AutoCAD)
-src/LynhCad.Manhole.Plugin    net48 + WPF, plugin AutoCAD
+src/LynhCad.Loader            net48, DLL AutoCAD nạp: đăng ký lệnh, nạp/nạp lại plugin từ byte
+src/LynhCad.Manhole.Plugin    net48 + WPF, plugin AutoCAD (gọi qua Entry.Run, không tự đăng ký lệnh)
   Commands.cs     lệnh LCT_MANHOLE, LCT_MANHOLE_JSON, LCT_MANHOLE_EDIT; lưu thông số vào group
   AcadSetup.cs    layer S-*, linetype, text style, dim style LCT_1-20
   AcadRenderer.cs primitive → entity AutoCAD

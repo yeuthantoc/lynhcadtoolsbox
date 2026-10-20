@@ -30,12 +30,10 @@ $asset = "LynhCadToolsBox-AutoCAD2023.zip"
 $releasePage = "https://github.com/$repo/releases/tag/latest"
 $target = Join-Path $env:APPDATA "Autodesk\ApplicationPlugins\LynhCadToolsBox.bundle"
 
-if (Get-Process -Name acad -ErrorAction SilentlyContinue) {
-    Write-Host "AutoCAD đang mở. Hãy đóng AutoCAD rồi chạy lại (DLL đang được dùng sẽ không ghi đè được)." -ForegroundColor Yellow
-    exit 1
-}
+$acadRunning = [bool](Get-Process -Name acad -ErrorAction SilentlyContinue)
 
 if ($Uninstall) {
+    if ($acadRunning) { Write-Host "Hãy đóng AutoCAD trước khi gỡ." -ForegroundColor Yellow; exit 1 }
     if (Test-Path $target) { Remove-Item $target -Recurse -Force; Write-Host "Đã gỡ LynhCadToolsBox." -ForegroundColor Green }
     else { Write-Host "Chưa cài LynhCadToolsBox." }
     exit 0
@@ -87,11 +85,24 @@ try {
     # file tải từ Internet bị Windows đánh dấu chặn -> AutoCAD không nạp được DLL
     Get-ChildItem $bundle -Recurse -File | Unblock-File
 
-    if (Test-Path $target) { Remove-Item $target -Recurse -Force }
-    New-Item -ItemType Directory -Force -Path (Split-Path $target) | Out-Null
-    Copy-Item $bundle $target -Recurse
+    # chép đè từng file: chạy được cả khi AutoCAD đang mở (chỉ LynhCad.Loader.dll bị khoá)
+    $loaderLocked = $false
+    foreach ($f in Get-ChildItem $bundle -Recurse -File) {
+        $to = Join-Path $target ($f.FullName.Substring($bundle.Length).TrimStart('\'))
+        New-Item -ItemType Directory -Force -Path (Split-Path $to) | Out-Null
+        try { Copy-Item $f.FullName $to -Force -ErrorAction Stop }
+        catch { if ($f.Name -eq "LynhCad.Loader.dll") { $loaderLocked = $true } else { throw } }
+    }
+    # bundle bản cũ nạp thẳng LynhCad.Manhole.dll; giờ AutoCAD nạp loader (đã ghi trong PackageContents.xml)
     Write-Host "Đã cài vào $target" -ForegroundColor Green
-    Write-Host "Mở AutoCAD 2023, gõ LCT_MANHOLE (vẽ), LCT_MANHOLE_JSON (từ file), LCT_MANHOLE_EDIT (sửa chi tiết đã vẽ)." -ForegroundColor Green
+    if ($loaderLocked) {
+        Write-Host "LynhCad.Loader.dll đang được AutoCAD dùng nên giữ bản cũ. Nếu đây là lần đầu cài bản có loader, hãy đóng AutoCAD rồi chạy lại script." -ForegroundColor Yellow
+    }
+    if ($acadRunning) {
+        Write-Host "AutoCAD đang mở: gõ LCT_RELOAD (hoặc chạy lệnh) để dùng bản mới, không cần mở lại." -ForegroundColor Green
+    } else {
+        Write-Host "Mở AutoCAD 2023, gõ LCT_MANHOLE (vẽ), LCT_MANHOLE_JSON (từ file), LCT_MANHOLE_EDIT (sửa), LCT_RELOAD (nạp bản mới)." -ForegroundColor Green
+    }
 }
 finally {
     Remove-Item $work -Recurse -Force -ErrorAction SilentlyContinue
