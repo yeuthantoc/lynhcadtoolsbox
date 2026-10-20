@@ -4,6 +4,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
+using LynhCad.Manhole.Core.Drawing;
 using LynhCad.Manhole.Core.Model;
 using LynhCad.Manhole.Core.Rebar;
 using Microsoft.Win32;
@@ -14,6 +16,7 @@ namespace LynhCad.Manhole.Plugin.UI
     public partial class ManholeWindow : Window
     {
         private ObservableCollection<PipeSpec> pipes;
+        private bool previewQueued;
 
         /// <summary>Thông số sau khi người dùng bấm Draw (đã kiểm tra hợp lệ).</summary>
         public ManholeParams Params { get; private set; }
@@ -41,10 +44,12 @@ namespace LynhCad.Manhole.Plugin.UI
         {
             Params = p.Clone();
             pipes = new ObservableCollection<PipeSpec>(Params.Pipes);
+            pipes.CollectionChanged += (s, e) => QueuePreview();
             DataContext = Params;
             gridPipes.ItemsSource = pipes;
             UpdateTypePanels();
             txtStatus.Text = "";
+            QueuePreview();
         }
 
         private bool IsRect { get { return Params != null && Params.Type == ManholeType.RectangularCast; } }
@@ -54,6 +59,7 @@ namespace LynhCad.Manhole.Plugin.UI
             if (cbType.SelectedItem is ManholeType)
                 Params.Type = (ManholeType)cbType.SelectedItem;
             UpdateTypePanels();
+            QueuePreview();
         }
 
         /// <summary>Ẩn/hiện các trường riêng của hố chữ nhật / hố tròn.</summary>
@@ -82,6 +88,48 @@ namespace LynhCad.Manhole.Plugin.UI
             txtPipeHint.Text = rect
                 ? "Wall: N = +Y, E = +X. Offset along the wall from manhole centre (+X / +Y). Section A-A is cut along the outlet pipe."
                 : "Angle in plan: 0° = +X (east), counter-clockwise. Section A-A is cut along the outlet pipe.";
+        }
+
+        // ---------------------------------------------------------------- xem trước vị trí ống
+
+        /// <summary>Vẽ lại preview sau khi giá trị đang sửa đã vào binding (gộp nhiều sự kiện liên tiếp thành một lần vẽ).</summary>
+        private void QueuePreview()
+        {
+            if (previewQueued) return;
+            previewQueued = true;
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(RenderPreview));
+        }
+
+        private void RenderPreview()
+        {
+            previewQueued = false;
+            if (cvPreview == null || Params == null || pipes == null) return;
+            try
+            {
+                var p = Params.Clone();
+                p.Pipes = pipes.Select(x => x.Clone()).ToList();
+                var pv = PipeLayoutPreview.Build(p);
+                PreviewRenderer.Render(cvPreview, pv.Model);
+                txtPreviewInfo.Text = pv.Geometry.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", pv.Geometry.Errors);
+            }
+            catch (Exception ex)
+            {
+                // preview không bao giờ được làm hỏng hộp thoại
+                cvPreview.Children.Clear();
+                txtPreviewInfo.Text = "Không xem trước được: " + ex.Message;
+            }
+        }
+
+        private void OnPipeCellEditEnding(object sender, DataGridCellEditEndingEventArgs e) { QueuePreview(); }
+
+        private void OnPipeCurrentCellChanged(object sender, EventArgs e) { QueuePreview(); }
+
+        private void OnPreviewSizeChanged(object sender, SizeChangedEventArgs e) { QueuePreview(); }
+
+        /// <summary>Thông số tab General có thể đã đổi → vẽ lại khi chuyển tab. Bỏ qua sự kiện nổi bọt từ ComboBox / DataGrid.</summary>
+        private void OnTabChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ReferenceEquals(e.OriginalSource, tabs)) QueuePreview();
         }
 
         private void OnAddPipe(object sender, RoutedEventArgs e)

@@ -37,6 +37,8 @@ namespace LynhCad.Manhole.Core.Model
         public readonly ManholeParams P;
         public readonly List<string> Errors = new List<string>();
         public readonly List<string> Warnings = new List<string>();
+        /// <summary>Ống có lỗi riêng (lỗ xuyên chồng nhau, vượt mặt tường, quá lớn, chạm bản nắp...) — để preview tô đỏ.</summary>
+        public readonly HashSet<PipeSpec> PipesWithErrors = new HashSet<PipeSpec>();
 
         public bool IsRect { get { return P.Type == ManholeType.RectangularCast; } }
         /// <summary>Hố tròn (đúc sẵn hoặc đổ tại chỗ): ống khai báo theo góc, lỗ thăm tròn.</summary>
@@ -166,7 +168,7 @@ namespace LynhCad.Manhole.Core.Model
                     }
                     double halfFace = (spec.Wall == WallSide.North || spec.Wall == WallSide.South) ? Li / 2 : Wi / 2;
                     if (Math.Abs(spec.Offset) + f.HalfGap > halfFace + 1e-6)
-                        Errors.Add(string.Format("Ống {0}: lỗ xuyên tường vượt quá chiều dài mặt trong tường {1}.", spec.Mark, spec.Wall));
+                        PipeError(spec, string.Format("Ống {0}: lỗ xuyên tường vượt quá chiều dài mặt trong tường {1}.", spec.Mark, spec.Wall));
                 }
                 else
                 {
@@ -174,7 +176,7 @@ namespace LynhCad.Manhole.Core.Model
                     f.AxisPoint = Vec2.Zero;
                     f.InnerDist = Ri; f.OuterDist = Ro;
                     if (f.HalfGap >= Ri * 0.9)
-                        Errors.Add(string.Format("Ống {0} quá lớn so với hố.", spec.Mark));
+                        PipeError(spec, string.Format("Ống {0} quá lớn so với hố.", spec.Mark));
                 }
 
                 f.ZInvert = Z(spec.InvertLevel);
@@ -182,9 +184,9 @@ namespace LynhCad.Manhole.Core.Model
                 f.ZOuterTop = f.ZOuterBottom + f.OD;
                 f.GapZ = new Interval(f.ZOuterBottom - P.PipeClearance, f.ZOuterTop + P.PipeClearance);
 
-                Require(spec.NominalDiameter >= 50, string.Format("Ống {0}: DN không hợp lệ.", spec.Mark));
+                if (spec.NominalDiameter < 50) PipeError(spec, string.Format("Ống {0}: DN không hợp lệ.", spec.Mark));
                 if (f.GapZ.Max > H - 50)
-                    Errors.Add(string.Format("Ống {0}: đỉnh lỗ xuyên ({1:0} mm) chạm bản nắp — cao độ nắp quá thấp.", spec.Mark, f.GapZ.Max));
+                    PipeError(spec, string.Format("Ống {0}: đỉnh lỗ xuyên ({1:0} mm) chạm bản nắp — cao độ nắp quá thấp.", spec.Mark, f.GapZ.Max));
                 if (f.GapZ.Min < -1e-6)
                     Warnings.Add(string.Format("Ống {0}: lỗ xuyên ăn xuống dưới mặt bản đáy, kiểm tra SumpDepth / khe hở.", spec.Mark));
                 Pipes.Add(f);
@@ -233,7 +235,11 @@ namespace LynhCad.Manhole.Core.Model
                         clash = diff < da + db;
                     }
                     if (clash)
+                    {
                         Errors.Add(string.Format("Lỗ xuyên của ống {0} và {1} chồng lên nhau.", a.Spec.Mark, b.Spec.Mark));
+                        PipesWithErrors.Add(a.Spec);
+                        PipesWithErrors.Add(b.Spec);
+                    }
                 }
         }
 
@@ -255,5 +261,7 @@ namespace LynhCad.Manhole.Core.Model
         }
 
         private void Require(bool ok, string msg) { if (!ok) Errors.Add(msg); }
+
+        private void PipeError(PipeSpec spec, string msg) { Errors.Add(msg); PipesWithErrors.Add(spec); }
     }
 }

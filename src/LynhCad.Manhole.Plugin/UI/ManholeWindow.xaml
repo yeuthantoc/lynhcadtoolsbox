@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="LynhCadToolsBox - Manhole Detail (AU)"
-        Width="820" Height="660" MinWidth="700" MinHeight="560"
+        Width="1100" Height="660" MinWidth="900" MinHeight="560"
         WindowStartupLocation="CenterOwner" ResizeMode="CanResizeWithGrip"
         ShowInTaskbar="False" FontSize="12">
 
@@ -52,7 +52,7 @@
         <!-- Trạng thái kiểm tra -->
         <TextBlock x:Name="txtStatus" DockPanel.Dock="Bottom" Margin="4,8,4,0" TextWrapping="Wrap" Foreground="DarkRed" />
 
-        <TabControl>
+        <TabControl x:Name="tabs" SelectionChanged="OnTabChanged">
 
             <!-- ===================== CHUNG ===================== -->
             <TabItem Header="General">
@@ -270,8 +270,16 @@
                         <Button Content="− Remove selected" Padding="8,2" Click="OnRemovePipe" />
                         <TextBlock x:Name="txtPipeHint" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="Gray" TextWrapping="Wrap" />
                     </StackPanel>
-                    <DataGrid x:Name="gridPipes" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
-                              HeadersVisibility="Column" SelectionMode="Extended" RowHeaderWidth="0">
+                    <!-- bảng ống | thanh kéo | xem trước vị trí ống trên mặt bằng -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="300" />
+                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="340" MinWidth="200" />
+                        </Grid.ColumnDefinitions>
+                    <DataGrid x:Name="gridPipes" Grid.Column="0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                              HeadersVisibility="Column" SelectionMode="Extended" RowHeaderWidth="0"
+                              CellEditEnding="OnPipeCellEditEnding" CurrentCellChanged="OnPipeCurrentCellChanged">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Mark" Width="60" Binding="{Binding Mark}" />
                             <DataGridComboBoxColumn x:Name="colRole" Header="Role" Width="80" SelectedItemBinding="{Binding Role}" />
@@ -284,6 +292,16 @@
                             <DataGridTextColumn x:Name="colOffset" Header="Offset (mm)" Width="85" Binding="{Binding Offset}" />
                         </DataGrid.Columns>
                     </DataGrid>
+                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" />
+                    <DockPanel Grid.Column="2">
+                        <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" FontWeight="SemiBold"
+                                   Text="Preview (plan) - outlet blue, clashes red" />
+                        <TextBlock x:Name="txtPreviewInfo" DockPanel.Dock="Bottom" Margin="2,4,0,0" TextWrapping="Wrap" Foreground="DarkRed" />
+                        <Border BorderBrush="#FFCCCCCC" BorderThickness="1" Background="White" ClipToBounds="True">
+                            <Canvas x:Name="cvPreview" SizeChanged="OnPreviewSizeChanged" />
+                        </Border>
+                    </DockPanel>
+                    </Grid>
                 </DockPanel>
             </TabItem>
         </TabControl>

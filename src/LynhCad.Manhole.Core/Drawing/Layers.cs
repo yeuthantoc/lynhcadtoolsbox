@@ -18,6 +18,30 @@ namespace LynhCad.Manhole.Core.Drawing
     /// </summary>
     public static class Layers
     {
+        /// <summary>Màu hiển thị (preview SVG / WPF) cho một màu ACI.</summary>
+        public static string AciToHex(short aci)
+        {
+            switch (aci)
+            {
+                case 1: return "#d62828";
+                case 2: return "#a07800";
+                case 3: return "#2a8a2a";
+                case 4: return "#0089a8";
+                case 5: return "#1d4ed8";
+                case 6: return "#b0179f";
+                case 8: return "#888888";
+                case 253: return "#bbbbbb";
+                default: return "#111111";
+            }
+        }
+
+        /// <summary>Định nghĩa layer theo tên, null nếu không phải layer chuẩn.</summary>
+        public static LayerDef Find(string name)
+        {
+            foreach (var l in All) if (l.Name == name) return l;
+            return null;
+        }
+
         public const string Concrete = "S-CONC";
         public const string ConcreteBeyond = "S-CONC-BYND";
         public const string ConcreteHidden = "S-CONC-HIDN";

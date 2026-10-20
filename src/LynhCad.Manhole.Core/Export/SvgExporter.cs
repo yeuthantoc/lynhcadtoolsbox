@@ -40,21 +40,7 @@ namespace LynhCad.Manhole.Core.Export
         private static string F(double v) { return v.ToString("0.##", Inv); }
         private static string Pt(Vec2 p) { return F(p.X) + "," + F(-p.Y); }
 
-        private static string Color(short aci)
-        {
-            switch (aci)
-            {
-                case 1: return "#d62828";
-                case 2: return "#a07800";
-                case 3: return "#2a8a2a";
-                case 4: return "#0089a8";
-                case 5: return "#1d4ed8";
-                case 6: return "#b0179f";
-                case 8: return "#888888";
-                case 253: return "#bbbbbb";
-                default: return "#111111";
-            }
-        }
+        private static string Color(short aci) { return Layers.AciToHex(aci); }
 
         private static string PathData(PPolyline pl)
         {

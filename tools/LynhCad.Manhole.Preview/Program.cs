@@ -34,12 +34,18 @@ namespace LynhCad.Manhole.Preview
                             WriteSvg(p, Path.Combine(dir, name + ".svg"));
                         }
                         return 0;
+                    case "pipes":
+                        if (args.Length < 3) { Console.WriteLine("usage: pipes <params.json> <out.svg>"); return 2; }
+                        var pv = PipeLayoutPreview.Build(ParamsJson.Load(args[1]));
+                        foreach (var e in pv.Geometry.Errors) Console.WriteLine("ERROR: " + e);
+                        File.WriteAllText(args[2], SvgExporter.Export(pv.Model, 20));
+                        return 0;
                     case "snapshot":
                         string samples = Snapshots.FindSamplesDir();
                         if (samples == null) { Console.WriteLine("samples/ not found"); return 2; }
                         return Snapshots.Write(samples);
                     default:
-                        Console.WriteLine("commands: check | svg <json> <svg> | sample <folder> | snapshot");
+                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | sample <folder> | snapshot");
                         return 2;
                 }
             }
@@ -91,6 +97,7 @@ namespace LynhCad.Manhole.Preview
             RectangularSample();
             CircularSample();
             CircularCastSample();
+            PipePreview();
             Validation();
             Json();
             Naming();
@@ -238,6 +245,37 @@ namespace LynhCad.Manhole.Preview
             var thin = ManholeParams.SampleCircularCast();
             thin.WallThickness = 120;
             True("circ cast thin wall error", !new ManholeGeometry(thin).IsValid);
+        }
+
+        private static void PipePreview()
+        {
+            foreach (var p in new[] { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular(), ManholeParams.SampleCircularCast() })
+            {
+                var pv = PipeLayoutPreview.Build(p);
+                var texts = pv.Model.Items.OfType<PText>().Select(t => t.Text).ToList();
+                True("pipe preview " + p.Id + " labels every pipe", p.Pipes.All(s => texts.Any(t => t.StartsWith(s.Mark + " "))));
+                True("pipe preview " + p.Id + " outlet highlighted", pv.Model.Items.Any(i => i.Layer == PipeLayoutPreview.OutletLayer));
+                True("pipe preview " + p.Id + " no error layer when valid", pv.Model.Items.All(i => i.Layer != PipeLayoutPreview.ErrorLayer));
+                True("pipe preview " + p.Id + " has section line", texts.Count(t => t == "A") == 2);
+            }
+
+            // lỗ xuyên chồng nhau: vẫn có preview, hai ống bị tô đỏ
+            var clash = ManholeParams.SampleRectangular();
+            clash.Pipes[1].Wall = WallSide.West; clash.Pipes[1].Offset = 100; clash.Pipes[1].InvertLevel = 12.450;
+            var cv = PipeLayoutPreview.Build(clash);
+            True("pipe preview clash still drawn", !cv.Geometry.IsValid && cv.Model.Items.Count > 0);
+            True("pipe preview clash marks P1+P2", cv.Geometry.PipesWithErrors.Count == 2
+                && cv.Model.Items.OfType<PText>().Count(t => t.Layer == PipeLayoutPreview.ErrorLayer) == 2);
+
+            // thông số vô lý: không được ném lỗi
+            var junk = ManholeParams.SampleRectangular();
+            junk.InternalLength = 0; junk.WallThickness = 0;
+            bool threw = false;
+            try { PipeLayoutPreview.Build(junk); } catch (Exception) { threw = true; }
+            True("pipe preview tolerates zero size", !threw);
+            junk = ManholeParams.SampleCircular();
+            junk.Pipes.Clear();
+            True("pipe preview with no pipes", PipeLayoutPreview.Build(junk).Model.Items.Count > 0);
         }
 
         private static void Validation()
