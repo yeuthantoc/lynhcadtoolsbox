@@ -58,6 +58,16 @@ namespace LynhCad.Manhole.Core.Geometry
             return new Interval(t0, t1);
         }
 
+        /// <summary>Đoạn thẳng a–b có cắt qua (hoặc nằm trong) hình chữ nhật r không.</summary>
+        public static bool SegmentIntersectsRect(Vec2 a, Vec2 b, Rect2 r)
+        {
+            var d = b - a;
+            double t0 = 0, t1 = 1;
+            if (!Slab(a.X, d.X, r.X1, r.X2, ref t0, ref t1)) return false;
+            if (!Slab(a.Y, d.Y, r.Y1, r.Y2, ref t0, ref t1)) return false;
+            return t0 <= t1;
+        }
+
         private static bool Slab(double o, double d, double lo, double hi, ref double t0, ref double t1)
         {
             if (Math.Abs(d) < 1e-12) return o >= lo && o <= hi;

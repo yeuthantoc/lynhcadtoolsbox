@@ -33,11 +33,37 @@ namespace LynhCad.Manhole.Core.Drawing
 
         protected PHatch ConcreteHatch(Rect2 r) { return ConcreteHatch(PPolyline.Rect(r, Layers.Hatch)); }
 
-        /// <summary>Xếp ghi chú thành 2 cột: điểm chỉ có X &lt; split sang cột trái (xLeft), còn lại sang cột phải (xRight).</summary>
+        /// <summary>
+        /// Xếp ghi chú thành 2 cột: điểm chỉ có X &lt; split sang cột trái (xLeft), còn lại sang cột phải (xRight).
+        /// Chữ kích thước và chữ đã có trong hình (nhãn cao độ...) là vật cản: cột ghi chú được đẩy ra ngoài chúng
+        /// để chữ ghi chú không đè lên, và leader được lách xuống để không cắt qua.
+        /// </summary>
         protected void PlaceCalloutColumns(double split, double xLeft, double xRight)
         {
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X < split), xLeft, -1);
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X >= split), xRight, +1);
+            var avoid = Obstacles();
+            double gap = 1.5 * st.Scale;
+            foreach (var r in avoid)
+            {
+                double cx = (r.X1 + r.X2) / 2;
+                if (cx < split) xLeft = System.Math.Min(xLeft, r.X1 - gap);
+                else xRight = System.Math.Max(xRight, r.X2 + gap);
+            }
+            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X < split), xLeft, -1, avoid);
+            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X >= split), xRight, +1, avoid);
+        }
+
+        /// <summary>Hộp chữ kích thước và chữ rời hiện có trong hình (gọi sau khi đã vẽ kích thước, cao độ).</summary>
+        private List<Rect2> Obstacles()
+        {
+            var list = new List<Rect2>();
+            foreach (var it in m.Items)
+            {
+                var d = it as PDim;
+                if (d != null) { list.Add(Annot.DimTextRect(d, st)); continue; }
+                var t = it as PText;
+                if (t != null && !string.IsNullOrEmpty(t.Text)) list.Add(Annot.TextRect(t));
+            }
+            return list;
         }
 
         /// <summary>Điểm trên thanh thép chạy theo X (alongX) hoặc Y: along = toạ độ dọc thanh, perp = toạ độ vuông góc.</summary>

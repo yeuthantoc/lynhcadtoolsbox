@@ -15,7 +15,7 @@ namespace LynhCad.Manhole.Plugin.UI
     /// <summary>Hộp thoại nhập thông số hố ga. Binding thẳng vào bản sao ManholeParams.</summary>
     public partial class ManholeWindow : Window
     {
-        private ObservableCollection<PipeSpec> pipes;
+        private ObservableCollection<PipeRow> pipes;
         private bool previewQueued;
 
         /// <summary>Thông số sau khi người dùng bấm Draw (đã kiểm tra hợp lệ).</summary>
@@ -43,7 +43,7 @@ namespace LynhCad.Manhole.Plugin.UI
         private void Bind(ManholeParams p)
         {
             Params = p.Clone();
-            pipes = new ObservableCollection<PipeSpec>(Params.Pipes);
+            pipes = new ObservableCollection<PipeRow>(Params.Pipes.Select(Watch));
             pipes.CollectionChanged += (s, e) => QueuePreview();
             DataContext = Params;
             gridPipes.ItemsSource = pipes;
@@ -107,7 +107,7 @@ namespace LynhCad.Manhole.Plugin.UI
             try
             {
                 var p = Params.Clone();
-                p.Pipes = pipes.Select(x => x.Clone()).ToList();
+                p.Pipes = pipes.Select(x => x.Spec.Clone()).ToList();
                 var pv = PipeLayoutPreview.Build(p);
                 PreviewRenderer.Render(cvPreview, pv.Model);
                 txtPreviewInfo.Text = pv.Geometry.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", pv.Geometry.Errors);
@@ -121,6 +121,23 @@ namespace LynhCad.Manhole.Plugin.UI
         }
 
         private void OnPipeCellEditEnding(object sender, DataGridCellEditEndingEventArgs e) { QueuePreview(); }
+
+        /// <summary>Dòng ống: mọi thay đổi ô (kể cả OD tự điền) → vẽ lại preview.</summary>
+        private PipeRow Watch(PipeSpec spec)
+        {
+            var row = new PipeRow(spec);
+            row.PropertyChanged += (s, e) => QueuePreview();
+            return row;
+        }
+
+        /// <summary>Ô DN / OD / vật liệu vào chế độ sửa: đưa focus vào ComboBox và mở danh sách ngay.</summary>
+        private void OnPipePreparingCellForEdit(object sender, DataGridPreparingCellForEditEventArgs e)
+        {
+            var cb = e.EditingElement as ComboBox;
+            if (cb == null) return;
+            cb.Focus();
+            cb.IsDropDownOpen = true;
+        }
 
         private void OnPipeCurrentCellChanged(object sender, EventArgs e) { QueuePreview(); }
 
@@ -137,23 +154,23 @@ namespace LynhCad.Manhole.Plugin.UI
             CommitEdits();
             int n = pipes.Count + 1;
             var last = pipes.LastOrDefault();
-            pipes.Add(new PipeSpec
+            pipes.Add(Watch(new PipeSpec
             {
                 Mark = "P" + n,
                 Role = PipeRole.Inlet,
                 NominalDiameter = last != null ? last.NominalDiameter : 300,
-                OutsideDiameter = last != null ? last.OutsideDiameter : 360,
+                OutsideDiameter = last != null ? last.OutsideDiameter : PipeCatalog.OutsideDiameter("RCP", 300),
                 Material = last != null ? last.Material : "RCP",
                 InvertLevel = last != null ? Math.Round(last.InvertLevel + 0.05, 3) : Params.CoverLevel - 2.0,
                 AngleDeg = 90,
                 Wall = WallSide.North,
-            });
+            }));
         }
 
         private void OnRemovePipe(object sender, RoutedEventArgs e)
         {
             CommitEdits();
-            foreach (var p in gridPipes.SelectedItems.OfType<PipeSpec>().ToList()) pipes.Remove(p);
+            foreach (var p in gridPipes.SelectedItems.OfType<PipeRow>().ToList()) pipes.Remove(p);
         }
 
         private void OnSampleRect(object sender, RoutedEventArgs e) { Bind(ManholeParams.SampleRectangular()); }
@@ -197,7 +214,7 @@ namespace LynhCad.Manhole.Plugin.UI
 
         private ManholeParams Collect()
         {
-            Params.Pipes = pipes.ToList();
+            Params.Pipes = pipes.Select(r => r.Spec).ToList();
             return Params;
         }
 

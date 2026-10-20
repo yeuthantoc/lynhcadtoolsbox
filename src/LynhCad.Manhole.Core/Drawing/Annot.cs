@@ -75,10 +75,41 @@ namespace LynhCad.Manhole.Core.Drawing
         }
 
         /// <summary>
+        /// Hộp chữ của một kích thước (chữ nằm phía DimLinePoint, cách đường kích thước 1 mm giấy, như renderer vẽ),
+        /// nới thêm 0.4 chiều cao chữ mỗi phía. Dùng làm vật cản khi xếp ghi chú để leader không cắt qua số kích thước.
+        /// </summary>
+        public static Rect2 DimTextRect(PDim d, DrawStyle st)
+        {
+            var dir = Vec2.FromAngle(d.AngleDeg * GeomUtil.Deg);
+            var n = dir.Perp();
+            var q1 = d.P1 + n * (d.DimLinePoint - d.P1).Dot(n);
+            var q2 = d.P2 + n * (d.DimLinePoint - d.P2).Dot(n);
+            string text = string.IsNullOrEmpty(d.TextOverride) ? d.Measured.ToString("0", System.Globalization.CultureInfo.InvariantCulture) : d.TextOverride;
+            double h = st.TextSmall, w = text.Length * 0.8 * h, pad = 0.4 * h;
+            var centre = (q1 + q2) * 0.5 + n * (1.0 * st.Scale + h / 2);
+            var b = new Bounds();
+            foreach (var sx in new[] { -1, 1 })
+                foreach (var sy in new[] { -1, 1 })
+                    b.Add(centre + dir * (sx * (w / 2 + pad)) + n * (sy * (h / 2 + pad)));
+            return new Rect2(b.MinX, b.MinY, b.MaxX, b.MaxY);
+        }
+
+        /// <summary>Hộp chữ (ước lượng) của một PText, nới thêm 0.4 chiều cao chữ mỗi phía.</summary>
+        public static Rect2 TextRect(PText t)
+        {
+            var b = new Bounds();
+            t.AddBounds(b);
+            double pad = 0.4 * t.Height;
+            return new Rect2(b.MinX - pad, b.MinY - pad, b.MaxX + pad, b.MaxY + pad);
+        }
+
+        /// <summary>
         /// Xếp một cột ghi chú tại hoành độ xText, tự giãn cách để chữ không đè nhau, kẻ leader tới từng điểm.
         /// side = -1: cột nằm bên trái (chữ căn phải); +1: bên phải.
+        /// avoid: các hộp chữ (số kích thước, nhãn cao độ...) mà leader không được cắt qua — ghi chú bị đẩy xuống
+        /// cho tới khi leader đi lọt (chỉ đẩy xuống, nên thứ tự cột vẫn giữ nguyên).
         /// </summary>
-        public static void CalloutColumn(DrawingModel m, DrawStyle st, IEnumerable<Callout> items, double xText, int side)
+        public static void CalloutColumn(DrawingModel m, DrawStyle st, IEnumerable<Callout> items, double xText, int side, IList<Rect2> avoid = null)
         {
             var list = items.Where(c => !string.IsNullOrEmpty(c.Text)).OrderByDescending(c => c.Target.Y).ToList();
             if (list.Count == 0) return;
@@ -91,9 +122,15 @@ namespace LynhCad.Manhole.Core.Drawing
                 double y = c.Target.Y;
                 if (prevBottom != null && y + blockH / 2 > prevBottom.Value - h * 0.8)
                     y = prevBottom.Value - h * 0.8 - blockH / 2;
+                double xElbow = xText - side * 1.5 * st.Scale;
+                if (avoid != null)
+                {
+                    for (int i = 0; i < 60 && LeaderHits(c.Target, new Vec2(xElbow, y), avoid); i++)
+                        y -= h * 0.5;
+                }
                 prevBottom = y - blockH / 2;
 
-                var elbow = new Vec2(xText - side * 1.5 * st.Scale, y);
+                var elbow = new Vec2(xElbow, y);
                 m.Add(new PLeader
                 {
                     Layer = Layers.Text,
@@ -104,6 +141,13 @@ namespace LynhCad.Manhole.Core.Drawing
                     DotArrow = c.Dot,
                 });
             }
+        }
+
+        private static bool LeaderHits(Vec2 target, Vec2 elbow, IList<Rect2> avoid)
+        {
+            foreach (var r in avoid)
+                if (GeomUtil.SegmentIntersectsRect(target, elbow, r)) return true;
+            return false;
         }
 
         /// <summary>

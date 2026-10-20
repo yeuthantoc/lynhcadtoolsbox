@@ -391,7 +391,8 @@ namespace LynhCad.Manhole.Core.Drawing
         // ---------------------------------------------------------------- cao độ
         private void BuildLevels()
         {
-            double x = Math.Max(roofS.Max, baseS.Max) + 4 * st.Scale;
+            // đặt ngoài đoạn ống ra thò ra bên phải để nhãn TOB/USB không đè lên ống
+            double x = RightExtent + 4 * st.Scale;
             double len = 26 * st.Scale;
             Annot.Level(m, st, x, zCL, "CL", g.P.CoverLevel, 1, len);
             Annot.Level(m, st, x, zTopRoof, "TOS", g.RoofTopRL, 1, len);
@@ -406,6 +407,16 @@ namespace LynhCad.Manhole.Core.Drawing
             {
                 double e = Math.Min(baseS.Min, roofS.Min);
                 if (cutLeft.Count > 0) e = Math.Min(e, outerS.Min - st.PipeStub); // ống bị cắt thò ra bên trái
+                return e;
+            }
+        }
+
+        private double RightExtent
+        {
+            get
+            {
+                double e = Math.Max(baseS.Max, roofS.Max);
+                if (cutRight.Count > 0) e = Math.Max(e, outerS.Max + st.PipeStub); // ống bị cắt thò ra bên phải
                 return e;
             }
         }
@@ -429,10 +440,8 @@ namespace LynhCad.Manhole.Core.Drawing
 
         private void PlaceCallouts()
         {
-            double right = Math.Max(roofS.Max, baseS.Max);
-            if (cutRight.Count > 0) right = Math.Max(right, outerS.Max + st.PipeStub);
             double xL = LeftExtent - st.DimOffset - 2 * st.DimStep - 6 * st.Scale;
-            double xR = right + 34 * st.Scale;
+            double xR = RightExtent + 34 * st.Scale;
             PlaceCalloutColumns(innerS.Mid, xL, xR);
         }
     }

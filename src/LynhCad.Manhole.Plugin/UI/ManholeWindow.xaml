@@ -314,13 +314,45 @@
                         </Grid.ColumnDefinitions>
                     <DataGrid x:Name="gridPipes" Grid.Column="0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                               HeadersVisibility="Column" SelectionMode="Extended" RowHeaderWidth="0"
-                              CellEditEnding="OnPipeCellEditEnding" CurrentCellChanged="OnPipeCurrentCellChanged">
+                              CellEditEnding="OnPipeCellEditEnding" CurrentCellChanged="OnPipeCurrentCellChanged"
+                              PreparingCellForEdit="OnPipePreparingCellForEdit">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Mark" Width="60" Binding="{Binding Mark}" />
                             <DataGridComboBoxColumn x:Name="colRole" Header="Role" Width="80" SelectedItemBinding="{Binding Role}" />
-                            <DataGridTextColumn Header="DN (mm)" Width="70" Binding="{Binding NominalDiameter}" />
-                            <DataGridTextColumn Header="OD (mm)" Width="70" Binding="{Binding OutsideDiameter}" />
-                            <DataGridTextColumn Header="Material" Width="80" Binding="{Binding Material}" />
+                            <!-- DN / OD / vật liệu: chọn từ danh sách (PipeCatalog) hoặc gõ giá trị khác; đổi DN / vật liệu thì OD tự điền -->
+                            <DataGridTemplateColumn Header="DN (mm)" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate><TextBlock Text="{Binding NominalDiameter}" Margin="3,0" /></DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <ComboBox IsEditable="True" ItemsSource="{Binding SizeOptions}"
+                                                  Text="{Binding NominalDiameter, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="OD (mm)" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate><TextBlock Text="{Binding OutsideDiameter}" Margin="3,0" /></DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <ComboBox IsEditable="True" ItemsSource="{Binding OutsideDiameterOptions}"
+                                                  Text="{Binding OutsideDiameter, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Material" Width="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate><TextBlock Text="{Binding Material}" Margin="3,0" /></DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <ComboBox IsEditable="True" ItemsSource="{Binding MaterialOptions}"
+                                                  Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTextColumn Header="IL (m)" Width="80" Binding="{Binding InvertLevel, StringFormat=0.000}" />
                             <DataGridTextColumn x:Name="colAngle" Header="Angle (°)" Width="70" Binding="{Binding AngleDeg}" />
                             <DataGridComboBoxColumn x:Name="colWall" Header="Wall" Width="80" SelectedItemBinding="{Binding Wall}" />

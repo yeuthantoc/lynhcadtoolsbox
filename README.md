@@ -112,6 +112,7 @@ Hộp thoại có nút **Load JSON / Save JSON** để lưu cấu hình chuẩn 
 - Mặt bằng: X = Đông, Y = Bắc, tâm hố tại điểm chọn.
 - Hố chữ nhật: ống khai báo theo **tường** (`North/East/South/West`) + **offset** dọc tường so với tim hố. Ống vuông góc tường.
 - Hố tròn: ống khai báo theo **góc** (0° = +X, ngược chiều kim đồng hồ), hướng tâm.
+- Tab Pipes: **DN**, **OD** và **Material** chọn từ danh sách (hoặc gõ giá trị khác). Đổi DN / vật liệu thì OD tự điền theo danh mục (`PipeCatalog`: PVC-U AS/NZS 1260, PE100, DICL; vật liệu khác OD ≈ 1.2·DN) — chỉ là giá trị gợi ý, cần kiểm tra theo catalogue nhà sản xuất.
 - **Mặt bản đáy** = đáy ngoài thấp nhất của các ống − `sumpDepth`. **Mặt bản nắp** = `coverLevel` − `coverAllowance`.
 - **Mặt cắt A-A** luôn đi dọc trục ống ra (ống ra nằm bên phải), nhìn về phía trái của hướng ống ra.
 

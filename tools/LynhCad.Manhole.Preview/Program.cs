@@ -102,6 +102,8 @@ namespace LynhCad.Manhole.Preview
             Validation();
             Json();
             Naming();
+            Overlap();
+            Catalog();
             Snapshot();
             Console.WriteLine("{0} passed, {1} failed", passed, failed);
             return failed == 0 ? 0 : 1;
@@ -369,6 +371,55 @@ namespace LynhCad.Manhole.Preview
             True("chunks within limit", chunks.All(c => c.Length <= DetailNaming.XrecordChunkSize));
             True("chunks rejoin", string.Concat(chunks) == json);
             Eq("chunk empty", 0, DetailNaming.Chunk("", 250).Count);
+        }
+
+        /// <summary>
+        /// Ghi chú không được đè kích thước: với mọi mẫu, chữ của leader không đè lên số kích thước / nhãn cao độ,
+        /// và đường leader không cắt qua số kích thước.
+        /// </summary>
+        private static void Overlap()
+        {
+            var all = new List<ManholeParams> { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular(), ManholeParams.SampleCircularCast() };
+            string samples = Snapshots.FindSamplesDir();
+            if (samples != null)
+                foreach (var f in Directory.GetFiles(samples, "*.json")) all.AddRange(ParamsJson.LoadMany(f));
+            foreach (var p in all)
+            {
+                var res = DetailComposer.Compose(p);
+                if (!res.Ok) { True("overlap sample " + p.Id + " composes", false); continue; }
+                var st = new DrawStyle(p.Scale);
+                var dims = res.Model.Items.OfType<PDim>().Select(d => Annot.DimTextRect(d, st)).ToList();
+                var texts = res.Model.Items.OfType<PText>().Where(t => t.Layer == Layers.Text).Select(Annot.TextRect).ToList();
+                foreach (var l in res.Model.Items.OfType<PLeader>())
+                {
+                    var box = Annot.TextRect(new PText { Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align });
+                    string name = p.Id + " leader '" + l.Text.Replace('\n', ' ') + "'";
+                    True(name + " text clear of dim text", !dims.Any(r => Overlaps(r, box)));
+                    True(name + " text clear of other text", !texts.Any(r => Overlaps(r, box)));
+                    for (int i = 0; i + 1 < l.Points.Count; i++)
+                        True(name + " line clear of dim text", !dims.Any(r => GeomUtil.SegmentIntersectsRect(l.Points[i], l.Points[i + 1], r)));
+                }
+            }
+        }
+
+        /// <summary>Danh mục ống cho hộp thoại (DN / OD / vật liệu dạng danh sách).</summary>
+        private static void Catalog()
+        {
+            Eq("catalog PVC-U 225", 250, PipeCatalog.OutsideDiameter("PVC-U", 225));
+            Eq("catalog pvc-u case-insensitive", 160, PipeCatalog.OutsideDiameter("pvc-u", 150));
+            Eq("catalog RCP 225 = 1.2 DN", 270, PipeCatalog.OutsideDiameter("RCP", 225));
+            Eq("catalog unknown material", 360, PipeCatalog.OutsideDiameter("XYZ", 300));
+            Eq("catalog null material", 360, PipeCatalog.OutsideDiameter(null, 300));
+            var ods = PipeCatalog.OutsideDiameters(225);
+            True("catalog OD options sorted, > DN, distinct", ods.SequenceEqual(ods.Distinct().OrderBy(v => v)) && ods.All(v => v > 225));
+            True("catalog OD options include default and table", ods.Contains(270) && ods.Contains(250) && ods.Contains(259));
+            True("catalog sizes ascending", PipeCatalog.Sizes.SequenceEqual(PipeCatalog.Sizes.OrderBy(v => v)));
+            True("catalog materials non-empty", PipeCatalog.Materials.Length > 0 && PipeCatalog.Materials.Contains("RCP"));
+        }
+
+        private static bool Overlaps(Rect2 a, Rect2 b)
+        {
+            return a.X1 < b.X2 && b.X1 < a.X2 && a.Y1 < b.Y2 && b.Y1 < a.Y2;
         }
 
         /// <summary>SVG của samples/*.json phải khớp samples/snapshots (ghi lại bằng lệnh "snapshot").</summary>
