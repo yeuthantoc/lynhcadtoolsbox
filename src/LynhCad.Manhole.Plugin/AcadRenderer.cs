@@ -17,6 +17,7 @@ namespace LynhCad.Manhole.Plugin
         private readonly AcadSetup setup;
         private readonly ObjectIdCollection created = new ObjectIdCollection();
         private readonly ObjectIdCollection hatches = new ObjectIdCollection();
+        private readonly List<string> skipped = new List<string>();
 
         public AcadRenderer(Database db, Transaction tr, BlockTableRecord space, AcadSetup setup)
         {
@@ -24,6 +25,9 @@ namespace LynhCad.Manhole.Plugin
         }
 
         public ObjectIdCollection Created { get { return created; } }
+
+        /// <summary>Primitive bị bỏ qua vì AutoCAD báo lỗi khi tạo (để báo cho người dùng).</summary>
+        public List<string> Skipped { get { return skipped; } }
 
         public void Render(DrawingModel model)
         {
@@ -33,7 +37,7 @@ namespace LynhCad.Manhole.Plugin
                 catch (Autodesk.AutoCAD.Runtime.Exception ex)
                 {
                     // một primitive lỗi (vd hatch không đóng) không làm hỏng cả chi tiết
-                    model.Messages.Add(string.Format("Bỏ qua {0} trên layer {1}: {2}", p.GetType().Name, p.Layer, ex.Message));
+                    skipped.Add(string.Format("Bỏ qua {0} trên layer {1}: {2}", p.GetType().Name, p.Layer, ex.Message));
                 }
             }
             if (hatches.Count > 0)

@@ -91,6 +91,7 @@ namespace LynhCad.Manhole.Preview
             CircularSample();
             Validation();
             Json();
+            Naming();
             Snapshot();
             Console.WriteLine("{0} passed, {1} failed", passed, failed);
             return failed == 0 ? 0 : 1;
@@ -212,6 +213,24 @@ namespace LynhCad.Manhole.Preview
             p.Pipes.ForEach(x => x.Role = PipeRole.Inlet);
             var g = new ManholeGeometry(p);
             True("no outlet -> warning + lowest", g.IsValid && g.Outlet.Spec.Mark == "P3" && g.Warnings.Count > 0);
+        }
+
+        private static void Naming()
+        {
+            True("group base name", DetailNaming.GroupBaseName("MH 01/a") == "LCT_MH_01_a");
+            True("group base name empty id", DetailNaming.GroupBaseName("") == "LCT_MH");
+            var taken = new HashSet<string> { "LCT_MH01", "LCT_MH01_2" };
+            True("unique name skips taken", DetailNaming.UniqueName("LCT_MH01", taken.Contains) == "LCT_MH01_3");
+            True("unique name free", DetailNaming.UniqueName("LCT_MH02", taken.Contains) == "LCT_MH02");
+            True("belongs exact", DetailNaming.BelongsTo("LCT_MH01", "LCT_MH01"));
+            True("belongs numbered", DetailNaming.BelongsTo("LCT_MH01_2", "LCT_MH01"));
+            True("not belongs prefix", !DetailNaming.BelongsTo("LCT_MH010", "LCT_MH01"));
+
+            string json = ParamsJson.Serialize(ManholeParams.SampleRectangular());
+            var chunks = DetailNaming.Chunk(json, DetailNaming.XrecordChunkSize);
+            True("chunks within limit", chunks.All(c => c.Length <= DetailNaming.XrecordChunkSize));
+            True("chunks rejoin", string.Concat(chunks) == json);
+            Eq("chunk empty", 0, DetailNaming.Chunk("", 250).Count);
         }
 
         /// <summary>SVG của samples/*.json phải khớp samples/snapshots (ghi lại bằng lệnh "snapshot").</summary>
