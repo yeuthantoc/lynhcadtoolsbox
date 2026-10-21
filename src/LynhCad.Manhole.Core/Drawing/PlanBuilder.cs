@@ -251,7 +251,7 @@ namespace LynhCad.Manhole.Core.Drawing
             DrawLoopSide(new Vec2(-bx + rb, sy * by), new Vec2(bx - rb, sy * by), sy > 0 ? WallSide.North : WallSide.South, true, c);
             foreach (int sx in new[] { -1, 1 })
             {
-                DrawLoopSide(new Vec2(sx * bx, sy * (by - leg)), new Vec2(sx * bx, sy * (by - rb)), sx > 0 ? WallSide.East : WallSide.West, false, c);
+                DrawLoopSide(new Vec2(sx * bx, sy * (by - leg)), new Vec2(sx * bx, sy * (by - rb)), sx > 0 ? WallSide.East : WallSide.West, false, c, sy * (by - leg));
                 if (rb > 1e-9)
                 {
                     var centre = new Vec2(sx * (bx - rb), sy * (by - rb));
@@ -263,13 +263,20 @@ namespace LynhCad.Manhole.Core.Drawing
             }
         }
 
-        private void DrawLoopSide(Vec2 a, Vec2 b, WallSide side, bool alongX, double c)
+        /// <summary>
+        /// Một cạnh / chân thanh ngang từ a tới b, đứt tại lỗ ống. freeEnd = toạ độ (dọc cạnh) của đầu tự do (đầu nối chồng
+        /// của chân thanh U): mẩu còn lại ở đầu đó ngắn hơn MinPiece (vd 20 mm kẹt giữa lỗ ống và điểm kết thúc nối chồng) không vẽ,
+        /// thanh coi như kết thúc tại lỗ ống. Null = hai đầu đều là góc uốn.
+        /// </summary>
+        private void DrawLoopSide(Vec2 a, Vec2 b, WallSide side, bool alongX, double c, double? freeEnd = null)
         {
             var span = alongX ? new Interval(a.X, b.X) : new Interval(a.Y, b.Y);
             var gaps = g.Pipes.Where(f => f.Spec.Wall == side)
                               .Select(f => new Interval(f.Spec.Offset - f.HalfGap - c, f.Spec.Offset + f.HalfGap + c));
             foreach (var seg in span.Subtract(gaps))
             {
+                if (freeEnd != null && seg.Length < RebarDesigner.MinPiece
+                    && (Math.Abs(seg.Min - freeEnd.Value) < 1e-6 || Math.Abs(seg.Max - freeEnd.Value) < 1e-6)) continue;
                 var p1 = alongX ? new Vec2(seg.Min, a.Y) : new Vec2(a.X, seg.Min);
                 var p2 = alongX ? new Vec2(seg.Max, a.Y) : new Vec2(a.X, seg.Max);
                 m.Add(PPolyline.Line(p1, p2, Layers.Rebar)).Key = RebarKeys.WallHorizontal;

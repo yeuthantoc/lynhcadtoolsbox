@@ -782,6 +782,10 @@ namespace LynhCad.Manhole.Preview
             True("plan lap: inner south U legs at lap position", legLines.Any(l => Math.Abs(l.Points[0].X - (g.Li / 2 + L.HorizLapFromInner[0])) < 1e-9 && l.Points[0].Y < 0));
             True("plan lap: outer south U legs at lap position", legLines.Any(l => Math.Abs(l.Points[0].X - (g.Li / 2 + L.HorizLapFromInner[1])) < 1e-9 && l.Points[0].Y < 0));
             True("plan lap: north U legs at loop position", legLines.Any(l => Math.Abs(l.Points[0].X - hl[0].X) < 1e-9 && l.Points[0].Y > 0));
+            // lỗ ống P1 (tường Tây, lỗ ± 280) cắt gần hết vùng lap (± 300): mẩu 20 mm ở đầu tự do của chân U không vẽ
+            True("plan lap: no stub between pipe gap and lap end", !legLines.Any(l => (l.Points[1] - l.Points[0]).Length < RebarDesigner.MinPiece - 1e-9
+                && l.Points.Min(q => Math.Abs(q.Y)) >= 280 - 1e-6 && l.Points.Max(q => Math.Abs(q.Y)) <= 300 + 1e-6));
+            True("plan lap: legs still drawn beyond the pipe", legLines.Any(l => l.Points[0].X < 0 && l.Points.Min(q => q.Y) >= 280 - 1e-6 && (l.Points[1] - l.Points[0]).Length > 300));
             // mặt cắt (dọc X, cắt giữa cạnh Đông / Tây = vùng nối chồng): mỗi cao độ, mỗi mặt có 2 chấm cách nhau 10
             var hDots = sec.Items.OfType<PDot>().Where(dd => dd.Key == RebarKeys.WallHorizontal && Math.Abs(dd.Center.Y - L.HorizLevels.First(z => z > 800)) < 1e-6).Select(dd => dd.Center.X).OrderBy(v => v).ToList();
             Eq("section lap: 2 dots per face per side at a level", 8, hDots.Count);

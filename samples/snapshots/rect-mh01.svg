@@ -59,27 +59,23 @@
 <path d="M1550,265 L1550,40 L1510,20 L1590,-20 L1550,-40 L1550,-265" stroke="#0089a8" stroke-width="7" fill="none"/>
 <path d="M-770,-656 L-437.5,-656" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M37.5,-656 L770,-656" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M-806,300 L-806,280" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-806,-280 L-806,-620" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-770,-656 A36,36 0 0 0 -806,-620" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M806,-325 L806,-620" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M806,-620 A36,36 0 0 0 770,-656" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-804,656 L804,656" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-840,620 L-840,280" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M-840,-280 L-840,-300" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-840,620 A36,36 0 0 0 -804,656" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M840,620 L840,325" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M804,656 A36,36 0 0 0 840,620" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-858,-744 L-437.5,-744" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M37.5,-744 L858,-744" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M-894,300 L-894,280" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-894,-280 L-894,-708" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-858,-744 A36,36 0 0 0 -894,-708" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M894,-325 L894,-708" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M894,-708 A36,36 0 0 0 858,-744" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-824,744 L824,744" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-860,708 L-860,280" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M-860,-280 L-860,-300" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M-860,708 A36,36 0 0 0 -824,744" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M860,708 L860,325" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M824,744 A36,36 0 0 0 860,708" stroke="#d62828" stroke-width="10" fill="none"/>
