@@ -411,7 +411,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 var gaps = cuts.Select(f => new Interval(f.GapZ.Min - c, f.GapZ.Max + c)).ToList();
 
                 // thép ngang → chấm, mỗi lớp (1 hoặc 2) đo từ mặt trong tường ra; hố chữ nhật: chỗ hai thanh U nối chồng
-                // (giữa cạnh Đông / Tây, khi mặt cắt dọc X) có thêm chấm thứ hai lệch về tim tường HorizLapOffset như trên mặt bằng
+                // (giữa cạnh Đông / Tây, khi mặt cắt dọc X) có thêm chấm thứ hai tại HorizLapFromInner như trên mặt bằng
                 var loops = g.IsRect ? RebarDesigner.HorizontalLoops(g, L) : null;
                 for (int k = 0; k < L.HorizFromInner.Count; k++)
                 {
@@ -422,7 +422,7 @@ namespace LynhCad.Manhole.Core.Drawing
                         double by = loops[k].Y, leg = Math.Min(2 * by, by + L.Lap / 2);
                         lapHere = Math.Abs(origin.Y) < leg - by - 1e-6;
                     }
-                    double face2 = face + side * (k == 0 ? 1 : -1) * L.HorizLapOffset;
+                    double face2 = sInner + side * L.HorizLapFromInner[k];
                     foreach (var z in L.HorizLevels)
                         if (!gaps.Any(gp => gp.Contains(z)))
                         {

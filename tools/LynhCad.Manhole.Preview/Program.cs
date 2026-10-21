@@ -779,15 +779,32 @@ namespace LynhCad.Manhole.Preview
             True("plan U-bar corners are arcs", plan.Items.OfType<PPolyline>().Count(l => l.Key == RebarKeys.WallHorizontal && l.Bulges.Any(bb => Math.Abs(bb) > 1e-9)) == 8);
             var hl = RebarDesigner.HorizontalLoops(g, L);
             var legLines = plan.Items.OfType<PPolyline>().Where(l => l.Key == RebarKeys.WallHorizontal && l.Points.Count == 2 && Math.Abs(l.Points[0].X - l.Points[1].X) < 1e-9).ToList();
-            True("plan lap: inner south U legs offset outward", legLines.Any(l => Math.Abs(l.Points[0].X - (hl[0].X + L.HorizLapOffset)) < 1e-9 && l.Points[0].Y < 0));
-            True("plan lap: outer south U legs offset inward", legLines.Any(l => Math.Abs(l.Points[0].X - (hl[1].X - L.HorizLapOffset)) < 1e-9 && l.Points[0].Y < 0));
+            True("plan lap: inner south U legs at lap position", legLines.Any(l => Math.Abs(l.Points[0].X - (g.Li / 2 + L.HorizLapFromInner[0])) < 1e-9 && l.Points[0].Y < 0));
+            True("plan lap: outer south U legs at lap position", legLines.Any(l => Math.Abs(l.Points[0].X - (g.Li / 2 + L.HorizLapFromInner[1])) < 1e-9 && l.Points[0].Y < 0));
             True("plan lap: north U legs at loop position", legLines.Any(l => Math.Abs(l.Points[0].X - hl[0].X) < 1e-9 && l.Points[0].Y > 0));
             // mặt cắt (dọc X, cắt giữa cạnh Đông / Tây = vùng nối chồng): mỗi cao độ, mỗi mặt có 2 chấm cách nhau 10
             var hDots = sec.Items.OfType<PDot>().Where(dd => dd.Key == RebarKeys.WallHorizontal && Math.Abs(dd.Center.Y - L.HorizLevels.First(z => z > 800)) < 1e-6).Select(dd => dd.Center.X).OrderBy(v => v).ToList();
             Eq("section lap: 2 dots per face per side at a level", 8, hDots.Count);
-            True("section lap: dot pairs 10 apart", Math.Abs(hDots[1] - hDots[0] - L.HorizLapOffset) < 1e-9 && Math.Abs(hDots[3] - hDots[2] - L.HorizLapOffset) < 1e-9);
+            // lap mặt trong: thanh ngang 56, thép đứng 68 → thanh lap phải sang bên kia thép đứng: 68 + 12 + 10 = 90 (mặt ngoài đối xứng: 110)
+            Eq("inner lap bar clear of the vertical bar", L.VertFromInner[0] + (12 + 12) / 2.0 + RebarDesigner.CogClear, L.HorizLapFromInner[0]);
+            Eq("outer lap bar clear of the vertical bar", g.Tw - L.HorizLapFromInner[0], L.HorizLapFromInner[1]);
+            for (int k = 0; k < 2; k++)
+            {
+                True("lap bar " + k + " >= d+10 from the first bar", Math.Abs(L.HorizLapFromInner[k] - L.HorizFromInner[k]) >= 12 + RebarDesigner.CogClear - 1e-9);
+                True("lap bar " + k + " >= 10 clear of the vertical bar", Math.Abs(L.HorizLapFromInner[k] - L.VertFromInner[k]) >= 12 + RebarDesigner.CogClear - 1e-9);
+            }
+            True("section lap: dot pairs at first bar and lap bar", Math.Abs(hDots[1] - hDots[0] - (L.HorizLapFromInner[0] - L.HorizFromInner[0])) < 1e-9
+                && Math.Abs(hDots[3] - hDots[2] - (L.HorizFromInner[1] - L.HorizLapFromInner[1])) < 1e-9);
             True("schedule unchanged by lap offset: 2 horizontal marks", rd.Schedule.Set(BarSets.WallHoriz).Marks.Count == 2);
-            Eq("lap offset = d + 10 (10 clear between the two bars)", 12 + RebarDesigner.CogClear, L.HorizLapOffset);
+            // thép ngang phía trong thép đứng: lệch về tim tường là rời xa thép đứng → chỉ cần d + 10
+            var pHi = p.Clone(); pHi.WallHorizontalInside = true;
+            var LHi = RebarDesigner.Design(new ManholeGeometry(pHi)).Layout;
+            Eq("horiz-inside lap bar = first bar + d + 10", LHi.HorizFromInner[0] + 12 + RebarDesigner.CogClear, LHi.HorizLapFromInner[0]);
+            // một lớp giữa tường: thanh lap ra phía ngoài, cách thép đứng ≥ 10
+            var pOne = p.Clone(); pOne.WallSingleLayer = true;
+            var LOne = RebarDesigner.Design(new ManholeGeometry(pOne)).Layout;
+            True("single layer lap bar clear", LOne.HorizLapFromInner.Count == 1 && Math.Abs(LOne.HorizLapFromInner[0] - LOne.VertFromInner[0]) >= 12 + RebarDesigner.CogClear - 1e-9
+                && Math.Abs(LOne.HorizLapFromInner[0] - LOne.HorizFromInner[0]) >= 12 + RebarDesigner.CogClear - 1e-9);
             // bản nắp: vạch cog ở đầu thanh lớp dưới
             var roof = new RoofPlanBuilder(g, rd, new DrawStyle(20)).Build();
             True("roof plan cog ticks", roof.Items.OfType<PPolyline>().Count(l => l.Layer == Layers.RebarHidden && l.Points.Count == 2 && (l.Points[1] - l.Points[0]).Length < 60) > 10);

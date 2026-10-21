@@ -137,8 +137,11 @@ namespace LynhCad.Manhole.Core.Rebar
         public double VertZBot, VertZTop, VertLeg;
         /// <summary>Cog ở đầu trên thép đứng móc vào bản nắp (0 = không), bán kính tim uốn thép đứng / thép ngang.</summary>
         public double VertCog, VertBendRadius, HorizBendRadius;
-        /// <summary>Thanh U thép ngang thứ hai của mỗi vòng đặt lệch về tim tường (= d + 10, hai thanh cách nhau 10 mm) để thấy rõ nối chồng; cùng mác.</summary>
-        public double HorizLapOffset;
+        /// <summary>
+        /// Khoảng từ MẶT TRONG tường tới tim thanh U thép ngang thứ hai (thanh nối chồng) của từng mặt, cùng thứ tự HorizFromInner:
+        /// lệch về tim tường, cách thanh thứ nhất ≥ d + 10 và cách thép đứng ≥ (d_h + d_v)/2 + 10 (sang bên kia thép đứng nếu cần). Cùng mác.
+        /// </summary>
+        public readonly List<double> HorizLapFromInner = new List<double>();
         /// <summary>Cao độ chân / đỉnh của thép đứng từng mặt (cùng thứ tự VertFromInner): mặt ngoài lùi WallBarInset ở hai đầu để chân L / cog không trùng mặt trong.</summary>
         public readonly List<double> VertZBotFaces = new List<double>(), VertZTopFaces = new List<double>();
         public double Lap;
@@ -392,7 +395,16 @@ namespace LynhCad.Manhole.Core.Rebar
             L.VertCog = P.Cogs ? RebarCatalog.StandardCog(L.DV, P.BendFactor) : 0;
             L.VertBendRadius = RebarCatalog.BendRadius(L.DV, P.BendFactor);
             L.HorizBendRadius = RebarCatalog.BendRadius(L.DH, P.BendFactor);
-            L.HorizLapOffset = L.DH + CogClear;
+            L.HorizLapFromInner.Clear();
+            for (int k = 0; k < L.HorizFromInner.Count; k++)
+            {
+                int dir = k == 0 ? 1 : -1; // về phía tim tường (1 lớp: ra phía mặt ngoài)
+                double pos = L.HorizFromInner[k] + dir * (L.DH + CogClear);
+                double vert = L.VertFromInner[Math.Min(k, L.VertFromInner.Count - 1)];
+                double clearV = (L.DH + L.DV) / 2.0 + CogClear;
+                if (Math.Abs(pos - vert) < clearV - 1e-9) pos = vert + dir * clearV;
+                L.HorizLapFromInner.Add(pos);
+            }
             // mặt ngoài (lớp thứ 2) lùi WallBarInset ở chân và ở cog để không đè lên chân / cog mặt trong
             L.VertZBotFaces.Clear(); L.VertZTopFaces.Clear();
             for (int k = 0; k < L.VertFromInner.Count; k++)

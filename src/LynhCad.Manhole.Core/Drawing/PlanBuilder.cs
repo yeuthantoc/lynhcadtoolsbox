@@ -179,11 +179,10 @@ namespace LynhCad.Manhole.Core.Drawing
                 var loop = horizLoops[k];
                 double bx = loop.X, by = loop.Y;
                 double leg = Math.Min(2 * by, by + L.Lap / 2);
-                // mỗi vòng = 2 thanh U (Bắc / Nam) nối chồng ở giữa cạnh Đông / Tây; thanh Nam vẽ lệch về tim tường HorizLapOffset
-                // (vòng trong: ra phía ngoài hố, vòng ngoài: vào phía trong) để thấy rõ nối chồng
-                double dx = (k == 0 ? 1 : -1) * L.HorizLapOffset;
+                // mỗi vòng = 2 thanh U (Bắc / Nam) nối chồng ở giữa cạnh Đông / Tây; chân thanh Nam đặt tại HorizLapFromInner
+                // (lệch về tim tường, cách thanh Bắc và thép đứng ≥ 10) để thấy rõ nối chồng
                 DrawU(bx, by, leg, +1, rb, c);
-                DrawU(bx + dx, by, leg, -1, rb, c);
+                DrawU(g.Li / 2 + L.HorizLapFromInner[k], by, leg, -1, rb, c);
             }
 
             // Thép đứng: chấm, các mặt thẳng hàng với nhau (cùng vị trí dọc tường)
