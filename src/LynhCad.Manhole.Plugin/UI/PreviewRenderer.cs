@@ -102,7 +102,9 @@ namespace LynhCad.Manhole.Plugin.UI
             int em = Emphasis(key);
             if (em > 0)
             {
-                if (fill) path.Fill = HighlightBrush; else { path.Stroke = HighlightBrush; path.StrokeThickness = 2.5; }
+                // ống lỗi giữ màu đỏ, chỉ tô đậm hơn
+                var br = layer == PipeLayoutPreview.ErrorLayer ? BrushOf(layer) : HighlightBrush;
+                if (fill) path.Fill = br; else { path.Stroke = br; path.StrokeThickness = 2.5; }
             }
             else if (em < 0) path.Opacity = DimOpacity;
             canvas.Children.Add(path);
@@ -111,7 +113,7 @@ namespace LynhCad.Manhole.Plugin.UI
         private void Emphasize(TextBlock tb, string key)
         {
             int em = Emphasis(key);
-            if (em > 0) { tb.Foreground = HighlightBrush; tb.FontWeight = FontWeights.Bold; }
+            if (em > 0) { if (tb.Foreground != BrushOf(PipeLayoutPreview.ErrorLayer)) tb.Foreground = HighlightBrush; tb.FontWeight = FontWeights.Bold; }
             else if (em < 0) tb.Opacity = DimOpacity;
         }
 

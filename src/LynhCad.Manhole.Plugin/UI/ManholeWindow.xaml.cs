@@ -106,7 +106,7 @@ namespace LynhCad.Manhole.Plugin.UI
         private void RenderPreview()
         {
             previewQueued = false;
-            if (cvPreview == null || cvRebarPreview == null || cvGeneralPreview == null || Params == null || pipes == null) return;
+            if (cvPreview == null || cvRebarPreview == null || cvGeneralPreview == null || cvPipeSection == null || Params == null || pipes == null) return;
             ManholeParams p;
             try
             {
@@ -129,10 +129,13 @@ namespace LynhCad.Manhole.Plugin.UI
                 cvGeneralPreview.Children.Clear();
                 txtGeneralPreviewInfo.Text = "Không xem trước được: " + ex.Message;
             }
+            // dòng ống đang chọn trong bảng → ống đó nổi bật trên mặt bằng và mặt cắt
+            var current = gridPipes.CurrentItem as PipeRow ?? gridPipes.SelectedItem as PipeRow;
+            string[] pipeKeys = current != null && !string.IsNullOrEmpty(current.Spec.Mark) ? new[] { current.Spec.Mark } : null;
             try
             {
                 var pv = PipeLayoutPreview.Build(p);
-                PreviewRenderer.Render(cvPreview, pv.Model);
+                PreviewRenderer.Render(cvPreview, pv.Model, pipeKeys);
                 txtPreviewInfo.Text = pv.Geometry.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", pv.Geometry.Errors);
             }
             catch (Exception ex)
@@ -140,6 +143,16 @@ namespace LynhCad.Manhole.Plugin.UI
                 // preview không bao giờ được làm hỏng hộp thoại
                 cvPreview.Children.Clear();
                 txtPreviewInfo.Text = "Không xem trước được: " + ex.Message;
+            }
+            try
+            {
+                var ps = PipeSectionPreview.Build(p);
+                PreviewRenderer.Render(cvPipeSection, ps.Model, pipeKeys);
+            }
+            catch (Exception ex)
+            {
+                cvPipeSection.Children.Clear();
+                txtPreviewInfo.Text = "Không xem trước mặt cắt được: " + ex.Message;
             }
             try
             {

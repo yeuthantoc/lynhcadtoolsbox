@@ -52,12 +52,18 @@ namespace LynhCad.Manhole.Preview
                         foreach (var e in rv.Errors) Console.WriteLine("ERROR: " + e);
                         File.WriteAllText(args[2], SvgExporter.Export(rv.Model, 20));
                         return 0;
+                    case "pipesec":
+                        if (args.Length < 3) { Console.WriteLine("usage: pipesec <params.json> <out.svg>"); return 2; }
+                        var sv = PipeSectionPreview.Build(ParamsJson.Load(args[1]));
+                        foreach (var e in sv.Errors) Console.WriteLine("ERROR: " + e);
+                        File.WriteAllText(args[2], SvgExporter.Export(sv.Model, 20));
+                        return 0;
                     case "snapshot":
                         string samples = Snapshots.FindSamplesDir();
                         if (samples == null) { Console.WriteLine("samples/ not found"); return 2; }
                         return Snapshots.Write(samples);
                     default:
-                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | dims <json> <svg> | rebar <json> <svg> | sample <folder> | snapshot");
+                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | dims <json> <svg> | rebar <json> <svg> | pipesec <json> <svg> | sample <folder> | snapshot");
                         return 2;
                 }
             }
@@ -253,6 +259,19 @@ namespace LynhCad.Manhole.Preview
             var dpNo = DimensionPreview.Build(noPipes);
             True("dim preview without pipes still draws", dpNo.Errors.Count > 0 && dpNo.Model.Items.OfType<PDim>().Any(d => d.Tip.StartsWith(DimensionPreview.TipBase)));
 
+            // preview mặt cắt ống (tab Pipes): nét ống mang Key = tên ống, ống ra xanh, nhãn IL
+            var ps = PipeSectionPreview.Build(p);
+            True("pipe section preview builds", ps.Errors.Count == 0 && ps.Model.Items.Count > 0);
+            True("pipe section preview: outlet on outlet layer", ps.Model.Items.Any(i => i.Layer == PipeLayoutPreview.OutletLayer && i.Key == "P3"));
+            True("pipe section preview: inlet keyed", ps.Model.Items.Any(i => i.Key == "P1" && i.Layer == Layers.Pipe));
+            True("pipe section preview: labels", ps.Model.Items.OfType<PText>().Any(t => t.Text == "P3 IL 12.400" && t.Key == "P3")
+                && ps.Model.Items.OfType<PText>().Any(t => t.Text == "SECTION A-A"));
+            True("pipe section preview: no dims/leaders", !ps.Model.Items.Any(i => i is PDim || i is PLeader || i is PBlock));
+            var noPipeParams = p.Clone(); noPipeParams.Pipes.Clear();
+            True("pipe section preview invalid -> empty", PipeSectionPreview.Build(noPipeParams).Model.Items.Count == 0);
+            True("pipe plan preview pipes keyed", PipeLayoutPreview.Build(p).Model.Items.Count(i => i.Key == "P1") >= 3);
+            True("section pipes keyed in drawing model", new SectionBuilder(g, rd, new DrawStyle(20)).Build().Items.Any(i => i.Key == "P3" && i.Layer == Layers.Pipe));
+
             // preview bố trí thép (tab Reinforcement)
             var rp = RebarLayoutPreview.Build(p);
             True("rebar preview builds", rp.Errors.Count == 0 && rp.Model.Items.Count > 0);
@@ -272,8 +291,8 @@ namespace LynhCad.Manhole.Preview
             // mọi primitive thép mang Key = thuộc tính ManholeParams (hoặc "Trimmers"); chú giải cũng có Key
             var rebarItems = rp.Model.Items.Where(i => i.Layer == Layers.Rebar).ToList();
             True("rebar preview: all bars keyed", rebarItems.Count > 0 && rebarItems.All(i => !string.IsNullOrEmpty(i.Key)));
-            True("rebar preview: keys valid", rp.Model.Items.Where(i => !string.IsNullOrEmpty(i.Key)).Select(i => i.Key).Distinct()
-                .All(k => k == RebarKeys.Trimmers || typeof(ManholeParams).GetProperty(k) != null));
+            True("rebar preview: keys valid", rp.Model.Items.Where(i => !string.IsNullOrEmpty(i.Key) && i.Layer != Layers.Pipe && i.Layer != Layers.PipeHidden)
+                .Select(i => i.Key).Distinct().All(k => k == RebarKeys.Trimmers || typeof(ManholeParams).GetProperty(k) != null));
             foreach (var k in new[] { RebarKeys.WallVertical, RebarKeys.WallHorizontal, "BaseBottom", "BaseTop", "RoofBottom", RebarKeys.Trimmers })
                 True("rebar preview key present: " + k, rebarItems.Any(i => i.Key == k) && rp.Model.Items.OfType<PText>().Any(t => t.Key == k));
             True("rebar preview: no RoofTop key when no roof top mat", !rebarItems.Any(i => i.Key == "RoofTop"));

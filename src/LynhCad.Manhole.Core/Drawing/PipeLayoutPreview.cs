@@ -94,9 +94,10 @@ namespace LynhCad.Manhole.Core.Drawing
             // ---- bậc thang ----
             if (g.Steps != null) m.Add(StepsDraw.PlanU(g.Steps, Layers.Steps));
 
-            // ---- ống ----
+            // ---- ống (mọi nét mang Key = tên ống để hộp thoại nổi bật ống đang chọn) ----
             foreach (var f in g.Pipes)
             {
+                int first = m.Items.Count;
                 bool bad = g.PipesWithErrors.Contains(f.Spec);
                 string layer = bad ? ErrorLayer : f.IsOutlet ? OutletLayer : Layers.Pipe;
                 var n = f.Dir.Perp();
@@ -123,6 +124,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 else
                     m.Add(new PText { Layer = layer, Position = tp + new Vec2(h * 0.4, f.Dir.Y * h), Text = text, Height = h,
                         Align = TextAlign.Left, VAlign = TextVAlign.Middle });
+                for (int i = first; i < m.Items.Count; i++) m.Items[i].Key = f.Spec.Mark;
             }
 
             // ---- đường cắt A-A (dọc ống ra) ----

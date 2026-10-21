@@ -407,11 +407,22 @@
                     <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" />
                     <DockPanel Grid.Column="2">
                         <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" FontWeight="SemiBold"
-                                   Text="Preview (plan) - outlet blue, clashes red" />
+                                   Text="Preview (plan + section A-A) - outlet blue, clashes red, selected pipe highlighted" />
                         <TextBlock x:Name="txtPreviewInfo" DockPanel.Dock="Bottom" Margin="2,4,0,0" TextWrapping="Wrap" Foreground="DarkRed" />
-                        <Border BorderBrush="#FFCCCCCC" BorderThickness="1" Background="White" ClipToBounds="True">
-                            <Canvas x:Name="cvPreview" SizeChanged="OnPreviewSizeChanged" />
-                        </Border>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="6" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderBrush="#FFCCCCCC" BorderThickness="1" Background="White" ClipToBounds="True">
+                                <Canvas x:Name="cvPreview" SizeChanged="OnPreviewSizeChanged" />
+                            </Border>
+                            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" />
+                            <Border Grid.Row="2" BorderBrush="#FFCCCCCC" BorderThickness="1" Background="White" ClipToBounds="True">
+                                <Canvas x:Name="cvPipeSection" SizeChanged="OnPreviewSizeChanged" />
+                            </Border>
+                        </Grid>
                     </DockPanel>
                     </Grid>
                 </DockPanel>

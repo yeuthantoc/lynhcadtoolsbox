@@ -177,6 +177,16 @@ namespace LynhCad.Manhole.Core.Drawing
         {
             foreach (var f in g.Pipes)
             {
+                int first = m.Items.Count;
+                DrawPipe(f);
+                // mọi nét của ống mang Key = tên ống (preview hộp thoại nổi bật ống đang chọn)
+                for (int i = first; i < m.Items.Count; i++) m.Items[i].Key = f.Spec.Mark;
+            }
+        }
+
+        private void DrawPipe(PipeFrame f)
+        {
+            {
                 string label = string.Format("{0} DN{1:0} {2}\nIL {3:0.000}", f.Spec.Mark, f.DN, f.IsOutlet ? "OUTLET" : "INLET", f.Spec.InvertLevel);
                 if (IsCut(f))
                 {
@@ -187,11 +197,11 @@ namespace LynhCad.Manhole.Core.Drawing
                         m.Add(PPolyline.Line(new Vec2(s0, z), new Vec2(s1, z), Layers.Pipe));
                     Annot.BreakLine(m, new Vec2(s1, f.ZOuterBottom), new Vec2(s1, f.ZOuterTop), Math.Min(f.OD * 0.5, 4 * st.Scale), Layers.Pipe);
                     callouts.Add(new Annot.Callout(new Vec2(s1 - side * st.PipeStub * 0.4, f.ZOuterTop), label, false));
-                    continue;
+                    return;
                 }
 
                 double beyond = (f.AxisPoint - origin).Dot(d) + f.Dir.Dot(d) * f.InnerDist;
-                if (beyond <= 1) continue; // nằm phía trước mặt cắt → đã bị bỏ đi
+                if (beyond <= 1) return; // nằm phía trước mặt cắt → đã bị bỏ đi
 
                 double sc = S(f.InnerPoint);
                 double zc = f.ZInvert + f.DN / 2;
@@ -203,9 +213,9 @@ namespace LynhCad.Manhole.Core.Drawing
                     double sOut = f.Dir.Dot(u) > 0 ? outerS.Max : outerS.Min;
                     m.Add(PPolyline.Rect(new Rect2(sIn, f.ZOuterBottom, sOut, f.ZOuterTop), Layers.PipeHidden));
                     callouts.Add(new Annot.Callout(new Vec2(sOut, f.ZOuterTop), label + " (BEYOND)", false));
-                    continue;
+                    return;
                 }
-                if (k < 0.05) continue;
+                if (k < 0.05) return;
                 m.Add(new PEllipse { Layer = Layers.Pipe, Center = new Vec2(sc, zc), RadiusX = f.DN / 2 * k, RadiusY = f.DN / 2 });
                 m.Add(new PEllipse { Layer = Layers.Pipe, Center = new Vec2(sc, zc), RadiusX = f.OD / 2 * k, RadiusY = f.OD / 2 });
                 callouts.Add(new Annot.Callout(new Vec2(sc, zc + f.OD / 2), label + " (BEYOND)", false));
