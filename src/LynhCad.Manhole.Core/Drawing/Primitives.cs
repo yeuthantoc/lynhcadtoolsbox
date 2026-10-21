@@ -286,6 +286,12 @@ namespace LynhCad.Manhole.Core.Drawing
     }
 
     /// <summary>Đường dẫn ghi chú: Points[0] là đầu mũi tên, chữ đặt tại TextPosition.</summary>
+    /// <summary>
+    /// Đầu leader: mũi tên (mặc định, chỉ vào nét / thanh thép vẽ dạng đường), vòng tròn rỗng khi chỉ vào chấm thép (thanh cắt ngang),
+    /// vòng tròn đặc khi chỉ vào vùng hatch (bê tông, benching).
+    /// </summary>
+    public enum LeaderEnd { Arrow, OpenCircle, FilledCircle }
+
     public class PLeader : Prim
     {
         public List<Vec2> Points = new List<Vec2>();
@@ -293,8 +299,7 @@ namespace LynhCad.Manhole.Core.Drawing
         public string Text;
         public double TextHeight;
         public TextAlign Align;
-        /// <summary>Mũi tên dạng chấm (cho thép) thay vì mũi tên đặc.</summary>
-        public bool DotArrow;
+        public LeaderEnd End = LeaderEnd.Arrow;
 
         public override void AddBounds(Bounds b)
         {

@@ -105,7 +105,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 m.Add(PPolyline.Line(Vec2.FromAngle(gapsO[k].Max) * g.Ro, Vec2.FromAngle(gapsI[k].Max) * g.Ri, Layers.Concrete));
             }
             callouts.Add(new Annot.Callout(Vec2.FromAngle(1.25 * Math.PI) * (g.Ri + g.Tw / 2),
-                string.Format("{0}\nID {1:0}, WALL {2:0}", g.IsPrecast ? "PRECAST MANHOLE SHAFT" : "CAST IN-SITU RC WALL", g.P.InternalDiameter, g.Tw), false));
+                string.Format("{0}\nID {1:0}, WALL {2:0}", g.IsPrecast ? "PRECAST MANHOLE SHAFT" : "CAST IN-SITU RC WALL", g.P.InternalDiameter, g.Tw), LeaderEnd.FilledCircle));
         }
 
         // ---------------------------------------------------------------- nét khuất
@@ -130,13 +130,13 @@ namespace LynhCad.Manhole.Core.Drawing
             }
             callouts.Add(new Annot.Callout(o + new Vec2(g.OpeningHalfX * 0.7071, g.OpeningHalfY * 0.7071) * (g.OpeningIsCircle ? 1 : 1.41),
                 g.OpeningIsCircle ? string.Format("Ø{0:0} ACCESS OPENING OVER", 2 * g.OpeningHalfX)
-                                  : string.Format("{0:0}x{1:0} ACCESS OPENING OVER", 2 * g.OpeningHalfX, 2 * g.OpeningHalfY), false));
+                                  : string.Format("{0:0}x{1:0} ACCESS OPENING OVER", 2 * g.OpeningHalfX, 2 * g.OpeningHalfY)));
 
             // Máng dẫn dòng: tim máng từ mỗi ống vào → tâm → ống ra
             foreach (var f in g.Pipes)
                 m.Add(PPolyline.Line(f.InnerPoint, ChannelHub(), Layers.ConcreteBeyond));
             callouts.Add(new Annot.Callout(ChannelHub() + (g.Outlet.InnerPoint - ChannelHub()) * 0.5,
-                "CHANNEL & BENCHING\n(FALL 1:12 TO CHANNEL)", false));
+                "CHANNEL & BENCHING\n(FALL 1:12 TO CHANNEL)"));
         }
 
         private Vec2 ChannelHub()
@@ -161,7 +161,7 @@ namespace LynhCad.Manhole.Core.Drawing
 
                 string role = f.IsOutlet ? "OUTLET" : "INLET";
                 string txt = string.Format("{0} DN{1:0} {2} {3}\nIL {4:0.000}", f.Spec.Mark, f.DN, f.Spec.Material ?? "", role, f.Spec.InvertLevel).Replace("  ", " ");
-                callouts.Add(new Annot.Callout(f.OuterPoint + f.Dir * (st.PipeStub * 0.6) + n * (f.OD / 2), txt, false));
+                callouts.Add(new Annot.Callout(f.OuterPoint + f.Dir * (st.PipeStub * 0.6) + n * (f.OD / 2), txt));
             }
         }
 
@@ -174,24 +174,16 @@ namespace LynhCad.Manhole.Core.Drawing
             // Thép ngang: vòng trong & vòng ngoài, đứt tại lỗ ống
             var horizLoops = RebarDesigner.HorizontalLoops(g, L);
             double rb = L.HorizBendRadius;
-            foreach (var loop in horizLoops)
+            for (int k = 0; k < horizLoops.Count; k++)
             {
+                var loop = horizLoops[k];
                 double bx = loop.X, by = loop.Y;
-                // các cạnh lùi vào rb ở góc, góc vẽ cung bán kính tim uốn
-                DrawLoopSide(new Vec2(-bx + rb, by), new Vec2(bx - rb, by), WallSide.North, true, c);
-                DrawLoopSide(new Vec2(-bx + rb, -by), new Vec2(bx - rb, -by), WallSide.South, true, c);
-                DrawLoopSide(new Vec2(bx, -by + rb), new Vec2(bx, by - rb), WallSide.East, false, c);
-                DrawLoopSide(new Vec2(-bx, -by + rb), new Vec2(-bx, by - rb), WallSide.West, false, c);
-                if (rb > 1e-9)
-                    foreach (int sx in new[] { -1, 1 })
-                        foreach (int sy in new[] { -1, 1 })
-                        {
-                            var centre = new Vec2(sx * (bx - rb), sy * (by - rb));
-                            double a0 = sx > 0 ? (sy > 0 ? 0 : -Math.PI / 2) : (sy > 0 ? Math.PI / 2 : Math.PI);
-                            var arc = new PPolyline { Layer = Layers.Rebar, Key = RebarKeys.WallHorizontal };
-                            arc.AddArc(centre, rb, a0, a0 + Math.PI / 2);
-                            m.Add(arc);
-                        }
+                double leg = Math.Min(2 * by, by + L.Lap / 2);
+                // mỗi vòng = 2 thanh U (Bắc / Nam) nối chồng ở giữa cạnh Đông / Tây; thanh Nam vẽ lệch về tim tường HorizLapOffset
+                // (vòng trong: ra phía ngoài hố, vòng ngoài: vào phía trong) để thấy rõ nối chồng
+                double dx = (k == 0 ? 1 : -1) * L.HorizLapOffset;
+                DrawU(bx, by, leg, +1, rb, c);
+                DrawU(bx + dx, by, leg, -1, rb, c);
             }
 
             // Thép đứng: chấm, các mặt thẳng hàng với nhau (cùng vị trí dọc tường)
@@ -206,7 +198,7 @@ namespace LynhCad.Manhole.Core.Drawing
 
             var outer = horizLoops[horizLoops.Count - 1];
             callouts.Add(new Annot.Callout(new Vec2(-outer.X, -g.Wi / 4), rd.Schedule.Callout(BarSets.WallHoriz)));
-            if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
+            if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert), LeaderEnd.OpenCircle));
         }
 
         private void BuildSteps()
@@ -214,7 +206,7 @@ namespace LynhCad.Manhole.Core.Drawing
             var s = g.Steps;
             if (s == null) return;
             m.Add(StepsDraw.PlanU(s, Layers.Steps));
-            callouts.Add(new Annot.Callout(s.RungCentre, StepsDraw.Callout(s), false));
+            callouts.Add(new Annot.Callout(s.RungCentre, StepsDraw.Callout(s)));
         }
 
         /// <summary>Hố tròn đổ tại chỗ: thép ngang là các vòng tròn (đứt tại lỗ ống), thép đứng là chấm trên hai vòng.</summary>
@@ -248,7 +240,28 @@ namespace LynhCad.Manhole.Core.Drawing
             }
 
             callouts.Add(new Annot.Callout(Vec2.FromAngle(0.8 * Math.PI) * horiz[horiz.Count - 1], rd.Schedule.Callout(BarSets.WallHoriz)));
-            if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
+            if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert), LeaderEnd.OpenCircle));
+        }
+
+        /// <summary>
+        /// Một thanh U thép ngang: cạnh dài tại y = sy·by (từ −bx tới bx), hai chân dọc cạnh Đông / Tây dài leg tính từ góc,
+        /// góc bo cung bán kính rb; đứt tại lỗ ống.
+        /// </summary>
+        private void DrawU(double bx, double by, double leg, int sy, double rb, double c)
+        {
+            DrawLoopSide(new Vec2(-bx + rb, sy * by), new Vec2(bx - rb, sy * by), sy > 0 ? WallSide.North : WallSide.South, true, c);
+            foreach (int sx in new[] { -1, 1 })
+            {
+                DrawLoopSide(new Vec2(sx * bx, sy * (by - leg)), new Vec2(sx * bx, sy * (by - rb)), sx > 0 ? WallSide.East : WallSide.West, false, c);
+                if (rb > 1e-9)
+                {
+                    var centre = new Vec2(sx * (bx - rb), sy * (by - rb));
+                    double a0 = sx > 0 ? (sy > 0 ? 0 : -Math.PI / 2) : (sy > 0 ? Math.PI / 2 : Math.PI);
+                    var arc = new PPolyline { Layer = Layers.Rebar, Key = RebarKeys.WallHorizontal };
+                    arc.AddArc(centre, rb, a0, a0 + Math.PI / 2);
+                    m.Add(arc);
+                }
+            }
         }
 
         private void DrawLoopSide(Vec2 a, Vec2 b, WallSide side, bool alongX, double c)

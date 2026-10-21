@@ -302,7 +302,8 @@ namespace LynhCad.Manhole.Plugin
             ml.DoglegLength = dogleg;
             ml.LandingGap = landingGap;
             ml.ArrowSize = 0.6 * h;                                         // = Dimasz 1.5 mm giấy
-            if (src.DotArrow && !setup.DotArrowId.IsNull) ml.ArrowSymbolId = setup.DotArrowId;
+            var arrowId = ArrowFor(src.End);
+            if (!arrowId.IsNull) ml.ArrowSymbolId = arrowId;
             if (!setup.TextStyleId.IsNull) ml.TextStyleId = setup.TextStyleId;
             ml.TextHeight = h;
             ml.TextAlignmentType = side > 0 ? TextAlignmentType.LeftAlignment : TextAlignmentType.RightAlignment;
@@ -322,6 +323,17 @@ namespace LynhCad.Manhole.Plugin
             // nếu không AutoCAD kéo đỉnh cuối xuống theo tâm chữ và đoạn landing bị xiên thay vì ngang 0°.
             ml.TextLocation = P3(new Vec2(src.TextPosition.X, src.TextPosition.Y + TextBlockHeight(mt, src) / 2));
             Append(ml, src.Layer);
+        }
+
+        /// <summary>Block đầu leader theo quy ước: vòng đặc (_DOT) chỉ vào hatch, vòng rỗng (_DOTBLANK) chỉ vào chấm thép, mũi tên = mặc định (Null).</summary>
+        private ObjectId ArrowFor(LeaderEnd end)
+        {
+            switch (end)
+            {
+                case LeaderEnd.FilledCircle: return setup.DotArrowId;
+                case LeaderEnd.OpenCircle: return setup.OpenDotArrowId;
+                default: return ObjectId.Null;
+            }
         }
 
         /// <summary>Chiều cao khối chữ của ghi chú theo AutoCAD (ActualHeight); không lấy được thì ước lượng theo số dòng.</summary>
@@ -348,9 +360,10 @@ namespace LynhCad.Manhole.Plugin
             ld.HasArrowHead = true;
             ld.DimensionStyle = setup.DimStyleId;
             Add(ld, src.Layer);
-            if (src.DotArrow && !setup.DotArrowId.IsNull)
+            var arrowId = ArrowFor(src.End);
+            if (!arrowId.IsNull)
             {
-                try { ld.Dimldrblk = setup.DotArrowId; } catch (Autodesk.AutoCAD.Runtime.Exception) { }
+                try { ld.Dimldrblk = arrowId; } catch (Autodesk.AutoCAD.Runtime.Exception) { }
             }
             Add(ToMText(src.TextPosition, src.Text, src.TextHeight, src.Align, TextVAlign.Middle, 0, false), src.Layer);
         }

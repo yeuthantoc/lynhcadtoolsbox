@@ -63,10 +63,11 @@ namespace LynhCad.Manhole.Core.Drawing
         {
             public Vec2 Target;
             public string Text;
-            public bool Dot = true;
+            /// <summary>Đầu leader theo thứ chỉ vào: mũi tên (mặc định), vòng rỗng = chấm thép, vòng đặc = vùng hatch.</summary>
+            public LeaderEnd End = LeaderEnd.Arrow;
             /// <summary>Điểm đặt thay thế (theo thứ tự ưu tiên) khi leader từ Target không tránh được chữ kích thước — vd điểm khác dọc theo thanh thép.</summary>
             public List<Vec2> AltTargets = new List<Vec2>();
-            public Callout(Vec2 target, string text, bool dot = true) { Target = target; Text = text; Dot = dot; }
+            public Callout(Vec2 target, string text, LeaderEnd end = LeaderEnd.Arrow) { Target = target; Text = text; End = end; }
         }
 
         /// <summary>Khoảng trống phải giữ quanh số kích thước / nhãn cao độ (theo chiều cao chữ): ghi chú và leader không được sát hơn.</summary>
@@ -189,7 +190,7 @@ namespace LynhCad.Manhole.Core.Drawing
                     TextPosition = new Vec2(xText, y),
                     Text = c.Text, TextHeight = h,
                     Align = side > 0 ? TextAlign.Left : TextAlign.Right,
-                    DotArrow = c.Dot,
+                    End = c.End,
                 });
             }
             return result;

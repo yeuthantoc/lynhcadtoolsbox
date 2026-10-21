@@ -158,9 +158,9 @@ namespace LynhCad.Manhole.Core.Drawing
                     }
                 }
                 if (g.H % rh > 1 && g.H % rh < rh - 1)
-                    callouts.Add(new Annot.Callout(new Vec2(outerS.Min, g.H - (g.H % rh) / 2), "MAKE-UP RING", false));
-                callouts.Add(new Annot.Callout(new Vec2(outerS.Min, Math.Min(g.H * 0.75, g.H - 100)),
-                    "PRECAST SHAFT UNITS TO\nMANUFACTURER'S DETAILS", false));
+                    callouts.Add(new Annot.Callout(new Vec2(outerS.Min, g.H - (g.H % rh) / 2), "MAKE-UP RING"));
+                callouts.Add(new Annot.Callout(new Vec2(outerS.Min + g.Tw / 2, Math.Min(g.H * 0.75, g.H - 100)),
+                    "PRECAST SHAFT UNITS TO\nMANUFACTURER'S DETAILS", LeaderEnd.FilledCircle));
             }
         }
 
@@ -191,9 +191,9 @@ namespace LynhCad.Manhole.Core.Drawing
             // mặt benching phía sau (thấy được): ngang đỉnh ống ra
             double zBench = zOut + o.DN;
             m.Add(PPolyline.Line(new Vec2(sL, zBench), new Vec2(sR, zBench), Layers.ConcreteBeyond));
-            callouts.Add(new Annot.Callout(new Vec2(sL + innerS.Length * 0.3, zBench), "BENCHING BEYOND, FALL 1:12\nTO CHANNEL, STEEL TROWEL", false));
+            callouts.Add(new Annot.Callout(new Vec2(sL + innerS.Length * 0.3, zBench), "BENCHING BEYOND, FALL 1:12\nTO CHANNEL, STEEL TROWEL"));
             callouts.Add(new Annot.Callout(new Vec2(sL + innerS.Length * 0.35, (zIn + zOut) / 2 * 0.5),
-                string.Format("MASS CONCRETE BENCHING\nCHANNEL INVERT {0:0.000} → {1:0.000}", g.FloorRL + zIn / 1000, g.FloorRL + zOut / 1000), false));
+                string.Format("MASS CONCRETE BENCHING\nCHANNEL INVERT {0:0.000} → {1:0.000}", g.FloorRL + zIn / 1000, g.FloorRL + zOut / 1000), LeaderEnd.FilledCircle));
         }
 
         // ---------------------------------------------------------------- ống
@@ -220,7 +220,7 @@ namespace LynhCad.Manhole.Core.Drawing
                     foreach (var z in new[] { f.ZInvert, f.ZInvert + f.DN, f.ZOuterBottom, f.ZOuterTop })
                         m.Add(PPolyline.Line(new Vec2(s0, z), new Vec2(s1, z), Layers.Pipe));
                     Annot.BreakLine(m, new Vec2(s1, f.ZOuterBottom), new Vec2(s1, f.ZOuterTop), Math.Min(f.OD * 0.5, 4 * st.Scale), Layers.Pipe);
-                    callouts.Add(new Annot.Callout(new Vec2(s1 - side * st.PipeStub * 0.4, f.ZOuterTop), label, false));
+                    callouts.Add(new Annot.Callout(new Vec2(s1 - side * st.PipeStub * 0.4, f.ZOuterTop), label));
                     return;
                 }
 
@@ -236,13 +236,13 @@ namespace LynhCad.Manhole.Core.Drawing
                     double sIn = f.Dir.Dot(u) > 0 ? innerS.Max : innerS.Min;
                     double sOut = f.Dir.Dot(u) > 0 ? outerS.Max : outerS.Min;
                     m.Add(PPolyline.Rect(new Rect2(sIn, f.ZOuterBottom, sOut, f.ZOuterTop), Layers.PipeHidden));
-                    callouts.Add(new Annot.Callout(new Vec2(sOut, f.ZOuterTop), label + " (BEYOND)", false));
+                    callouts.Add(new Annot.Callout(new Vec2(sOut, f.ZOuterTop), label + " (BEYOND)"));
                     return;
                 }
                 if (k < 0.05) return;
                 m.Add(new PEllipse { Layer = Layers.Pipe, Center = new Vec2(sc, zc), RadiusX = f.DN / 2 * k, RadiusY = f.DN / 2 });
                 m.Add(new PEllipse { Layer = Layers.Pipe, Center = new Vec2(sc, zc), RadiusX = f.OD / 2 * k, RadiusY = f.OD / 2 });
-                callouts.Add(new Annot.Callout(new Vec2(sc, zc + f.OD / 2), label + " (BEYOND)", false));
+                callouts.Add(new Annot.Callout(new Vec2(sc, zc + f.OD / 2), label + " (BEYOND)"));
             }
         }
 
@@ -276,7 +276,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 target = new Vec2(Math.Max(sa, sb), st8.Levels[0]);
             }
             else return;
-            callouts.Add(new Annot.Callout(target, StepsDraw.Callout(st8), false));
+            callouts.Add(new Annot.Callout(target, StepsDraw.Callout(st8)));
         }
 
         // ---------------------------------------------------------------- thép
@@ -287,6 +287,7 @@ namespace LynhCad.Manhole.Core.Drawing
 
             foreach (var layer in L.AllLayers) DrawMatLayer(layer);
 
+            Vec2? trimDot = null;
             foreach (var t in L.RoofTrimmers)
             {
                 if (ParallelToCut(t.AlongX)) continue; // song song mặt cắt: không nằm trên đường cắt
@@ -294,7 +295,11 @@ namespace LynhCad.Manhole.Core.Drawing
                 double? sCross = CrossingOnBar(t.AlongX, t.Pos, along => run.Contains(along));
                 if (sCross == null) continue;
                 double zt = t.ZAt(AlongAt(t.AlongX, sCross.Value));
-                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sCross.Value, zt), Diameter = st.DotSize(t.Dia), Key = RebarKeys.Trimmers });
+                var ctr = new Vec2(sCross.Value, zt);
+                m.Add(new PDot { Layer = Layers.Rebar, Center = ctr, Diameter = st.DotSize(t.Dia), Key = RebarKeys.Trimmers });
+                // ghi chú chỉ vào chấm gần mép phải lỗ thăm nhất, ở lớp cao nhất
+                if (openingS.HasValue && ctr.X > openingS.Value.Max && (trimDot == null || ctr.Y > trimDot.Value.Y + 1e-6 || (Math.Abs(ctr.Y - trimDot.Value.Y) < 1e-6 && ctr.X < trimDot.Value.X)))
+                    trimDot = ctr;
             }
 
             // Ghi chú lưới (gộp 2 phương)
@@ -302,11 +307,10 @@ namespace LynhCad.Manhole.Core.Drawing
             if (g.P.BaseTopMat) AddMatCallout(BarSets.BaseTop, false);
             AddMatCallout(BarSets.RoofBot, true);
             if (g.P.RoofTopMat) AddMatCallout(BarSets.RoofTop, true);
-            if (L.RoofTrimmers.Count > 0 && openingS.HasValue)
-            {
-                var tz = L.RoofTrimmers[0].Z;
-                callouts.Add(new Annot.Callout(new Vec2(openingS.Value.Max + g.P.Cover + 20, tz), sch.Callout(BarSets.RoofTrim)));
-            }
+            if (trimDot != null)
+                callouts.Add(new Annot.Callout(trimDot.Value, sch.Callout(BarSets.RoofTrim), LeaderEnd.OpenCircle));
+            else if (L.RoofTrimmers.Count > 0 && openingS.HasValue)
+                callouts.Add(new Annot.Callout(new Vec2(openingS.Value.Max + g.P.Cover + 20, L.RoofTrimmers[0].Z), sch.Callout(BarSets.RoofTrim)));
 
             if (g.HasCastWalls) DrawWallRebar();
         }
@@ -374,7 +378,21 @@ namespace LynhCad.Manhole.Core.Drawing
             if (text == null) return;
             var range = roof ? roofS : baseS;
             double sTarget = range.Min + Math.Min(250, range.Length * 0.15);
+            // lớp song song mặt cắt vẽ dạng đường → mũi tên; lớp cắt ngang là chấm → vòng rỗng, chỉ đúng vào một chấm
             var c = new Annot.Callout(new Vec2(sTarget, layer.Z), text);
+            if (!ParallelToCut(layer.AlongX))
+            {
+                c.End = LeaderEnd.OpenCircle;
+                var dots = m.Items.OfType<PDot>().Where(dd => dd.Key == RebarKeys.ForMat(layer.Mat) && Math.Abs(dd.Center.Y - layer.Z) < 1e-6)
+                    .OrderBy(dd => Math.Abs(dd.Center.X - sTarget)).Select(dd => dd.Center).ToList();
+                if (dots.Count > 0)
+                {
+                    c.Target = dots[0];
+                    foreach (var dd in dots.Skip(1).Take(3)) c.AltTargets.Add(dd);
+                    callouts.Add(c);
+                    return;
+                }
+            }
             // lưới thép chạy suốt bản: nếu leader từ điểm chính vướng chữ kích thước thì chỉ vào điểm xa tường hơn
             foreach (var f in new[] { 0.25, 0.35, 0.45 })
                 c.AltTargets.Add(new Vec2(range.Min + range.Length * f, layer.Z));
@@ -385,19 +403,34 @@ namespace LynhCad.Manhole.Core.Drawing
         {
             var L = rd.Layout;
             double c = L.Cover;
+            var horizDotsLeft = new List<Vec2>(); // chấm thép ngang mặt ngoài tường trái (để ghi chú chỉ đúng vào một chấm)
             foreach (var side in new[] { -1, 1 })
             {
                 double sInner = side < 0 ? innerS.Min : innerS.Max;
                 var cuts = side < 0 ? cutLeft : cutRight;
                 var gaps = cuts.Select(f => new Interval(f.GapZ.Min - c, f.GapZ.Max + c)).ToList();
 
-                // thép ngang → chấm, mỗi lớp (1 hoặc 2) đo từ mặt trong tường ra
-                foreach (var off in L.HorizFromInner)
+                // thép ngang → chấm, mỗi lớp (1 hoặc 2) đo từ mặt trong tường ra; hố chữ nhật: chỗ hai thanh U nối chồng
+                // (giữa cạnh Đông / Tây, khi mặt cắt dọc X) có thêm chấm thứ hai lệch về tim tường HorizLapOffset như trên mặt bằng
+                var loops = g.IsRect ? RebarDesigner.HorizontalLoops(g, L) : null;
+                for (int k = 0; k < L.HorizFromInner.Count; k++)
                 {
-                    double face = sInner + side * off;
+                    double face = sInner + side * L.HorizFromInner[k];
+                    bool lapHere = false;
+                    if (loops != null && Math.Abs(u.X) > 0.5)
+                    {
+                        double by = loops[k].Y, leg = Math.Min(2 * by, by + L.Lap / 2);
+                        lapHere = Math.Abs(origin.Y) < leg - by - 1e-6;
+                    }
+                    double face2 = face + side * (k == 0 ? 1 : -1) * L.HorizLapOffset;
                     foreach (var z in L.HorizLevels)
                         if (!gaps.Any(gp => gp.Contains(z)))
+                        {
+                            if (side < 0 && k == L.HorizFromInner.Count - 1) horizDotsLeft.Add(new Vec2(face, z));
                             m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(face, z), Diameter = st.DotSize(L.DH), Key = RebarKeys.WallHorizontal });
+                            if (lapHere)
+                                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(face2, z), Diameter = st.DotSize(L.DH), Key = RebarKeys.WallHorizontal });
+                        }
                 }
 
                 // thép đứng → đường, chân L quay vào trong hố, cog đầu trên móc vào bản nắp (quay vào trong); chỗ uốn vẽ cung
@@ -423,13 +456,18 @@ namespace LynhCad.Manhole.Core.Drawing
             }
             double zv = g.H * 0.7;
             callouts.Add(new Annot.Callout(new Vec2(innerS.Min - L.VertFromInner[0], zv), rd.Schedule.Callout(BarSets.WallVert)));
-            double zh = L.HorizLevels.OrderBy(z => Math.Abs(z - g.H * 0.45)).FirstOrDefault();
-            callouts.Add(new Annot.Callout(new Vec2(innerS.Min - L.HorizFromInner[L.HorizFromInner.Count - 1], zh), rd.Schedule.Callout(BarSets.WallHoriz)));
+            if (horizDotsLeft.Count > 0)
+            {
+                var hc = new Annot.Callout(horizDotsLeft.OrderBy(q => Math.Abs(q.Y - g.H * 0.45)).First(), rd.Schedule.Callout(BarSets.WallHoriz), LeaderEnd.OpenCircle);
+                foreach (var q in horizDotsLeft.OrderBy(q => Math.Abs(q.Y - g.H * 0.45)).Skip(1).Take(3)) hc.AltTargets.Add(q);
+                callouts.Add(hc);
+            }
             if (cutRight.Count + cutLeft.Count > 0 && rd.Schedule.Set(BarSets.PipeTrim) != null)
             {
+                // thanh gia cường quanh lỗ ống không vẽ trên mặt cắt: ghi chú chỉ vào bê tông tường (hatch) dưới lỗ → vòng đặc
                 var f = cutRight.Count > 0 ? cutRight[0] : cutLeft[0];
                 double s = f.Dir.Dot(u) > 0 ? innerS.Max + g.Tw / 2 : innerS.Min - g.Tw / 2;
-                callouts.Add(new Annot.Callout(new Vec2(s, f.GapZ.Min - c), rd.Schedule.Set(BarSets.PipeTrim).CalloutWith(" TRIMMERS\nEACH SIDE OF PENETRATIONS" + (L.WallLayers == 2 ? " EF" : ""))));
+                callouts.Add(new Annot.Callout(new Vec2(s, f.GapZ.Min - c), rd.Schedule.Set(BarSets.PipeTrim).CalloutWith(" TRIMMERS\nEACH SIDE OF PENETRATIONS" + (L.WallLayers == 2 ? " EF" : "")), LeaderEnd.FilledCircle));
             }
         }
 
@@ -448,12 +486,12 @@ namespace LynhCad.Manhole.Core.Drawing
                 m.Add(PPolyline.Rect(rf, Layers.ConcreteBeyond));
                 m.Add(PPolyline.Line(new Vec2(rf.X1, zCL - 40), new Vec2(rf.X2, zCL - 40), Layers.ConcreteBeyond));
                 callouts.Add(new Annot.Callout(new Vec2(rf.X2, (zBase + zCL) / 2),
-                    "ACCESS COVER & FRAME BEDDED IN\nREBATE, ADJUSTMENT RINGS AS\nREQUIRED (BY OTHERS)", false));
+                    "ACCESS COVER & FRAME BEDDED IN\nREBATE, ADJUSTMENT RINGS AS\nREQUIRED (BY OTHERS)"));
                 string size = g.OpeningIsCircle
                     ? string.Format("Ø{0:0}", 2 * g.RebateHalfX)
                     : string.Format("{0:0}x{1:0}", 2 * g.RebateHalfX, 2 * g.RebateHalfY);
                 callouts.Add(new Annot.Callout(new Vec2(r.Min, zBase),
-                    string.Format("{0:0} DEEP x {1} REBATE\nFOR COVER FRAME", g.RebateDepth, size), false));
+                    string.Format("{0:0} DEEP x {1} REBATE\nFOR COVER FRAME", g.RebateDepth, size)));
                 return;
             }
             if (!openingS.HasValue) return;
@@ -465,7 +503,7 @@ namespace LynhCad.Manhole.Core.Drawing
             m.Add(PPolyline.Rect(frame, Layers.ConcreteBeyond));
             m.Add(PPolyline.Line(new Vec2(frame.X1, zCL - 40), new Vec2(frame.X2, zCL - 40), Layers.ConcreteBeyond));
             callouts.Add(new Annot.Callout(new Vec2(frame.X2, (zTopRoof + zCL) / 2),
-                "ACCESS COVER & FRAME ON\nADJUSTMENT RINGS (BY OTHERS)", false));
+                "ACCESS COVER & FRAME ON\nADJUSTMENT RINGS (BY OTHERS)"));
         }
 
         // ---------------------------------------------------------------- cao độ

@@ -15,6 +15,8 @@ namespace LynhCad.Manhole.Plugin
         public ObjectId TextStyleId { get; private set; }
         public ObjectId DimStyleId { get; private set; }
         public ObjectId DotArrowId { get; private set; }
+        /// <summary>Block "_DOTBLANK" (vòng tròn rỗng) cho leader chỉ vào chấm thép.</summary>
+        public ObjectId OpenDotArrowId { get; private set; }
 
         /// <summary>Lấy (và tạo nếu cần) block mũi tên chuẩn như "_OBLIQUE", "_DOT". Phải gọi NGOÀI transaction.</summary>
         public static ObjectId EnsureArrow(Database db, string arrowName)
@@ -37,13 +39,14 @@ namespace LynhCad.Manhole.Plugin
             }
         }
 
-        public void Run(Database db, Transaction tr, double scale, ObjectId obliqueArrow, ObjectId dotArrow)
+        public void Run(Database db, Transaction tr, double scale, ObjectId obliqueArrow, ObjectId dotArrow, ObjectId openDotArrow)
         {
             EnsureLinetypes(db, tr);
             EnsureLayers(db, tr);
             TextStyleId = EnsureTextStyle(db, tr);
             DimStyleId = EnsureDimStyle(db, tr, scale, obliqueArrow);
             DotArrowId = dotArrow;
+            OpenDotArrowId = openDotArrow;
         }
 
         private static void EnsureLinetypes(Database db, Transaction tr)

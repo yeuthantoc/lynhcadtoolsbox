@@ -137,6 +137,8 @@ namespace LynhCad.Manhole.Core.Rebar
         public double VertZBot, VertZTop, VertLeg;
         /// <summary>Cog ở đầu trên thép đứng móc vào bản nắp (0 = không), bán kính tim uốn thép đứng / thép ngang.</summary>
         public double VertCog, VertBendRadius, HorizBendRadius;
+        /// <summary>Thanh U thép ngang thứ hai của mỗi vòng đặt lệch về tim tường (= d + 10, hai thanh cách nhau 10 mm) để thấy rõ nối chồng; cùng mác.</summary>
+        public double HorizLapOffset;
         /// <summary>Cao độ chân / đỉnh của thép đứng từng mặt (cùng thứ tự VertFromInner): mặt ngoài lùi WallBarInset ở hai đầu để chân L / cog không trùng mặt trong.</summary>
         public readonly List<double> VertZBotFaces = new List<double>(), VertZTopFaces = new List<double>();
         public double Lap;
@@ -182,6 +184,8 @@ namespace LynhCad.Manhole.Core.Rebar
         public const double TopMatInset = 10;
         /// <summary>Thép đứng mặt ngoài lùi vào (mm) ở chân L và cog so với mặt trong (hai chân / hai cog cùng cao độ sẽ đè lên nhau).</summary>
         public const double WallBarInset = 10;
+        /// <summary>Khe hở giữa thanh vuông góc và tim cog của lớp kia (mm, cộng thêm 1,5d) để chấm thép nằm trong vùng cog.</summary>
+        public const double CogClear = 10;
 
         public static RebarDesign Design(ManholeGeometry g)
         {
@@ -263,6 +267,27 @@ namespace LynhCad.Manhole.Core.Rebar
                     var ca = alongX ? cutX.Value : cutY.Value;
                     layer.CutAlong = new Interval(ca.Min - inset, ca.Max + inset);
                     layer.CutPerp = alongX ? cutY : cutX;
+                }
+                if (P.Cogs)
+                {
+                    // thanh nằm sát đường cog của lớp kia (mép bản, mép lỗ thăm) dịch vào trong vùng cog: cách tim cog ≥ 1,5d + CogClear
+                    double clear = 1.5 * d + CogClear;
+                    var lines = new List<KeyValuePair<double, int>>
+                    {
+                        new KeyValuePair<double, int>(-hPerp + c + inset, +1),
+                        new KeyValuePair<double, int>(hPerp - c - inset, -1),
+                    };
+                    if (layer.CutPerp != null)
+                    {
+                        var cp = layer.CutPerp.Value;
+                        lines.Add(new KeyValuePair<double, int>(cp.Min - inset, -1));
+                        lines.Add(new KeyValuePair<double, int>(cp.Max + inset, +1));
+                    }
+                    for (int i = 0; i < layer.Positions.Count; i++)
+                        foreach (var ln in lines)
+                            if (Math.Abs(layer.Positions[i] - ln.Key) < clear - 1e-9)
+                                layer.Positions[i] = ln.Key + ln.Value * clear;
+                    layer.Positions = layer.Positions.Distinct().OrderBy(v => v).ToList();
                 }
                 layer.Drop = alongX ? dropX : dropY;
                 layer.BendRadius = RebarCatalog.BendRadius(d, P.BendFactor);
@@ -367,6 +392,7 @@ namespace LynhCad.Manhole.Core.Rebar
             L.VertCog = P.Cogs ? RebarCatalog.StandardCog(L.DV, P.BendFactor) : 0;
             L.VertBendRadius = RebarCatalog.BendRadius(L.DV, P.BendFactor);
             L.HorizBendRadius = RebarCatalog.BendRadius(L.DH, P.BendFactor);
+            L.HorizLapOffset = L.DH + CogClear;
             // mặt ngoài (lớp thứ 2) lùi WallBarInset ở chân và ở cog để không đè lên chân / cog mặt trong
             L.VertZBotFaces.Clear(); L.VertZTopFaces.Clear();
             for (int k = 0; k < L.VertFromInner.Count; k++)

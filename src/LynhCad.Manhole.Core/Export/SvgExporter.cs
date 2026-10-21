@@ -199,8 +199,10 @@ namespace LynhCad.Manhole.Core.Export
                 pts.Add(new Vec2(l.TextPosition.X + gapX, l.TextPosition.Y));
                 var path = "M" + string.Join(" L", pts.Select(Pt));
                 sb.AppendFormat("<path d=\"{0}\" {1}/>\n", path, Stroke(l));
-                if (l.DotArrow)
+                if (l.End == LeaderEnd.FilledCircle)
                     sb.AppendFormat(Inv, "<circle cx=\"{0}\" cy=\"{1}\" r=\"{2}\" fill=\"{3}\"/>\n", F(pts[0].X), F(-pts[0].Y), F(0.6 * scale), FillColor(l));
+                else if (l.End == LeaderEnd.OpenCircle)
+                    sb.AppendFormat(Inv, "<circle cx=\"{0}\" cy=\"{1}\" r=\"{2}\" {3}/>\n", F(pts[0].X), F(-pts[0].Y), F(0.6 * scale), Stroke(l).Replace("fill=\"none\"", "fill=\"white\""));
                 else
                 {
                     var dir = (pts[1] - pts[0]).Normalized();

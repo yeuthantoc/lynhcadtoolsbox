@@ -119,6 +119,7 @@ namespace LynhCad.Manhole.Preview
             Steps();
             Rebate();
             CogsAndBends();
+            LeaderEnds();
             Validation();
             Json();
             Naming();
@@ -754,6 +755,15 @@ namespace LynhCad.Manhole.Preview
             True("rings have no cogs", RebarDesigner.Design(new ManholeGeometry(ManholeParams.SampleCircularCast())).Schedule.Marks
                 .Where(mk => mk.Shape == BarShape.Ring).All(mk => mk.CogCount == 0));
             Eq("vertical bar cog", 170, L.VertCog);
+            // thanh vuông góc nằm trong vùng cog của lớp kia: thanh đầu cách tim cog mép bản 1,5d + 10 (không đè lên đường cog)
+            Eq("first Y bar inside the X cogs (base, N16)", -1100 + 50 + 1.5 * 16 + RebarDesigner.CogClear, L.BaseLayers.First(l => l.Key == BarSets.Y(BarSets.BaseBot)).Positions[0], 1e-9);
+            Eq("first X bar inside the Y cogs (base, N16)", -950 + 50 + 1.5 * 16 + RebarDesigner.CogClear, baseBotX.Positions[0], 1e-9);
+            // bản nắp: thanh Y sát mép lỗ thăm (496.7 → trong khoảng 28 của đường cog tại ±500) đẩy ra ngoài tới 528
+            var roofBotY = L.RoofLayers.First(l => l.Key == BarSets.Y(BarSets.RoofBot));
+            True("Y bar next to the opening moved outside the X cogs", roofBotY.Positions.Any(x => Math.Abs(x - (500 + 1.5 * 12 + RebarDesigner.CogClear)) < 1e-9)
+                && roofBotY.Positions.All(x => Math.Abs(Math.Abs(x) - 500) >= 1.5 * 12 + RebarDesigner.CogClear - 1e-9));
+            var rdNoCogPos = RebarDesigner.Design(new ManholeGeometry(pNoCog)).Layout;
+            Eq("no cogs: positions start at cover + d/2", -1100 + 50 + 8, rdNoCogPos.BaseLayers.First(l => l.Key == BarSets.Y(BarSets.BaseBot)).Positions[0], 1e-9);
             Eq("vertical bend radius", 36, L.VertBendRadius);
 
             // mặt cắt: thép đứng là polyline có cung (bulge ≠ 0) với đỉnh cog ở cao độ VertZTop quay vào trong
@@ -764,9 +774,20 @@ namespace LynhCad.Manhole.Preview
             True("outer face cog drawn 10 lower", verts.Any(l => l.Points.Count(q => Math.Abs(q.Y - (L.VertZTop - RebarDesigner.WallBarInset)) < 1e-6) >= 2));
             var mats = sec.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Rebar && l.Key == "BaseBottom").ToList();
             True("base bottom bar drawn with cogs and arcs", mats.Count > 0 && mats.All(l => l.Points.Count >= 6 && l.Bulges.Count(bb => Math.Abs(bb) > 1e-9) == 2));
-            // mặt bằng: góc thanh U thép ngang là cung
+            // mặt bằng: góc thanh U thép ngang là cung; thanh U Nam của vòng trong vẽ lệch 10 ra phía tim tường (chân tại x = ±(bx + 10))
             var plan = new PlanBuilder(g, rd, new DrawStyle(20)).Build();
             True("plan U-bar corners are arcs", plan.Items.OfType<PPolyline>().Count(l => l.Key == RebarKeys.WallHorizontal && l.Bulges.Any(bb => Math.Abs(bb) > 1e-9)) == 8);
+            var hl = RebarDesigner.HorizontalLoops(g, L);
+            var legLines = plan.Items.OfType<PPolyline>().Where(l => l.Key == RebarKeys.WallHorizontal && l.Points.Count == 2 && Math.Abs(l.Points[0].X - l.Points[1].X) < 1e-9).ToList();
+            True("plan lap: inner south U legs offset outward", legLines.Any(l => Math.Abs(l.Points[0].X - (hl[0].X + L.HorizLapOffset)) < 1e-9 && l.Points[0].Y < 0));
+            True("plan lap: outer south U legs offset inward", legLines.Any(l => Math.Abs(l.Points[0].X - (hl[1].X - L.HorizLapOffset)) < 1e-9 && l.Points[0].Y < 0));
+            True("plan lap: north U legs at loop position", legLines.Any(l => Math.Abs(l.Points[0].X - hl[0].X) < 1e-9 && l.Points[0].Y > 0));
+            // mặt cắt (dọc X, cắt giữa cạnh Đông / Tây = vùng nối chồng): mỗi cao độ, mỗi mặt có 2 chấm cách nhau 10
+            var hDots = sec.Items.OfType<PDot>().Where(dd => dd.Key == RebarKeys.WallHorizontal && Math.Abs(dd.Center.Y - L.HorizLevels.First(z => z > 800)) < 1e-6).Select(dd => dd.Center.X).OrderBy(v => v).ToList();
+            Eq("section lap: 2 dots per face per side at a level", 8, hDots.Count);
+            True("section lap: dot pairs 10 apart", Math.Abs(hDots[1] - hDots[0] - L.HorizLapOffset) < 1e-9 && Math.Abs(hDots[3] - hDots[2] - L.HorizLapOffset) < 1e-9);
+            True("schedule unchanged by lap offset: 2 horizontal marks", rd.Schedule.Set(BarSets.WallHoriz).Marks.Count == 2);
+            Eq("lap offset = d + 10 (10 clear between the two bars)", 12 + RebarDesigner.CogClear, L.HorizLapOffset);
             // bản nắp: vạch cog ở đầu thanh lớp dưới
             var roof = new RoofPlanBuilder(g, rd, new DrawStyle(20)).Build();
             True("roof plan cog ticks", roof.Items.OfType<PPolyline>().Count(l => l.Layer == Layers.RebarHidden && l.Points.Count == 2 && (l.Points[1] - l.Points[0]).Length < 60) > 10);
@@ -793,6 +814,42 @@ namespace LynhCad.Manhole.Preview
             var partial = ParamsJson.Deserialize("{\"id\":\"X\",\"pipes\":[{\"mark\":\"A\",\"il\":10.0,\"role\":\"outlet\"}]}");
             True("json default cogs on, 5d", partial.Cogs && Math.Abs(partial.BendFactor - 5) < 1e-9);
             True("KeysForField cogs", RebarLayoutPreview.KeysForField("Cogs").Length >= 5 && RebarLayoutPreview.KeysForField("BendFactor").Length >= 5);
+        }
+
+        /// <summary>Quy ước đầu leader: mũi tên mặc định; vòng rỗng khi chỉ vào chấm thép (và chỉ đúng vào một chấm); vòng đặc khi chỉ vào vùng hatch.</summary>
+        private static void LeaderEnds()
+        {
+            var p = ManholeParams.SampleRectangular();
+            var res = DetailComposer.Compose(p);
+            var leaders = res.Model.Items.OfType<PLeader>().ToList();
+            var dots = res.Model.Items.OfType<PDot>().Select(d => d.Center).ToList();
+            Func<string, PLeader> find = txt => leaders.First(l => l.Text.StartsWith(txt));
+            True("default leader end is arrow", new Annot.Callout(Vec2.Zero, "X").End == LeaderEnd.Arrow && new PLeader().End == LeaderEnd.Arrow);
+            True("pipe callout arrow", find("P3 DN375").End == LeaderEnd.Arrow);
+            True("wall vertical (line in section) arrow", leaders.Where(l => l.Text.StartsWith("W1/W2")).All(l => l.End == LeaderEnd.Arrow || dots.Any(d => (d - l.Points[0]).Length < 1e-6)));
+            True("wall horizontal in section -> open circle on a dot", leaders.Any(l => l.Text.StartsWith("W3/W4") && l.End == LeaderEnd.OpenCircle && dots.Any(d => (d - l.Points[0]).Length < 1e-6)));
+            True("wall horizontal in plan (line) -> arrow", leaders.Any(l => l.Text.StartsWith("W3/W4") && l.End == LeaderEnd.Arrow));
+            True("wall vertical in plan (dot) -> open circle", leaders.Any(l => l.Text.StartsWith("W1/W2") && l.End == LeaderEnd.OpenCircle && dots.Any(d => (d - l.Points[0]).Length < 1e-6)));
+            True("mass concrete benching (hatch) -> filled circle", find("MASS CONCRETE BENCHING").End == LeaderEnd.FilledCircle);
+            True("benching beyond (line) -> arrow", find("BENCHING BEYOND").End == LeaderEnd.Arrow);
+            True("pipe trimmers (into wall hatch) -> filled circle", leaders.Any(l => l.Text.Contains("EACH SIDE OF PENETRATIONS") && l.End == LeaderEnd.FilledCircle));
+            True("roof trimmers in section -> open circle on a dot", leaders.Any(l => l.Text.Contains("EACH SIDE OF OPENING") && l.End == LeaderEnd.OpenCircle && dots.Any(d => (d - l.Points[0]).Length < 1e-6)));
+            True("roof trimmers in roof plan (line) -> arrow", leaders.Any(l => l.Text.Contains("EACH SIDE OF OPENING") && l.End == LeaderEnd.Arrow));
+            True("mat callout on a bar line (section along X) -> arrow", leaders.Any(l => l.Text.EndsWith("BOT EW") && l.End == LeaderEnd.Arrow));
+            True("every open-circle leader points at a dot", leaders.Where(l => l.End == LeaderEnd.OpenCircle).All(l => dots.Any(d => (d - l.Points[0]).Length < 1e-6)));
+            // mặt cắt chéo (hố tròn, ống ra 45°): lưới bản là chấm → ghi chú lưới dùng vòng rỗng, chỉ đúng vào chấm
+            var diag = ParamsJson.LoadMany(Path.Combine(Snapshots.FindSamplesDir(), "circ-mh03-diagonal.json"))[0];
+            var rdg = DetailComposer.Compose(diag);
+            var dDots = rdg.Model.Items.OfType<PDot>().Select(d => d.Center).ToList();
+            True("diagonal section: mat callouts are open circles on dots", rdg.Model.Items.OfType<PLeader>().Where(l => l.Text.EndsWith(" EW")).All(l =>
+                l.End == LeaderEnd.OpenCircle && dDots.Any(d => (d - l.Points[0]).Length < 1e-6)));
+            // hố tròn: ghi chú tường trên mặt bằng chỉ vào hatch tường → vòng đặc; đúc sẵn: ghi chú đốt cống chỉ vào hatch
+            var circ = DetailComposer.Compose(ManholeParams.SampleCircular());
+            True("circular wall note -> filled circle", circ.Model.Items.OfType<PLeader>().Any(l => l.Text.StartsWith("PRECAST MANHOLE SHAFT") && l.End == LeaderEnd.FilledCircle));
+            True("precast shaft note -> filled circle", circ.Model.Items.OfType<PLeader>().Any(l => l.Text.StartsWith("PRECAST SHAFT UNITS") && l.End == LeaderEnd.FilledCircle));
+            // SVG: vòng rỗng có fill trắng, vòng đặc có fill màu
+            string svg = SvgExporter.Export(res.Model, 20);
+            True("svg open circle", svg.Contains("<circle") && svg.Contains("fill=\"white\""));
         }
 
         private static void Validation()

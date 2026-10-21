@@ -16,11 +16,16 @@ namespace LynhCad.Manhole.Plugin
         /// <summary>Block mũi tên cho dim style / leader. Phải tạo NGOÀI transaction (dùng sysvar DIMBLK).</summary>
         private struct Arrows
         {
-            public ObjectId Oblique, Dot;
+            public ObjectId Oblique, Dot, OpenDot;
 
             public static Arrows Ensure(Database db)
             {
-                return new Arrows { Oblique = AcadSetup.EnsureArrow(db, "_OBLIQUE"), Dot = AcadSetup.EnsureArrow(db, "_DOT") };
+                return new Arrows
+                {
+                    Oblique = AcadSetup.EnsureArrow(db, "_OBLIQUE"),
+                    Dot = AcadSetup.EnsureArrow(db, "_DOT"),          // vòng đặc: leader chỉ vào hatch
+                    OpenDot = AcadSetup.EnsureArrow(db, "_DOTBLANK"), // vòng rỗng: leader chỉ vào chấm thép
+                };
             }
         }
 
@@ -205,7 +210,7 @@ namespace LynhCad.Manhole.Plugin
             DrawingModel model, Arrows arrows, Editor ed)
         {
             var setup = new AcadSetup();
-            setup.Run(db, tr, p.Scale, arrows.Oblique, arrows.Dot);
+            setup.Run(db, tr, p.Scale, arrows.Oblique, arrows.Dot, arrows.OpenDot);
             var renderer = new AcadRenderer(db, tr, space, setup);
             renderer.Render(model);
             foreach (var msg in renderer.Skipped) ed.WriteMessage("\n[{0}] {1}", p.Id, msg);
