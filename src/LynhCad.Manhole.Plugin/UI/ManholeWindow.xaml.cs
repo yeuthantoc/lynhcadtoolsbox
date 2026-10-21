@@ -50,8 +50,28 @@ namespace LynhCad.Manhole.Plugin.UI
             DataContext = Params;
             gridPipes.ItemsSource = pipes;
             UpdateTypePanels();
+            UpdateEnabledFields();
             txtStatus.Text = "";
             QueuePreview();
+        }
+
+        /// <summary>
+        /// Ô phụ thuộc chỉ mở khi ô tick tương ứng được chọn: lưới trên bản đáy / bản nắp, nhóm bậc thang
+        /// (góc chỉ khi bậc thang bật và không tự đặt). Gọi khi nạp thông số và mỗi lần tick / bỏ tick.
+        /// </summary>
+        private void UpdateEnabledFields()
+        {
+            if (chkBaseTop == null || chkSteps == null) return;
+            bool baseTop = chkBaseTop.IsChecked == true;
+            cbBaseT.IsEnabled = txtBaseTopSpacing.IsEnabled = baseTop;
+            bool roofTop = chkRoofTop.IsChecked == true;
+            cbRoofT.IsEnabled = txtRoofTopSpacing.IsEnabled = roofTop;
+
+            bool steps = chkSteps.IsChecked == true;
+            chkStepAuto.IsEnabled = steps;
+            foreach (var tb in new[] { txtStepSpacing, txtStepWidth, txtStepProjection, txtStepTopGap, txtStepBottomClear })
+                tb.IsEnabled = steps;
+            txtStepAngle.IsEnabled = steps && chkStepAuto.IsChecked != true;
         }
 
         private bool IsRect { get { return Params != null && Params.Type == ManholeType.RectangularCast; } }
@@ -167,8 +187,12 @@ namespace LynhCad.Manhole.Plugin.UI
             }
         }
 
-        /// <summary>Ô nhập mất focus / checkbox / combobox đổi (tab General, Reinforcement): binding đã cập nhật → vẽ lại preview.</summary>
-        private void OnFieldChanged(object sender, RoutedEventArgs e) { QueuePreview(); }
+        /// <summary>Ô nhập mất focus / checkbox / combobox đổi (tab General, Reinforcement): binding đã cập nhật → mở/khoá ô phụ thuộc, vẽ lại preview.</summary>
+        private void OnFieldChanged(object sender, RoutedEventArgs e)
+        {
+            UpdateEnabledFields();
+            QueuePreview();
+        }
 
         private void OnFieldSelectionChanged(object sender, SelectionChangedEventArgs e) { QueuePreview(); }
 

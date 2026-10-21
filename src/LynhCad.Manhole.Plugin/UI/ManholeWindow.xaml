@@ -212,28 +212,28 @@
                                     <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
-                                <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="4,6" Content="Draw step irons" IsChecked="{Binding StepIrons}" />
-                                <CheckBox Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="4,6" Content="Auto position (near opening, clear of pipes)" IsChecked="{Binding StepAuto}" />
+                                <CheckBox x:Name="chkSteps" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="4,6" Content="Draw step irons" IsChecked="{Binding StepIrons}" />
+                                <CheckBox x:Name="chkStepAuto" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="4,6" Content="Auto position (near opening, clear of pipes)" IsChecked="{Binding StepAuto}" />
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Vertical spacing" />
-                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding StepSpacing}" />
+                                <TextBox x:Name="txtStepSpacing" Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding StepSpacing}" />
                                 <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
                                 <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource Lbl}" Text="Angle (when not auto)" ToolTip="Direction from manhole centre to the wall with the steps: 0° = +X (east), counter-clockwise" />
-                                <TextBox Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding StepAngle}" />
+                                <TextBox x:Name="txtStepAngle" Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding StepAngle}" />
                                 <TextBlock Grid.Row="1" Grid.Column="5" Style="{StaticResource Unit}" Text="°" />
 
                                 <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Lbl}" Text="Width" />
-                                <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding StepWidth}" />
+                                <TextBox x:Name="txtStepWidth" Grid.Row="2" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding StepWidth}" />
                                 <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
                                 <TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource Lbl}" Text="Projection from wall" />
-                                <TextBox Grid.Row="2" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding StepProjection}" />
+                                <TextBox x:Name="txtStepProjection" Grid.Row="2" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding StepProjection}" />
                                 <TextBlock Grid.Row="2" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
 
                                 <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Lbl}" Text="Top step below roof" ToolTip="From underside of roof slab down to the top step" />
-                                <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding StepTopGap}" />
+                                <TextBox x:Name="txtStepTopGap" Grid.Row="3" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding StepTopGap}" />
                                 <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
                                 <TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource Lbl}" Text="Bottom step above benching" ToolTip="Minimum height of the lowest step above the benching (top of outlet pipe)" />
-                                <TextBox Grid.Row="3" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding StepBottomClear}" />
+                                <TextBox x:Name="txtStepBottomClear" Grid.Row="3" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding StepBottomClear}" />
                                 <TextBlock Grid.Row="3" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
                             </Grid>
                         </GroupBox>
@@ -296,20 +296,20 @@
                         <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
                         <TextBox Grid.Row="5" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseBottom.Spacing}" />
 
-                        <CheckBox Grid.Row="6" Grid.Column="0" Margin="4,6" Content="Base top mat (EW)" IsChecked="{Binding BaseTopMat}" />
+                        <CheckBox x:Name="chkBaseTop" Grid.Row="6" Grid.Column="0" Margin="4,6" Content="Base top mat (EW)" IsChecked="{Binding BaseTopMat}" />
                         <ComboBox x:Name="cbBaseT" Grid.Row="6" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding BaseTop.Diameter}" />
                         <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
-                        <TextBox Grid.Row="6" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseTop.Spacing}" />
+                        <TextBox x:Name="txtBaseTopSpacing" Grid.Row="6" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseTop.Spacing}" />
 
                         <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource Lbl}" Text="Roof bottom (EW)" />
                         <ComboBox x:Name="cbRoofB" Grid.Row="7" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding RoofBottom.Diameter}" />
                         <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
                         <TextBox Grid.Row="7" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofBottom.Spacing}" />
 
-                        <CheckBox Grid.Row="8" Grid.Column="0" Margin="4,6" Content="Roof top mat (EW)" IsChecked="{Binding RoofTopMat}" />
+                        <CheckBox x:Name="chkRoofTop" Grid.Row="8" Grid.Column="0" Margin="4,6" Content="Roof top mat (EW)" IsChecked="{Binding RoofTopMat}" />
                         <ComboBox x:Name="cbRoofT" Grid.Row="8" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding RoofTop.Diameter}" />
                         <TextBlock Grid.Row="8" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
-                        <TextBox Grid.Row="8" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofTop.Spacing}" />
+                        <TextBox x:Name="txtRoofTopSpacing" Grid.Row="8" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofTop.Spacing}" />
 
                         <TextBlock Grid.Row="9" Grid.Column="0" Style="{StaticResource Lbl}" Text="Trimmers (size / no. each side)" />
                         <ComboBox x:Name="cbTrim" Grid.Row="9" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding TrimmerDiameter}" />
