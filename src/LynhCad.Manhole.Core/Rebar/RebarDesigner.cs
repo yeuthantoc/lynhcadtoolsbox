@@ -48,6 +48,8 @@ namespace LynhCad.Manhole.Core.Rebar
         public List<double> Positions = new List<double>();
         /// <summary>Vùng bị lỗ thăm cắt (đã cộng lớp bảo vệ). Null nếu bản không có lỗ.</summary>
         public Interval? CutAlong, CutPerp;
+        /// <summary>Vùng nhấn xuống dưới rãnh khung nắp (chỉ lưới trên bản nắp khi có rãnh). Null nếu không.</summary>
+        public DropZone Drop;
 
         /// <summary>Các đoạn thực tế của thanh tại vị trí pos (thanh bị cắt bởi lỗ thăm thì tách đôi).</summary>
         public List<Interval> Pieces(double pos)
@@ -55,6 +57,18 @@ namespace LynhCad.Manhole.Core.Rebar
             if (CutAlong == null || CutPerp == null || !CutPerp.Value.Contains(pos))
                 return new List<Interval> { Run };
             return Run.Subtract(new[] { CutAlong.Value }).Where(i => i.Length >= RebarDesigner.MinPiece).ToList();
+        }
+
+        /// <summary>Trắc dọc (along, z) của một đoạn thanh tại vị trí pos: thẳng ở Z, hoặc nhấn xuống trong vùng rãnh.</summary>
+        public List<Vec2> Profile(double pos, Interval piece)
+        {
+            return Drop != null && Drop.Applies(pos) ? Drop.Profile(piece, Z) : DropZone.Flat(piece, Z);
+        }
+
+        /// <summary>Cao độ tim thanh tại vị trí pos, toạ độ dọc thanh along.</summary>
+        public double ZAt(double pos, double along)
+        {
+            return Drop != null && Drop.Applies(pos) ? Drop.ZAt(along, Z) : Z;
         }
     }
 
@@ -67,6 +81,18 @@ namespace LynhCad.Manhole.Core.Rebar
         public Interval Run;
         public double Z;
         public int Dia;
+        /// <summary>Vùng nhấn xuống (thanh gia cường lớp trên nằm trong rãnh khung nắp). Null nếu không.</summary>
+        public DropZone Drop;
+
+        public List<Vec2> Profile()
+        {
+            return Drop != null && Drop.Applies(Pos) ? Drop.Profile(Run, Z) : DropZone.Flat(Run, Z);
+        }
+
+        public double ZAt(double along)
+        {
+            return Drop != null && Drop.Applies(Pos) ? Drop.ZAt(along, Z) : Z;
+        }
     }
 
     /// <summary>Các giá trị bố trí thép dùng chung cho bảng thống kê và bản vẽ (để hai bên luôn khớp nhau).</summary>
@@ -123,6 +149,8 @@ namespace LynhCad.Manhole.Core.Rebar
     {
         public const double MinPiece = 300;
         public const double TrimmerPitch = 75;
+        /// <summary>Độ dốc đoạn xiên của thanh nhấn xuống dưới rãnh khung nắp: chiều ngang = CrankSlope × độ nhấn (1:2).</summary>
+        public const double CrankSlope = 2;
 
         public static RebarDesign Design(ManholeGeometry g)
         {
@@ -134,20 +162,32 @@ namespace LynhCad.Manhole.Core.Rebar
 
             // ---------------- Bản đáy ----------------
             AddMat(L.BaseLayers, items, sets, BarSets.BaseBot, P.BaseBottom, false, 'B', c,
-                   g.BaseHalfX, g.BaseHalfY, -g.Tb, null, null);
+                   g.BaseHalfX, g.BaseHalfY, -g.Tb, null, null, null, null);
             if (P.BaseTopMat)
                 AddMat(L.BaseLayers, items, sets, BarSets.BaseTop, P.BaseTop, true, 'B', c,
-                       g.BaseHalfX, g.BaseHalfY, 0, null, null);
+                       g.BaseHalfX, g.BaseHalfY, 0, null, null, null, null);
 
             // ---------------- Bản nắp ----------------
             var o = g.OpeningCenter;
             var cutX = new Interval(o.X - g.OpeningHalfX - c, o.X + g.OpeningHalfX + c);
             var cutY = new Interval(o.Y - g.OpeningHalfY - c, o.Y + g.OpeningHalfY + c);
             AddMat(L.RoofLayers, items, sets, BarSets.RoofBot, P.RoofBottom, false, 'R', c,
-                   g.RoofHalfX, g.RoofHalfY, g.H, cutX, cutY);
+                   g.RoofHalfX, g.RoofHalfY, g.H, cutX, cutY, null, null);
             if (P.RoofTopMat)
+            {
+                // có rãnh khung nắp: lưới trên nhấn xuống RebateDepth trong phạm vi rãnh (hố tròn: hình vuông bao rãnh)
+                DropZone dropX = null, dropY = null;
+                if (g.HasRebate)
+                {
+                    var rx = new Interval(o.X - g.RebateHalfX, o.X + g.RebateHalfX);
+                    var ry = new Interval(o.Y - g.RebateHalfY, o.Y + g.RebateHalfY);
+                    double run = g.RebateDepth * CrankSlope;
+                    dropX = new DropZone { Along = rx, Perp = ry, Depth = g.RebateDepth, Run = run };
+                    dropY = new DropZone { Along = ry, Perp = rx, Depth = g.RebateDepth, Run = run };
+                }
                 AddMat(L.RoofLayers, items, sets, BarSets.RoofTop, P.RoofTop, true, 'R', c,
-                       g.RoofHalfX, g.RoofHalfY, g.H + g.Ts, cutX, cutY);
+                       g.RoofHalfX, g.RoofHalfY, g.H + g.Ts, cutX, cutY, dropX, dropY);
+            }
 
             AddRoofTrimmers(g, L, items, sets);
 
@@ -160,7 +200,7 @@ namespace LynhCad.Manhole.Core.Rebar
         /// <summary>Thêm một lưới 2 lớp (X ở ngoài cùng, Y ở trong).</summary>
         private static void AddMat(List<MatLayer> layers, List<BarItem> items, List<BarSetInfo> sets,
             string keyPrefix, BarSpec spec, bool isTop, char group, double c,
-            double hx, double hy, double zFace, Interval? cutX, Interval? cutY)
+            double hx, double hy, double zFace, Interval? cutX, Interval? cutY, DropZone dropX, DropZone dropY)
         {
             int d = spec.Diameter;
             double s = spec.Spacing;
@@ -185,6 +225,7 @@ namespace LynhCad.Manhole.Core.Rebar
                     layer.CutAlong = alongX ? cutX : cutY;
                     layer.CutPerp = alongX ? cutY : cutX;
                 }
+                layer.Drop = alongX ? dropX : dropY;
                 layers.Add(layer);
 
                 sets.Add(new BarSetInfo
@@ -194,7 +235,7 @@ namespace LynhCad.Manhole.Core.Rebar
                 });
                 foreach (var pos in layer.Positions)
                     foreach (var piece in layer.Pieces(pos))
-                        items.Add(new BarItem { SetKey = layer.Key, Group = group, Dia = d, Shape = BarShape.Straight, A = piece.Length, Count = 1 });
+                        items.Add(DropZone.Item(layer.Profile(pos, piece), layer.Key, group, d));
             }
         }
 
@@ -218,8 +259,10 @@ namespace LynhCad.Manhole.Core.Rebar
                     for (int k = 0; k < n; k++)
                     {
                         double pos = oPerp + side * (hPerp + c + dt / 2.0 + k * TrimmerPitch);
-                        L.RoofTrimmers.Add(new TrimmerBar { Key = key, AlongX = ax, Pos = pos, Run = run, Z = layer.Z, Dia = dt });
-                        items.Add(new BarItem { SetKey = key, Group = 'T', Dia = dt, Shape = BarShape.Straight, A = run.Length, Count = 1 });
+                        // thanh gia cường lớp trên nằm trong dải rãnh khung nắp cũng nhấn xuống theo lưới
+                        var t = new TrimmerBar { Key = key, AlongX = ax, Pos = pos, Run = run, Z = layer.Z, Dia = dt, Drop = layer.Drop };
+                        L.RoofTrimmers.Add(t);
+                        items.Add(DropZone.Item(t.Profile(), key, 'T', dt));
                     }
             }
             sets.Add(new BarSetInfo { Key = BarSets.RoofTrim, Dia = dt, FixedCount = n, Suffix = "TRIMMERS EACH SIDE OF OPENING" + (P.RoofTopMat ? " T&B" : "") });

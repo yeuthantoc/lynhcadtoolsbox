@@ -56,12 +56,14 @@ namespace LynhCad.Manhole.Plugin.UI
         }
 
         /// <summary>
-        /// Ô phụ thuộc chỉ mở khi ô tick tương ứng được chọn: lưới trên bản đáy / bản nắp, nhóm bậc thang
+        /// Ô phụ thuộc chỉ mở khi ô tick tương ứng được chọn: lưới trên bản đáy / bản nắp, rãnh khung nắp, nhóm bậc thang
         /// (góc chỉ khi bậc thang bật và không tự đặt). Gọi khi nạp thông số và mỗi lần tick / bỏ tick.
         /// </summary>
         private void UpdateEnabledFields()
         {
-            if (chkBaseTop == null || chkSteps == null) return;
+            if (chkBaseTop == null || chkSteps == null || chkRebate == null) return;
+            bool rebate = chkRebate.IsChecked == true;
+            txtRebateDepth.IsEnabled = txtRebateWidth.IsEnabled = rebate;
             bool baseTop = chkBaseTop.IsChecked == true;
             cbBaseT.IsEnabled = txtBaseTopSpacing.IsEnabled = baseTop;
             bool roofTop = chkRoofTop.IsChecked == true;

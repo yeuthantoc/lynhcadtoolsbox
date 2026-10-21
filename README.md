@@ -114,6 +114,7 @@ Hộp thoại có nút **Load JSON / Save JSON** để lưu cấu hình chuẩn 
 - Hố tròn: ống khai báo theo **góc** (0° = +X, ngược chiều kim đồng hồ), hướng tâm.
 - Tab Pipes: **DN**, **OD** và **Material** chọn từ danh sách (hoặc gõ giá trị khác). Đổi DN / vật liệu thì OD tự điền theo danh mục (`PipeCatalog`: PVC-U AS/NZS 1260, PE100, DICL; vật liệu khác OD ≈ 1.2·DN) — chỉ là giá trị gợi ý, cần kiểm tra theo catalogue nhà sản xuất.
 - **Mặt bản đáy** = đáy ngoài thấp nhất của các ống − `sumpDepth`. **Mặt bản nắp** = `coverLevel` − `coverAllowance`.
+- **Rãnh khung nắp** (`coverRebate`): mặt bản nắp hạ xuống `coverRebateDepth` trong phạm vi lỗ thăm + `coverRebateWidth` mỗi phía (hố tròn: rãnh tròn); khung nắp vẽ đặt trong rãnh. Lưới thép **trên** của bản nắp và thanh gia cường lớp trên nằm trong phạm vi rãnh được **nhấn xuống** bằng đúng chiều sâu rãnh (đoạn xiên dốc 1:2), thống kê thành thanh `CRANKED` (gãy một chỗ: A, B = độ nhấn, C) hoặc `DROPPED` (nhấn ở giữa: A, B, C, D — bảng có thêm cột D). Lưới dưới không đổi.
 - **Mặt cắt A-A** luôn đi dọc trục ống ra (ống ra nằm bên phải), nhìn về phía trái của hướng ống ra.
 - **Ghi chú (callout)**: xếp thành cột hai bên hình, cách nhau ≥ 1.2 × chiều cao chữ; leader ngang khi chữ cùng cao độ với điểm đặt, nếu phải dời chữ thì gãy khúc 45° (hoặc 90°) tính từ điểm đặt rồi landing ngang; các leader không cắt nhau và giữ khoảng trống 1.2 × chiều cao chữ với số kích thước / nhãn cao độ. Mặt bằng thép bản nắp đặt thẳng tim dưới mặt bằng.
 
@@ -128,6 +129,7 @@ Ví dụ đầy đủ trong [`samples/`](samples). Trường bị thiếu sẽ l
   "internalLength": 1500, "internalWidth": 1200, "wallThickness": 200,
   "baseThickness": 250, "baseProjection": 150, "roofThickness": 200,
   "openingX": 900, "openingY": 600,
+  "coverRebate": false, "coverRebateDepth": 50, "coverRebateWidth": 150,
   "coverLevel": 15.000, "coverAllowance": 200, "sumpDepth": 50,
   "cover": 50,
   "wallVertical": { "dia": 12, "spacing": 200 },
@@ -145,6 +147,8 @@ Ví dụ đầy đủ trong [`samples/`](samples). Trường bị thiếu sẽ l
 Hố tròn đúc sẵn: `"type": "CircularPrecast"`, dùng `internalDiameter`, `precastWallThickness`, `ringHeight`, `openingDiameter`, `roofProjection`, và ống dùng `"angle"` thay cho `wall/offset`.
 
 Thép tường: mặc định 2 lớp hai mặt (EF); `"wallSingleLayer": true` đặt 1 lớp giữa tường (ký hiệu CENTRAL). Mặc định thép ngang là lớp ngoài (sát mặt bê tông), thép đứng phía trong; `"wallHorizontalInside": true` đảo lại (thép đứng ngoài, thép ngang buộc phía trong). Thanh đứng ở các mặt luôn thẳng hàng với nhau (cùng vị trí dọc tường / cùng góc).
+
+Rãnh khung nắp: `"coverRebate": true`, `coverRebateDepth` (50, ≥ 20 và bản nắp còn lại ≥ 100), `coverRebateWidth` (150, rộng hơn lỗ thăm mỗi phía, ≥ `cover`). Có lưới trên thì chiều sâu bị giới hạn để lưới trên nhấn xuống vẫn cách lưới dưới ≥ 25 mm. Ví dụ: [`samples/rect-mh05-rebate.json`](samples/rect-mh05-rebate.json), [`samples/circ-cast-mh06-rebate.json`](samples/circ-cast-mh06-rebate.json).
 
 Bậc thang: `"stepIrons": true`, tuỳ chọn `stepSpacing` (300), `stepWidth` (350), `stepProjection` (150), `stepTopGap` (300, từ đáy bản nắp tới bậc trên cùng), `stepBottomClear` (300, bậc dưới cùng trên mặt benching), `stepAuto` (true) hoặc `"stepAuto": false` + `stepAngle` (độ, hướng từ tâm hố tới tường đặt bậc, 0° = +X).
 

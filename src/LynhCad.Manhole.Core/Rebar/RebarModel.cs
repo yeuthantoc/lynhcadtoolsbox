@@ -5,8 +5,12 @@ using LynhCad.Manhole.Core.Geometry;
 
 namespace LynhCad.Manhole.Core.Rebar
 {
-    /// <summary>Hình dạng thanh. Ring = vòng tròn kín (A = đường kính tim, B = chiều dài nối chồng).</summary>
-    public enum BarShape { Straight, L, U, Ring }
+    /// <summary>
+    /// Hình dạng thanh. Ring = vòng tròn kín (A = đường kính tim, B = chiều dài nối chồng).
+    /// Cranked = gãy một chỗ (A = đoạn thẳng thứ nhất, B = độ nhấn đứng, C = đoạn thẳng thứ hai; đoạn xiên dốc 1:CrankSlope).
+    /// Dropped = nhấn xuống ở giữa, gãy hai chỗ (A = đoạn đầu, B = độ nhấn, C = đoạn giữa đã nhấn, D = đoạn cuối).
+    /// </summary>
+    public enum BarShape { Straight, L, U, Ring, Cranked, Dropped }
 
     /// <summary>
     /// Tên các bộ thép logic: khoá nối RebarDesigner (bảng thống kê) với các builder (ký hiệu trên bản vẽ).
@@ -50,6 +54,104 @@ namespace LynhCad.Manhole.Core.Rebar
         }
     }
 
+    /// <summary>
+    /// Vùng thép lớp trên bản nắp bị nhấn xuống dưới rãnh khung nắp: thanh nằm trong dải Perp được hạ Depth
+    /// trong khoảng Along, chuyển cao độ bằng đoạn xiên dài Run (= Depth × RebarDesigner.CrankSlope) ở hai mép.
+    /// </summary>
+    public class DropZone
+    {
+        public Interval Along, Perp;
+        public double Depth, Run;
+
+        public bool Applies(double pos) { return Perp.Contains(pos); }
+
+        /// <summary>Cao độ thanh (so với cao độ bình thường zHigh) tại toạ độ dọc thanh.</summary>
+        public double ZAt(double along, double zHigh)
+        {
+            if (along <= Along.Min - Run || along >= Along.Max + Run) return zHigh;
+            if (along >= Along.Min && along <= Along.Max) return zHigh - Depth;
+            double t = along < Along.Min ? (Along.Min - along) / Run : (along - Along.Max) / Run;
+            return zHigh - Depth * (1 - t);
+        }
+
+        /// <summary>
+        /// Trắc dọc của một đoạn thanh: các đỉnh (along, z) gồm hai đầu và các điểm gãy nằm trong đoạn.
+        /// Thanh thẳng (không chạm vùng nhấn) → 2 đỉnh.
+        /// </summary>
+        public List<Vec2> Profile(Interval piece, double zHigh)
+        {
+            var xs = new List<double> { piece.Min };
+            foreach (var x in new[] { Along.Min - Run, Along.Min, Along.Max, Along.Max + Run })
+                if (x > piece.Min + 1e-6 && x < piece.Max - 1e-6) xs.Add(x);
+            xs.Add(piece.Max);
+            var pts = new List<Vec2>();
+            foreach (var x in xs)
+            {
+                var v = new Vec2(x, ZAt(x, zHigh));
+                // bỏ đỉnh thừa nằm trên cùng một đường thẳng với hai đỉnh trước
+                if (pts.Count >= 2)
+                {
+                    var a = pts[pts.Count - 2]; var b = pts[pts.Count - 1];
+                    if (Math.Abs((b - a).Cross(v - a)) < 1e-6 * Math.Max(1, (v - a).Length)) { pts[pts.Count - 1] = v; continue; }
+                }
+                pts.Add(v);
+            }
+            return pts;
+        }
+
+        /// <summary>Trắc dọc thẳng (không có vùng nhấn).</summary>
+        public static List<Vec2> Flat(Interval piece, double z)
+        {
+            return new List<Vec2> { new Vec2(piece.Min, z), new Vec2(piece.Max, z) };
+        }
+
+        /// <summary>
+        /// Lập BarItem từ trắc dọc: 0 đoạn xiên → thẳng; 1 → Cranked (A = đoạn dài hơn); 2 → Dropped (A = đoạn đầu dài hơn D).
+        /// Trắc dọc lấy từ Profile nên đoạn xiên luôn dốc 1:CrankSlope và chiều dài của nó tính theo B.
+        /// </summary>
+        public static BarItem Item(List<Vec2> profile, string setKey, char group, int dia)
+        {
+            // đoạn thẳng theo thứ tự dọc thanh, đoạn xiên nằm giữa chúng; đoạn xiên ở đầu / cuối thanh → đoạn thẳng dài 0
+            var legs = new List<double>();
+            double drop = 0;
+            int ramps = 0;
+            bool prevRamp = true;
+            for (int i = 0; i + 1 < profile.Count; i++)
+            {
+                var a = profile[i]; var b = profile[i + 1];
+                bool ramp = Math.Abs(b.Y - a.Y) >= 1e-9;
+                if (ramp)
+                {
+                    ramps++;
+                    drop = Math.Max(drop, Math.Abs(b.Y - a.Y));
+                    if (prevRamp) legs.Add(0);
+                }
+                else legs.Add(Math.Abs(b.X - a.X));
+                prevRamp = ramp;
+            }
+            if (prevRamp) legs.Add(0);
+
+            var it = new BarItem { SetKey = setKey, Group = group, Dia = dia, Count = 1 };
+            if (ramps == 0)
+            {
+                it.Shape = BarShape.Straight; it.A = legs.Sum();
+            }
+            else if (ramps == 1)
+            {
+                it.Shape = BarShape.Cranked; it.B = drop;
+                it.A = Math.Max(legs[0], legs[1]); it.C = Math.Min(legs[0], legs[1]);
+            }
+            else if (ramps == 2)
+            {
+                it.Shape = BarShape.Dropped; it.B = drop;
+                it.C = legs[1];
+                it.A = Math.Max(legs[0], legs[2]); it.D = Math.Min(legs[0], legs[2]);
+            }
+            else throw new InvalidOperationException("Trắc dọc thanh có quá nhiều đoạn xiên (" + ramps + ").");
+            return it;
+        }
+    }
+
     /// <summary>Một nhóm thanh giống hệt nhau trước khi đánh số hiệu.</summary>
     public class BarItem
     {
@@ -59,8 +161,11 @@ namespace LynhCad.Manhole.Core.Rebar
         public char Group;
         public int Dia;
         public BarShape Shape;
-        public double A, B, C;
+        public double A, B, C, D;
         public int Count;
+
+        /// <summary>Chiều dài đoạn xiên của thanh gãy có độ nhấn B (dốc 1:CrankSlope).</summary>
+        public static double RampLength(double drop) { return drop * Math.Sqrt(1 + RebarDesigner.CrankSlope * RebarDesigner.CrankSlope); }
 
         public double Length
         {
@@ -71,24 +176,27 @@ namespace LynhCad.Manhole.Core.Rebar
                     case BarShape.L: return A + B;
                     case BarShape.U: return A + B + C;
                     case BarShape.Ring: return Math.PI * A + B;
+                    case BarShape.Cranked: return A + C + RampLength(B);
+                    case BarShape.Dropped: return A + C + D + 2 * RampLength(B);
                     default: return A;
                 }
             }
         }
 
-        /// <summary>Bản sao với A, B, C làm tròn lên 10 mm như thông lệ bảng thống kê (không sửa bản gốc).</summary>
+        /// <summary>Bản sao với A, B, C, D làm tròn lên 10 mm như thông lệ bảng thống kê (không sửa bản gốc).</summary>
         internal BarItem RoundedTo10()
         {
             var r = (BarItem)MemberwiseClone();
             r.A = GeomUtil.RoundUp(A, 10);
             r.B = GeomUtil.RoundUp(B, 10);
             r.C = GeomUtil.RoundUp(C, 10);
+            r.D = GeomUtil.RoundUp(D, 10);
             return r;
         }
 
         internal string Signature
         {
-            get { return string.Format("{0}|{1}|{2}|{3:0}|{4:0}|{5:0}", Group, Dia, Shape, A, B, C); }
+            get { return string.Format("{0}|{1}|{2}|{3:0}|{4:0}|{5:0}|{6:0}", Group, Dia, Shape, A, B, C, D); }
         }
     }
 
@@ -98,7 +206,7 @@ namespace LynhCad.Manhole.Core.Rebar
         public string Mark;
         public int Dia;
         public BarShape Shape;
-        public double A, B, C;
+        public double A, B, C, D;
         public int Count;
         public double Length;
         public double TotalLength { get { return Count * Length; } }
@@ -192,7 +300,7 @@ namespace LynhCad.Manhole.Core.Rebar
                     m = new BarMark
                     {
                         Mark = it.Group.ToString() + n, Dia = it.Dia, Shape = it.Shape,
-                        A = it.A, B = it.B, C = it.C, Length = it.Length,
+                        A = it.A, B = it.B, C = it.C, D = it.D, Length = it.Length,
                     };
                     bySig[it.Signature] = m;
                     sch.Marks.Add(m);

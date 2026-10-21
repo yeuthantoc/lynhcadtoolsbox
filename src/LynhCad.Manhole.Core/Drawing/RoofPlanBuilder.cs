@@ -26,6 +26,21 @@ namespace LynhCad.Manhole.Core.Drawing
             else
                 m.Add(PPolyline.Rect(Rect2.Centered(o.X, o.Y, 2 * g.OpeningHalfX, 2 * g.OpeningHalfY), Layers.Concrete));
 
+            // rãnh khung nắp (mép rãnh nhìn thấy từ trên)
+            if (g.HasRebate)
+            {
+                if (g.OpeningIsCircle)
+                    m.Add(new PCircle { Layer = Layers.Concrete, Center = o, Radius = g.RebateHalfX });
+                else
+                    m.Add(PPolyline.Rect(Rect2.Centered(o.X, o.Y, 2 * g.RebateHalfX, 2 * g.RebateHalfY), Layers.Concrete));
+                string size = g.OpeningIsCircle
+                    ? string.Format("Ø{0:0}", 2 * g.RebateHalfX)
+                    : string.Format("{0:0}x{1:0}", 2 * g.RebateHalfX, 2 * g.RebateHalfY);
+                var corner = o + new Vec2(-g.RebateHalfX, g.RebateHalfY) * (g.OpeningIsCircle ? 0.7071 : 1);
+                callouts.Add(new Annot.Callout(corner,
+                    string.Format("{0} x {1:0} DEEP REBATE\nFOR COVER FRAME", size, g.RebateDepth), false));
+            }
+
             // tường bên dưới
             if (g.IsRect)
             {
@@ -71,7 +86,8 @@ namespace LynhCad.Manhole.Core.Drawing
             {
                 string top = rd.Schedule.MatCallout(BarSets.RoofTop, true);
                 if (top != null)
-                    callouts.Add(new Annot.Callout(new Vec2(hx * 0.6, -hy * 0.6), top + "\n(NOT SHOWN FOR CLARITY)", false));
+                    callouts.Add(new Annot.Callout(new Vec2(hx * 0.6, -hy * 0.6),
+                        top + (g.HasRebate ? string.Format("\nCRANKED DOWN {0:0} UNDER REBATE", g.RebateDepth) : "") + "\n(NOT SHOWN FOR CLARITY)", false));
             }
 
             // kích thước

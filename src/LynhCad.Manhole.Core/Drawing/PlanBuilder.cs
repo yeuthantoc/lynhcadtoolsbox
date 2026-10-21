@@ -121,6 +121,13 @@ namespace LynhCad.Manhole.Core.Drawing
                 m.Add(new PCircle { Layer = Layers.ConcreteHidden, Center = o, Radius = g.OpeningHalfX });
             else
                 m.Add(PPolyline.Rect(Rect2.Centered(o.X, o.Y, 2 * g.OpeningHalfX, 2 * g.OpeningHalfY), Layers.ConcreteHidden));
+            if (g.HasRebate)
+            {
+                if (g.OpeningIsCircle)
+                    m.Add(new PCircle { Layer = Layers.ConcreteHidden, Center = o, Radius = g.RebateHalfX });
+                else
+                    m.Add(PPolyline.Rect(Rect2.Centered(o.X, o.Y, 2 * g.RebateHalfX, 2 * g.RebateHalfY), Layers.ConcreteHidden));
+            }
             callouts.Add(new Annot.Callout(o + new Vec2(g.OpeningHalfX * 0.7071, g.OpeningHalfY * 0.7071) * (g.OpeningIsCircle ? 1 : 1.41),
                 g.OpeningIsCircle ? string.Format("Ø{0:0} ACCESS OPENING OVER", 2 * g.OpeningHalfX)
                                   : string.Format("{0:0}x{1:0} ACCESS OPENING OVER", 2 * g.OpeningHalfX, 2 * g.OpeningHalfY), false));

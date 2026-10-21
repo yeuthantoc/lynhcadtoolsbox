@@ -58,6 +58,11 @@ namespace LynhCad.Manhole.Core.Model
         public double OpeningHalfX, OpeningHalfY;
         public bool OpeningIsCircle;
 
+        /// <summary>Rãnh đặt khung nắp trên mặt bản nắp (cùng tâm và cùng dạng với lỗ thăm). false nếu không bật.</summary>
+        public bool HasRebate;
+        /// <summary>Chiều sâu rãnh (mm) và nửa kích thước rãnh theo X / Y (hố tròn: bán kính).</summary>
+        public double RebateDepth, RebateHalfX, RebateHalfY;
+
         // Cao độ (mm so với mặt bản đáy = 0)
         public double FloorRL, RoofTopRL, SoffitRL, BaseBottomRL;
         public double H, Tb, Ts;
@@ -134,7 +139,39 @@ namespace LynhCad.Manhole.Core.Model
             else if (OpeningCenter.Length + OpeningHalfX > Ri + 1e-6)
                 Warnings.Add("Lỗ thăm vượt ra ngoài lòng hố (đè lên vách).");
 
+            ComputeRebate();
             ComputeLevelsAndPipes();
+        }
+
+        /// <summary>
+        /// Rãnh khung nắp: mặt bản nắp hạ xuống RebateDepth trong phạm vi lỗ thăm + CoverRebateWidth mỗi phía.
+        /// Lưới thép trên của bản nắp (nếu có) và thanh gia cường lớp trên trong phạm vi này được nhấn xuống theo
+        /// (RebarDesigner), nên phần bản còn lại dưới rãnh phải đủ chỗ cho hai lớp thép.
+        /// </summary>
+        private void ComputeRebate()
+        {
+            HasRebate = P.CoverRebate;
+            if (!HasRebate) return;
+            RebateDepth = P.CoverRebateDepth;
+            RebateHalfX = OpeningHalfX + Math.Max(0, P.CoverRebateWidth);
+            RebateHalfY = OpeningHalfY + Math.Max(0, P.CoverRebateWidth);
+            Require(RebateDepth >= 20, "Rãnh khung nắp phải sâu ≥ 20 mm.");
+            Require(P.CoverRebateWidth >= P.Cover,
+                string.Format("Rãnh khung nắp phải rộng hơn lỗ thăm mỗi phía ≥ lớp bảo vệ ({0:0} mm) để thép lớp trên nhấn xuống được.", P.Cover));
+            double remain = Ts - RebateDepth;
+            Require(remain >= 100, string.Format("Bản nắp dưới rãnh khung nắp chỉ còn {0:0} mm — phải ≥ 100 mm.", remain));
+            if (P.RoofTopMat)
+            {
+                // lớp trên nhấn xuống: thanh thấp nhất của lưới trên phải còn cách lưới dưới ≥ 25 mm
+                double clear = remain - P.Cover - 2 * P.RoofTop.Diameter - (P.Cover + 2 * P.RoofBottom.Diameter);
+                Require(clear >= 25, string.Format("Rãnh khung nắp quá sâu: lưới trên nhấn xuống chỉ còn cách lưới dưới {0:0} mm (cần ≥ 25 mm).", clear));
+            }
+            if (Math.Abs(OpeningCenter.X) + RebateHalfX > RoofHalfX + 1e-6 || Math.Abs(OpeningCenter.Y) + RebateHalfY > RoofHalfY + 1e-6)
+                Errors.Add("Rãnh khung nắp vượt ra ngoài mép bản nắp.");
+            else if (IsRect
+                ? (Math.Abs(OpeningCenter.X) + RebateHalfX > Li / 2 + 1e-6 || Math.Abs(OpeningCenter.Y) + RebateHalfY > Wi / 2 + 1e-6)
+                : OpeningCenter.Length + RebateHalfX > Ri + 1e-6)
+                Warnings.Add("Rãnh khung nắp đè lên tường — kiểm tra đầu trên thép đứng tường.");
         }
 
         private void ComputeLevelsAndPipes()

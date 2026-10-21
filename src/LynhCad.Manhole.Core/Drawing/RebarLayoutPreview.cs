@@ -81,6 +81,8 @@ namespace LynhCad.Manhole.Core.Drawing
                     return new[] { field };
                 case "BaseTopMat": return new[] { "BaseTop" };
                 case "RoofTopMat": return new[] { "RoofTop" };
+                case "CoverRebate": case "CoverRebateDepth": case "CoverRebateWidth":
+                    return new[] { "RoofTop", RebarKeys.Trimmers };
                 case "TrimmerDiameter": case "TrimmerCount": return new[] { RebarKeys.Trimmers };
                 case "WallSingleLayer": case "WallHorizontalInside": case "VerticalBarLeg":
                     return new[] { RebarKeys.WallVertical, RebarKeys.WallHorizontal };

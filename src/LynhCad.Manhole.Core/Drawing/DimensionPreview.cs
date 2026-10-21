@@ -26,7 +26,8 @@ namespace LynhCad.Manhole.Core.Drawing
             TipOpeningDia = "Access opening Ø", TipBase = "Base thickness", TipBaseProj = "Base projection",
             TipRoof = "Roof thickness", TipRoofProj = "Roof projection", TipOpenX = "Opening size X", TipOpenY = "Opening size Y",
             TipOffX = "Opening offset X", TipOffY = "Opening offset Y", TipCL = "Cover level (CL)", TipAllowance = "CL to top of roof",
-            TipSump = "Sump below pipes", TipHeight = "Internal height (derived: CL − CL to top of roof − roof − pipes − sump)";
+            TipSump = "Sump below pipes", TipRebateDepth = "Cover frame rebate depth", TipRebateWidth = "Rebate beyond opening",
+            TipHeight = "Internal height (derived: CL − CL to top of roof − roof − pipes − sump)";
 
         public static Result Build(ManholeParams p)
         {
@@ -128,6 +129,15 @@ namespace LynhCad.Manhole.Core.Drawing
                     : PPolyline.Rect(Rect2.Centered(ox, oy, 2 * hx, 2 * hy), Layers.ConcreteHidden);
                 op.Tip = "Access opening";
                 m.Add(op);
+                if (g.HasRebate)
+                {
+                    var rb = g.OpeningIsCircle
+                        ? (Prim)new PCircle { Layer = Layers.ConcreteHidden, Center = g.OpeningCenter, Radius = g.RebateHalfX }
+                        : PPolyline.Rect(Rect2.Centered(ox, oy, 2 * g.RebateHalfX, 2 * g.RebateHalfY), Layers.ConcreteHidden);
+                    rb.Tip = TipRebateWidth + " = " + Mm(P.CoverRebateWidth) + " mm (cover frame rebate)";
+                    rb.Key = "CoverRebateWidth";
+                    m.Add(rb);
+                }
             }
             // tim hố
             m.Add(PPolyline.Line(new Vec2(-bx - off * 0.5, 0), new Vec2(bx + off * 0.5, 0), Layers.Centre));
@@ -185,13 +195,27 @@ namespace LynhCad.Manhole.Core.Drawing
                         m.Add(joint);
                     }
             }
+            // rãnh khung nắp: mặt bản nắp hạ xuống quanh lỗ thăm
+            double rd = g.HasRebate ? Math.Min(g.RebateDepth, Ts - 1) : 0;
+            double rw = g.HasRebate ? Math.Max(0, P.CoverRebateWidth) : 0;
             if (hx > 0)
             {
-                Hatched(m, PPolyline.Rect(new Rect2(-rx, H, ox - hx, zTop), Layers.Concrete), null);
-                Hatched(m, PPolyline.Rect(new Rect2(ox + hx, H, rx, zTop), Layers.Concrete), null);
-                if (zCL - zTop > 1)
+                foreach (int side in new[] { -1, 1 })
                 {
-                    var frame = PPolyline.Rect(new Rect2(ox - hx - 100, zTop, ox + hx + 100, zCL), Layers.ConcreteBeyond);
+                    double xEdge = side < 0 ? -rx : rx;
+                    double xOpen = ox + side * hx;
+                    double xReb = ox + side * (hx + rw);
+                    var piece = new PPolyline { Layer = Layers.Concrete, Closed = true };
+                    piece.Add(new Vec2(xEdge, H)).Add(new Vec2(xOpen, H)).Add(new Vec2(xOpen, zTop - rd));
+                    if (rd > 0 && Math.Abs(xReb - xEdge) > 1 && (side < 0 ? xReb > xEdge : xReb < xEdge))
+                        piece.Add(new Vec2(xReb, zTop - rd)).Add(new Vec2(xReb, zTop));
+                    piece.Add(new Vec2(xEdge, zTop));
+                    Hatched(m, piece, null);
+                }
+                if (zCL - (zTop - rd) > 1)
+                {
+                    double fx = rd > 0 ? hx + rw - 15 : hx + 100;
+                    var frame = PPolyline.Rect(new Rect2(ox - fx, zTop - rd, ox + fx, zCL), Layers.ConcreteBeyond);
                     frame.Tip = "Cover, frame and adjustment rings (CL to top of roof)";
                     frame.Key = "CoverAllowance";
                     m.Add(frame);
@@ -234,6 +258,13 @@ namespace LynhCad.Manhole.Core.Drawing
             // ---- dưới / trên: phần bản thò ra ----
             if (P.BaseProjection > 0) DimH(m, -bx, -outerHalf, -Tb, -Tb - off, TipBaseProj, "BaseProjection");
             if (P.RoofProjection > 0) DimH(m, outerHalf, rx, zTop, zCL + off, TipRoofProj, "RoofProjection");
+
+            // ---- rãnh khung nắp: chiều sâu (bên phải, ngoài khung nắp) và bề rộng thêm mỗi phía (trên mặt đất) ----
+            if (rd > 0 && hx > 0)
+            {
+                DimV(m, zTop - rd, zTop, ox + hx + rw, xR + (P.SumpDepth > 0 ? off : 0), TipRebateDepth, "CoverRebateDepth");
+                if (rw > 0) DimH(m, ox + hx, ox + hx + rw, zTop, zCL + 2 * off, TipRebateWidth, "CoverRebateWidth");
+            }
         }
     }
 }

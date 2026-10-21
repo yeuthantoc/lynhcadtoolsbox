@@ -138,6 +138,14 @@ namespace LynhCad.Manhole.Core.Model
         [DataMember(Name = "openingOffsetX")] public double OpeningOffsetX { get; set; }
         [DataMember(Name = "openingOffsetY")] public double OpeningOffsetY { get; set; }
 
+        // ---------- Rãnh đặt khung nắp (cover frame rebate) ----------
+        /// <summary>Làm rãnh (rebate) trên mặt bản nắp quanh lỗ thăm để đặt khung nắp; lưới thép trên (nếu có) nhấn xuống dưới rãnh.</summary>
+        [DataMember(Name = "coverRebate")] public bool CoverRebate { get; set; }
+        /// <summary>Chiều sâu rãnh tính từ mặt bản nắp (mm).</summary>
+        [DataMember(Name = "coverRebateDepth")] public double CoverRebateDepth { get; set; }
+        /// <summary>Rãnh rộng hơn lỗ thăm mỗi phía (mm); hố tròn: rãnh tròn đường kính = lỗ + 2×giá trị này.</summary>
+        [DataMember(Name = "coverRebateWidth")] public double CoverRebateWidth { get; set; }
+
         // ---------- Cao độ ----------
         /// <summary>Cao độ nắp (cover level), m.</summary>
         [DataMember(Name = "coverLevel")] public double CoverLevel { get; set; }
@@ -219,6 +227,7 @@ namespace LynhCad.Manhole.Core.Model
             RoofThickness = 200; RoofProjection = 0;
             OpeningX = 900; OpeningY = 600; OpeningDiameter = 600;
             OpeningOffsetX = 0; OpeningOffsetY = 0;
+            CoverRebate = false; CoverRebateDepth = 50; CoverRebateWidth = 150;
             CoverLevel = 15.000; CoverAllowance = 200; SumpDepth = 50;
             Cover = 50;
             WallVertical = new BarSpec(12, 200);

@@ -13,27 +13,41 @@ namespace LynhCad.Manhole.Core.Drawing
         {
             var m = new DrawingModel();
             double s = st.Scale;
+            // cột D chỉ xuất hiện khi có thanh nhấn xuống (Dropped) để bảng của các hố khác không đổi
+            bool hasD = sch.Marks.Any(x => x.Shape == BarShape.Dropped);
+            var widths = new List<int> { 14, 12, 18, 16, 16, 16 };
+            if (hasD) widths.Add(16);
+            widths.AddRange(new[] { 12, 20, 18 });
             var t = new PTable
             {
                 Layer = Layers.Table,
                 Title = "BAR SCHEDULE - " + (g.P.Id ?? "MH"),
-                ColumnWidths = new[] { 14, 12, 18, 16, 16, 16, 12, 20, 18 }.Select(w => w * s).ToArray(),
+                ColumnWidths = widths.Select(w => w * s).ToArray(),
                 RowHeight = 6 * s,
                 TextHeight = 2.5 * s,
             };
-            t.Rows.Add(new[] { "MARK", "SIZE", "SHAPE", "A", "B", "C", "NO.", "LENGTH", "MASS (kg)" });
+            var head = new List<string> { "MARK", "SIZE", "SHAPE", "A", "B", "C" };
+            if (hasD) head.Add("D");
+            head.AddRange(new[] { "NO.", "LENGTH", "MASS (kg)" });
+            t.Rows.Add(head.ToArray());
             foreach (var bm in sch.Marks)
             {
-                t.Rows.Add(new[]
+                bool hasC = bm.Shape == BarShape.U || bm.Shape == BarShape.Cranked || bm.Shape == BarShape.Dropped;
+                var row = new List<string>
                 {
                     bm.Mark, bm.Size, ShapeName(bm.Shape),
                     bm.A.ToString("0"),
                     bm.Shape == BarShape.Straight ? "-" : bm.B.ToString("0"),
-                    bm.Shape == BarShape.U ? bm.C.ToString("0") : "-",
-                    bm.Count.ToString(), bm.Length.ToString("0"), bm.Mass.ToString("0.0"),
-                });
+                    hasC ? bm.C.ToString("0") : "-",
+                };
+                if (hasD) row.Add(bm.Shape == BarShape.Dropped ? bm.D.ToString("0") : "-");
+                row.AddRange(new[] { bm.Count.ToString(), bm.Length.ToString("0"), bm.Mass.ToString("0.0") });
+                t.Rows.Add(row.ToArray());
             }
-            t.Rows.Add(new[] { "TOTAL", "", "", "", "", "", sch.Marks.Sum(x => x.Count).ToString(), "", sch.TotalMass.ToString("0.0") });
+            var total = new List<string> { "TOTAL", "", "", "", "", "" };
+            if (hasD) total.Add("");
+            total.AddRange(new[] { sch.Marks.Sum(x => x.Count).ToString(), "", sch.TotalMass.ToString("0.0") });
+            t.Rows.Add(total.ToArray());
             m.Add(t);
             return m;
         }
@@ -45,6 +59,8 @@ namespace LynhCad.Manhole.Core.Drawing
                 case BarShape.L: return "L";
                 case BarShape.U: return "U";
                 case BarShape.Ring: return "RING";
+                case BarShape.Cranked: return "CRANKED";
+                case BarShape.Dropped: return "DROPPED";
                 default: return "STRAIGHT";
             }
         }
@@ -62,6 +78,10 @@ namespace LynhCad.Manhole.Core.Drawing
                 "REINFORCEMENT INTERRUPTED BY OPENINGS SHALL BE CUT AND TRIMMER BARS PROVIDED AS SHOWN.",
                 "PIPE PENETRATIONS SHALL BE SEALED WITH NON-SHRINK GROUT AND FLEXIBLE JOINT TO PIPE SUPPLIER'S DETAILS.",
             };
+            if (g.HasRebate)
+                notes.Add(string.Format("ROOF SLAB REBATED {0:0} DEEP AROUND THE ACCESS OPENING FOR THE COVER FRAME. "
+                    + "TOP REINFORCEMENT UNDER THE REBATE IS CRANKED DOWN {0:0} AT 1:{1:0} (CRANKED / DROPPED BARS: B = CRANK DEPTH).",
+                    g.RebateDepth, RebarDesigner.CrankSlope));
             if (g.IsPrecast)
                 notes.Add("PRECAST MANHOLE COMPONENTS TO WSA 02 / AUTHORITY STANDARD DRAWINGS AND MANUFACTURER'S DETAILS.");
             if (g.Steps != null)

@@ -117,6 +117,7 @@ namespace LynhCad.Manhole.Preview
             CircularCastSample();
             PipePreview();
             Steps();
+            Rebate();
             Validation();
             Json();
             Naming();
@@ -300,6 +301,7 @@ namespace LynhCad.Manhole.Preview
             True("KeysForField trimmer count", RebarLayoutPreview.KeysForField("TrimmerCount").SequenceEqual(new[] { RebarKeys.Trimmers }));
             True("KeysForField wall option -> both wall sets", RebarLayoutPreview.KeysForField("WallHorizontalInside").Length == 2);
             True("KeysForField top mat checkbox", RebarLayoutPreview.KeysForField("BaseTopMat").SequenceEqual(new[] { "BaseTop" }));
+            True("KeysForField rebate -> roof top + trimmers", RebarLayoutPreview.KeysForField("CoverRebateDepth").SequenceEqual(new[] { "RoofTop", RebarKeys.Trimmers }));
             True("KeysForField unrelated -> empty", RebarLayoutPreview.KeysForField("Cover").Length == 0 && RebarLayoutPreview.KeysForField(null).Length == 0);
             var legend = RebarLayoutPreview.Legend(g, rd);
             True("rebar preview legend", legend.Count >= 4 && legend[0].StartsWith("W1 ") && legend.Any(s => s.EndsWith(" BOT EW")));
@@ -491,6 +493,159 @@ namespace LynhCad.Manhole.Preview
             // JSON thiếu trường bậc thang → mặc định
             var partial = ParamsJson.Deserialize("{\"id\":\"X\",\"pipes\":[{\"mark\":\"A\",\"il\":10.0,\"role\":\"outlet\"}]}");
             True("json default steps", !partial.StepIrons && partial.StepAuto && Math.Abs(partial.StepSpacing - 300) < 1e-9);
+        }
+
+        /// <summary>
+        /// Rãnh khung nắp (cover rebate): bản nắp hạ xuống quanh lỗ thăm, lưới trên + thanh gia cường lớp trên
+        /// trong phạm vi rãnh nhấn xuống (thanh gãy CRANKED / DROPPED, dốc 1:2), khung nắp đặt trong rãnh.
+        /// </summary>
+        private static void Rebate()
+        {
+            // mặc định tắt: không có vùng nhấn, không có thanh gãy, bảng không có cột D
+            var off = ManholeParams.SampleRectangular();
+            off.RoofTopMat = true;
+            var gOff = new ManholeGeometry(off);
+            True("rebate off by default", !off.CoverRebate && !gOff.HasRebate);
+            var rdOff = RebarDesigner.Design(gOff);
+            True("rebate off: no drop zones", rdOff.Layout.RoofLayers.All(l => l.Drop == null) && rdOff.Layout.RoofTrimmers.All(t => t.Drop == null));
+            True("rebate off: no cranked bars", rdOff.Schedule.Marks.All(mk => mk.Shape != BarShape.Cranked && mk.Shape != BarShape.Dropped));
+            var tblOff = DetailComposer.Compose(off).Model.Items.OfType<PTable>().First();
+            Eq("rebate off: schedule has 9 columns", 9, tblOff.ColumnCount);
+
+            // trắc dọc thanh qua vùng nhấn
+            var dz = new DropZone { Along = new Interval(-600, 600), Perp = new Interval(-450, 450), Depth = 50, Run = 100 };
+            Eq("drop z outside", 100, dz.ZAt(-800, 100));
+            Eq("drop z inside", 50, dz.ZAt(0, 100));
+            Eq("drop z mid ramp", 75, dz.ZAt(-650, 100));
+            var full = dz.Profile(new Interval(-1000, 1000), 100);
+            Eq("double crank profile: 6 vertices", 6, full.Count);
+            var itFull = DropZone.Item(full, "S", 'R', 12);
+            True("double crank -> DROPPED", itFull.Shape == BarShape.Dropped);
+            Eq("dropped A", 300, itFull.A); Eq("dropped B", 50, itFull.B); Eq("dropped C", 1200, itFull.C); Eq("dropped D", 300, itFull.D);
+            Eq("dropped length", 300 + 1200 + 300 + 2 * 50 * Math.Sqrt(5), itFull.Length, 1e-6);
+            var half = dz.Profile(new Interval(-1000, -500), 100);
+            Eq("single crank profile: 4 vertices", 4, half.Count);
+            var itHalf = DropZone.Item(half, "S", 'R', 12);
+            True("single crank -> CRANKED", itHalf.Shape == BarShape.Cranked);
+            Eq("cranked A (longer leg first)", 300, itHalf.A); Eq("cranked C", 100, itHalf.C); Eq("cranked B", 50, itHalf.B);
+            var flat = dz.Profile(new Interval(-1000, -800), 100);
+            True("piece clear of rebate stays straight", flat.Count == 2 && DropZone.Item(flat, "S", 'R', 12).Shape == BarShape.Straight);
+            True("DROPPED signature differs from STRAIGHT", itFull.Signature != new BarItem { Group = 'R', Dia = 12, Shape = BarShape.Straight, A = itFull.A }.Signature);
+
+            // hố chữ nhật mẫu + lưới trên + rãnh 50 sâu, rộng hơn lỗ 150 mỗi phía
+            var p = ParamsJson.LoadMany(Path.Combine(Snapshots.FindSamplesDir(), "rect-mh05-rebate.json"))[0];
+            var g = new ManholeGeometry(p);
+            True("rebate rect valid: " + string.Join("; ", g.Errors), g.IsValid && g.HasRebate);
+            Eq("rebate half X", 450 + 150, g.RebateHalfX);
+            Eq("rebate half Y", 300 + 150, g.RebateHalfY);
+            Eq("rebate depth", 50, g.RebateDepth);
+            var rd = RebarDesigner.Design(g);
+            var L = rd.Layout;
+            True("bottom mat not dropped", L.RoofLayers.Where(l => !l.IsTop).All(l => l.Drop == null));
+            var topX = L.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofTop));
+            True("top mat X has drop zone", topX.Drop != null && Math.Abs(topX.Drop.Along.Min + 600) < 1e-6 && Math.Abs(topX.Drop.Perp.Max - 450) < 1e-6);
+            Eq("crank run = 2 x depth", 100, topX.Drop.Run);
+            // thanh ngoài dải rãnh: thẳng; thanh trong dải nhưng không bị lỗ cắt: nhấn 2 chỗ; thanh bị lỗ cắt: mỗi đoạn gãy 1 chỗ
+            double posOut = topX.Positions.First(y => Math.Abs(y) > 450 + 1e-6);
+            double posDrop = topX.Positions.First(y => Math.Abs(y) <= 450 && Math.Abs(y) > 300 + 50);
+            double posCut = topX.Positions.First(y => Math.Abs(y) <= 300 + 50);
+            True("top bar outside rebate band is straight", topX.Profile(posOut, topX.Run).Count == 2);
+            var dropped = topX.Profile(posDrop, topX.Run);
+            True("top bar in rebate band is dropped", dropped.Count == 6 && Math.Abs(dropped[2].Y - (topX.Z - 50)) < 1e-9 && Math.Abs(dropped[0].Y - topX.Z) < 1e-9);
+            var cutPieces = topX.Pieces(posCut);
+            Eq("cut top bar: 2 pieces", 2, cutPieces.Count);
+            var cutProfile = topX.Profile(posCut, cutPieces[0]);
+            True("cut top bar piece cranked once, ends low", cutProfile.Count == 4 && Math.Abs(cutProfile[3].Y - (topX.Z - 50)) < 1e-9);
+            Eq("cut top bar low leg = width - cover", 150 - 50, cutProfile[3].X - cutProfile[2].X, 1e-6);
+            Eq("top bar z outside", topX.Z, topX.ZAt(posDrop, -1000));
+            Eq("top bar z under rebate", topX.Z - 50, topX.ZAt(posDrop, 0));
+            var sch = rd.Schedule;
+            True("schedule has DROPPED and CRANKED marks", sch.Marks.Any(mk => mk.Shape == BarShape.Dropped) && sch.Marks.Any(mk => mk.Shape == BarShape.Cranked));
+            True("dropped marks only in R / T groups", sch.Marks.Where(mk => mk.Shape == BarShape.Dropped || mk.Shape == BarShape.Cranked).All(mk => mk.Mark[0] == 'R' || mk.Mark[0] == 'T'));
+            var rTop = sch.Set(BarSets.X(BarSets.RoofTop));
+            True("roof top set lists several marks (straight + dropped + cranked)", rTop.Marks.Count >= 3);
+            // thanh gia cường lớp trên nằm trong dải rãnh (c + 8 + k·75 < 150) cũng nhấn xuống
+            var topTrims = L.RoofTrimmers.Where(t => t.Drop != null).ToList();
+            True("top trimmers carry drop zone", topTrims.Count == 8 && topTrims.All(t => t.Profile().Count == 6));
+            True("bottom trimmers straight", L.RoofTrimmers.Where(t => t.Drop == null).All(t => t.Profile().Count == 2));
+            True("dropped bar mass counted", sch.Marks.Where(mk => mk.Shape == BarShape.Dropped).All(mk => mk.Length > mk.A + mk.C + mk.D + 2 * mk.B));
+
+            var res = DetailComposer.Compose(p);
+            True("rebate compose ok: " + string.Join("; ", res.Errors), res.Ok);
+            var tbl = res.Model.Items.OfType<PTable>().First();
+            Eq("rebate schedule has D column", 10, tbl.ColumnCount);
+            True("rebate schedule D header", tbl.Rows[0][6] == "D");
+            True("rebate schedule DROPPED row has D", tbl.Rows.Any(r => r[2] == "DROPPED" && r[6] != "-" && r[5] != "-"));
+            True("rebate schedule CRANKED row has C, no D", tbl.Rows.Any(r => r[2] == "CRANKED" && r[5] != "-" && r[6] == "-"));
+            True("rebate note", res.Model.Items.OfType<PText>().Any(t => t.Text.Contains("REBATED 50 DEEP")));
+            True("rebate callout in section", res.Model.Items.OfType<PLeader>().Any(l => l.Text.StartsWith("50 DEEP x 1200x900 REBATE")));
+            True("roof plan rebate callout", res.Model.Items.OfType<PLeader>().Any(l => l.Text.StartsWith("1200x900 x 50 DEEP REBATE")));
+            True("roof plan top mat note mentions crank", res.Model.Items.OfType<PLeader>().Any(l => l.Text.Contains("CRANKED DOWN 50 UNDER REBATE")));
+            // mặt cắt: mặt bản nắp có bậc tại đáy rãnh; thép lớp trên song song mặt cắt vẽ gãy (polyline ≥ 4 đỉnh) và có đỉnh ở cao độ hạ
+            var sec = new SectionBuilder(g, rd, new DrawStyle(20)).Build();
+            double zTop = g.H + g.Ts;
+            True("section concrete has rebate floor line", sec.Items.OfType<PPolyline>().Any(l => l.Layer == Layers.Concrete && l.Points.Count == 2
+                && Math.Abs(l.Points[0].Y - (zTop - 50)) < 1e-6 && Math.Abs(l.Points[1].Y - (zTop - 50)) < 1e-6 && Math.Abs(l.Points[0].X - l.Points[1].X) > 50));
+            var cranked = sec.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Rebar && l.Key == "RoofTop" && l.Points.Count >= 4).ToList();
+            True("section top bar drawn cranked", cranked.Count == 2 && cranked.All(l => l.Points.Any(q => Math.Abs(q.Y - (topX.Z - 50)) < 1e-6) && l.Points.Any(q => Math.Abs(q.Y - topX.Z) < 1e-6)));
+            True("section frame sits in rebate", sec.Items.OfType<PPolyline>().Any(l => l.Layer == Layers.ConcreteBeyond && l.Closed && Math.Abs(l.Points.Min(q => q.Y) - (zTop - 50)) < 1e-6));
+            // chấm thép lớp trên theo Y (cắt ngang) nằm trong rãnh phải ở cao độ hạ
+            var topY = L.RoofLayers.First(l => l.Key == BarSets.Y(BarSets.RoofTop));
+            var topDots = sec.Items.OfType<PDot>().Where(dd => dd.Key == "RoofTop" && Math.Abs(dd.Diameter - new DrawStyle(20).DotSize(topY.Dia)) < 1e-9).ToList();
+            True("section top Y dots follow the drop zone", topDots.Count > 0 && topDots.All(dd =>
+                Math.Abs(dd.Center.Y - (Math.Abs(dd.Center.X) <= 600 + 1e-6 ? topY.Z - 50 : topY.Z)) < 1e-6));
+            // lỗ thăm lệch để có thanh Y nằm trong dải rãnh mà không bị lỗ cắt → chấm ở cao độ hạ
+            // (lỗ lệch 400: đường cắt y = 0 ngoài vùng lỗ cắt thép 50..750 nhưng trong rãnh −50..850)
+            var shifted = p.Clone(); shifted.InternalWidth = 1600; shifted.OpeningOffsetY = 400;
+            var gS = new ManholeGeometry(shifted);
+            True("shifted rebate valid: " + string.Join("; ", gS.Errors), gS.IsValid);
+            var rdS = RebarDesigner.Design(gS);
+            var secS = new SectionBuilder(gS, rdS, new DrawStyle(20)).Build();
+            var topYS = rdS.Layout.RoofLayers.First(l => l.Key == BarSets.Y(BarSets.RoofTop));
+            var lowDots = secS.Items.OfType<PDot>().Where(dd => dd.Key == "RoofTop" && Math.Abs(dd.Center.Y - (topYS.Z - 50)) < 1e-6).ToList();
+            True("section shows dropped top Y dots under rebate", lowDots.Count > 0 && lowDots.All(dd => Math.Abs(dd.Center.X) <= 600 + 1e-6));
+
+            // preview tab General: kích thước rãnh có Tip và Key
+            var dp = DimensionPreview.Build(p);
+            True("dim preview rebate depth", dp.Model.Items.OfType<PDim>().Any(dd => dd.Tip.StartsWith(DimensionPreview.TipRebateDepth + " = 50") && dd.Key == "CoverRebateDepth"));
+            True("dim preview rebate width", dp.Model.Items.OfType<PDim>().Any(dd => dd.Tip.StartsWith(DimensionPreview.TipRebateWidth + " = 150") && dd.Key == "CoverRebateWidth"));
+            True("dim preview without rebate has no rebate dims", !DimensionPreview.Build(off).Model.Items.OfType<PDim>().Any(dd => dd.Tip.StartsWith(DimensionPreview.TipRebateDepth)));
+            True("rebar preview with rebate", RebarLayoutPreview.Build(p).Errors.Count == 0);
+
+            // hố tròn đổ tại chỗ có rãnh tròn
+            var c = ParamsJson.LoadMany(Path.Combine(Snapshots.FindSamplesDir(), "circ-cast-mh06-rebate.json"))[0];
+            var gc = new ManholeGeometry(c);
+            True("rebate circ valid: " + string.Join("; ", gc.Errors), gc.IsValid && gc.HasRebate);
+            Eq("rebate circ radius", 300 + 125, gc.RebateHalfX);
+            var rc = DetailComposer.Compose(c);
+            True("rebate circ compose ok", rc.Ok);
+            True("rebate circ roof plan has rebate circle", rc.Model.Items.OfType<PCircle>().Any(ci => ci.Layer == Layers.Concrete && Math.Abs(ci.Radius - 425) < 1e-6));
+            True("rebate circ callout", rc.Model.Items.OfType<PLeader>().Any(l => l.Text.StartsWith("40 DEEP x Ø850 REBATE")));
+
+            // rãnh không có lưới trên: chỉ bê tông + khung nắp đổi, thép không đổi
+            var noTop = p.Clone(); noTop.RoofTopMat = false;
+            var rdNoTop = RebarDesigner.Design(new ManholeGeometry(noTop));
+            True("rebate without top mat: no cranked bars", rdNoTop.Schedule.Marks.All(mk => mk.Shape != BarShape.Cranked && mk.Shape != BarShape.Dropped));
+            True("rebate without top mat composes", DetailComposer.Compose(noTop).Ok);
+
+            // kiểm tra thông số
+            var deep = p.Clone(); deep.CoverRebateDepth = 120;
+            True("rebate too deep (top mat touches bottom mat) -> error", new ManholeGeometry(deep).Errors.Any(e => e.Contains("quá sâu")));
+            var thin = p.Clone(); thin.RoofTopMat = false; thin.CoverRebateDepth = 160;
+            True("rebate leaves < 100 -> error", new ManholeGeometry(thin).Errors.Any(e => e.Contains("100 mm")));
+            var narrow = p.Clone(); narrow.CoverRebateWidth = 40;
+            True("rebate narrower than cover -> error", new ManholeGeometry(narrow).Errors.Any(e => e.Contains("rộng hơn lỗ thăm")));
+            var wide = p.Clone(); wide.CoverRebateWidth = 2000;
+            True("rebate beyond roof edge -> error", !new ManholeGeometry(wide).IsValid);
+            var onWall = p.Clone(); onWall.CoverRebateWidth = 400;
+            var gWall = new ManholeGeometry(onWall);
+            True("rebate over wall -> warning", gWall.IsValid && gWall.Warnings.Any(w => w.Contains("đè lên tường")));
+
+            // JSON: thiếu trường → mặc định (tắt, 50, 150); roundtrip
+            var partial = ParamsJson.Deserialize("{\"id\":\"X\",\"pipes\":[{\"mark\":\"A\",\"il\":10.0,\"role\":\"outlet\"}]}");
+            True("json default rebate", !partial.CoverRebate && Math.Abs(partial.CoverRebateDepth - 50) < 1e-9 && Math.Abs(partial.CoverRebateWidth - 150) < 1e-9);
+            var back = ParamsJson.Deserialize(ParamsJson.Serialize(p));
+            True("json rebate roundtrip", back.CoverRebate && Math.Abs(back.CoverRebateDepth - 50) < 1e-9 && Math.Abs(back.CoverRebateWidth - 150) < 1e-9);
         }
 
         private static void Validation()
