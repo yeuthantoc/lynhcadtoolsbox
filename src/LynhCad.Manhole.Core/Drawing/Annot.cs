@@ -70,6 +70,12 @@ namespace LynhCad.Manhole.Core.Drawing
             /// chữ đặt lệch cao độ ≥ DiagFactor × chiều cao chữ để leader vào xiên 45° (hoặc đứng) rồi landing ngang.
             /// </summary>
             public bool Horizontal;
+            /// <summary>Ưu tiên đặt chữ PHÍA TRÊN điểm đặt (leader vòng từ trên xuống) — ghi chú lưới thép lớp trên. Mặc định (nét ngang) là phía dưới.</summary>
+            public bool Above;
+            /// <summary>Cột bắt buộc: −1 trái, +1 phải, 0 = theo vị trí điểm đặt. Cặp ghi chú lớp trên / lớp dưới cùng một bản đặt cùng cột.</summary>
+            public int Side;
+            /// <summary>Ghi chú của chính đối tượng vật cản (vd ghi chú ống): bỏ qua vật cản chứa điểm đặt (nới 2 mm giấy) khi xét leader.</summary>
+            public bool OwnObstacle;
             /// <summary>Điểm đặt thay thế (theo thứ tự ưu tiên) khi leader từ Target không tránh được chữ kích thước — vd điểm khác dọc theo thanh thép.</summary>
             public List<Vec2> AltTargets = new List<Vec2>();
             public Callout(Vec2 target, string text, LeaderEnd end = LeaderEnd.Arrow) { Target = target; Text = text; End = end; }
@@ -128,9 +134,11 @@ namespace LynhCad.Manhole.Core.Drawing
         {
             var all = items.Where(c => !string.IsNullOrEmpty(c.Text)).ToList();
             if (all.Count == 0) return;
-            var byHeight = all.OrderByDescending(c => c.Target.Y).ThenBy(c => -side * c.Target.X).ToList();
+            double h0 = st.TextSmall;
+            // xếp theo cao độ chữ mong muốn (lớp trên: trên điểm đặt; nét ngang: dưới điểm đặt) để cặp trên / dưới nằm đúng thứ tự
+            var byHeight = all.OrderByDescending(c => DesiredY(c, h0)).ThenBy(c => -side * c.Target.X).ToList();
             // key tăng dần xuống dưới: với leader 45° cùng chiều, hai leader không cắt nhau khi key của ghi chú dưới >= ghi chú trên
-            var bySweep = all.OrderBy(c => -side * c.Target.X - c.Target.Y).ThenByDescending(c => c.Target.Y).ToList();
+            var bySweep = all.OrderBy(c => -side * c.Target.X - DesiredY(c, h0)).ThenByDescending(c => DesiredY(c, h0)).ToList();
 
             List<PLeader> best = null; int bestBad = int.MaxValue; double bestLen = double.MaxValue;
             foreach (var order in new[] { byHeight, bySweep })
@@ -149,48 +157,72 @@ namespace LynhCad.Manhole.Core.Drawing
             double gap = CalloutGapFactor * h;
             double? prevBottom = null;
             var placed = new List<List<Vec2>>();
+            var blocks = new List<Interval>(); // khối chữ đã xếp trong cột (để chữ đặt phía trên không đè lên)
             var result = new List<PLeader>();
             unresolved = 0; totalLength = 0;
             foreach (var c in list)
             {
                 int lines = c.Text.Split('\n').Length;
                 double blockH = lines * h * PText.LineSpacing;
-                double y = c.Target.Y;
-                // nét ngang: chữ đặt thấp hơn điểm đặt để leader vào xiên, không trùng hướng với nét
-                double diagMin = c.Horizontal ? DiagFactor * h : 0;
-                if (diagMin > 0) y = c.Target.Y - diagMin;
+                // nét ngang / lớp trên: chữ đặt lệch cao độ so với điểm đặt để leader vào xiên (dưới lên hoặc trên xuống)
+                double diagMin = c.Horizontal || c.Above ? DiagFactor * h : 0;
+                double y = DesiredY(c, h);
                 if (prevBottom != null && y + blockH / 2 > prevBottom.Value - gap)
                     y = prevBottom.Value - gap - blockH / 2;
                 double xElbow = xText - side * 1.5 * st.Scale;
-                var pts = LeaderPoints(c.Target, xElbow, y, h);
-                if (Blocked(pts, avoid, placed))
+                // ghi chú của chính vật cản (ống): bỏ các hộp chứa điểm đặt để leader được đi qua đối tượng của mình
+                IList<Rect2> avoidC = avoid;
+                if (c.OwnObstacle && avoid != null)
                 {
-                    // Lần lượt với điểm đặt chính rồi các điểm thay thế: đẩy chữ xuống từng nửa chiều cao chữ (tối đa 12 chiều cao),
-                    // mỗi bước thử cả đoạn xiên 45° lẫn đoạn đứng 90°. Không cách nào lọt thì giữ vị trí ban đầu
-                    // (chấp nhận vi phạm còn hơn chữ chạy đi quá xa).
+                    double mg = 2 * st.Scale;
+                    avoidC = avoid.Where(r => !(c.Target.X >= r.X1 - mg && c.Target.X <= r.X2 + mg && c.Target.Y >= r.Y1 - mg && c.Target.Y <= r.Y2 + mg)).ToList();
+                }
+                var pts = LeaderPoints(c.Target, xElbow, y, h);
+                // ghi chú ưu tiên phía trên mà bị đẩy xuống dưới điểm đặt thì cũng đi tìm chỗ khác (phía trên trước)
+                if (Blocked(pts, avoidC, placed) || (c.Above && y < c.Target.Y + diagMin - 1e-6))
+                {
+                    // Lần lượt với điểm đặt chính rồi các điểm thay thế, đoạn xiên 45° trước rồi mới đoạn đứng 90°:
+                    // đẩy chữ xuống từng nửa chiều cao chữ (tối đa 12 chiều cao); ghi chú nét ngang còn được thử đặt chữ
+                    // PHÍA TRÊN điểm đặt (leader đi vòng từ trên xuống) ở chỗ cột còn trống. Không cách nào lọt thì giữ
+                    // vị trí ban đầu (chấp nhận vi phạm còn hơn chữ chạy đi quá xa).
                     double y0 = y;
                     bool clear = false;
                     var targets = new List<Vec2> { c.Target };
                     targets.AddRange(c.AltTargets);
-                    foreach (var tg in targets)
+                    // Thứ tự ưu tiên: phía ưu tiên (trên với Above, dưới với các ghi chú khác) với đoạn xiên 45° rồi đoạn đứng 90°,
+                    // sau đó mới sang phía kia (cũng xiên trước, đứng sau).
+                    var phases = new List<Tuple<bool, bool>>(); // (up?, diag?)
+                    foreach (bool upPhase in c.Above ? new[] { true, false } : new[] { false, true })
+                        foreach (bool diag in new[] { true, false })
+                            phases.Add(Tuple.Create(upPhase, diag));
+                    foreach (var ph in phases)
                     {
-                        for (int i = 0; i <= 24 && !clear; i++)
+                        bool upPhase = ph.Item1, diag = ph.Item2;
+                        foreach (var tg in targets)
                         {
-                            double yi = y0 - i * h * 0.5;
-                            if (diagMin > 0 && yi > tg.Y - diagMin + 1e-6) continue; // vẫn phải vào xiên
-                            foreach (bool diag in new[] { true, false })
+                            var cands = new List<double>();
+                            if (upPhase)
+                                // phía trên điểm đặt (leader vòng từ trên xuống): ghi chú nét ngang / lớp trên từ diagMin, ghi chú khác từ nửa chữ
+                                for (int i = 0; i <= 24; i++) cands.Add(tg.Y + Math.Max(diagMin, 0.5 * h) + i * h * 0.5);
+                            else
+                                for (int i = 0; i <= 24; i++) cands.Add(y0 - i * h * 0.5);
+                            foreach (var yi in cands)
                             {
+                                if (diagMin > 0 && Math.Abs(yi - tg.Y) < diagMin - 1e-6) continue; // vẫn phải vào xiên
+                                if (!Fits(yi, blockH, gap, blocks)) continue;
                                 var cand = LeaderPoints(tg, xElbow, yi, h, diag);
-                                if (Blocked(cand, avoid, placed)) continue;
+                                if (Blocked(cand, avoidC, placed)) continue;
                                 y = yi; pts = cand; clear = true;
                                 break;
                             }
+                            if (clear) break;
                         }
                         if (clear) break;
                     }
                     if (!clear) { y = y0; pts = LeaderPoints(c.Target, xElbow, y0, h); unresolved++; }
                 }
-                prevBottom = y - blockH / 2;
+                prevBottom = Math.Min(prevBottom ?? double.MaxValue, y - blockH / 2);
+                blocks.Add(new Interval(y - blockH / 2, y + blockH / 2));
                 placed.Add(pts);
                 for (int i = 0; i + 1 < pts.Count; i++) totalLength += (pts[i + 1] - pts[i]).Length;
 
@@ -205,6 +237,21 @@ namespace LynhCad.Manhole.Core.Drawing
                 });
             }
             return result;
+        }
+
+        /// <summary>Cao độ chữ mong muốn: trên điểm đặt (Above), dưới điểm đặt (nét ngang), hoặc ngang điểm đặt.</summary>
+        private static double DesiredY(Callout c, double h)
+        {
+            if (c.Above) return c.Target.Y + DiagFactor * h;
+            if (c.Horizontal) return c.Target.Y - DiagFactor * h;
+            return c.Target.Y;
+        }
+
+        /// <summary>Khối chữ tâm y, cao blockH không đè (kể cả khoảng hở gap) lên khối chữ nào đã xếp trong cột.</summary>
+        private static bool Fits(double y, double blockH, double gap, List<Interval> blocks)
+        {
+            var me = new Interval(y - blockH / 2 - gap, y + blockH / 2 + gap);
+            return !blocks.Any(b => b.Overlaps(me));
         }
 
         private static bool Blocked(List<Vec2> pts, IList<Rect2> avoid, List<List<Vec2>> placed)

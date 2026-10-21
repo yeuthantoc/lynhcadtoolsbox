@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LynhCad.Manhole.Core.Geometry;
@@ -48,9 +49,15 @@ namespace LynhCad.Manhole.Core.Drawing
                 if (cx < split) xLeft = System.Math.Min(xLeft, r.X1 - gap);
                 else xRight = System.Math.Max(xRight, r.X2 + gap);
             }
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X < split), xLeft, -1, avoid);
-            Annot.CalloutColumn(m, st, callouts.Where(c => c.Target.X >= split), xRight, +1, avoid);
+            // vật cản thêm (ống...): leader phải tránh nhưng không đẩy cột chữ ra xa
+            var avoidAll = avoid.Concat(ExtraObstacles()).ToList();
+            Func<Annot.Callout, int> sideOf = c => c.Side != 0 ? c.Side : (c.Target.X < split ? -1 : 1);
+            Annot.CalloutColumn(m, st, callouts.Where(c => sideOf(c) < 0), xLeft, -1, avoidAll);
+            Annot.CalloutColumn(m, st, callouts.Where(c => sideOf(c) > 0), xRight, +1, avoidAll);
         }
+
+        /// <summary>Vật cản bổ sung cho leader ngoài chữ kích thước / chữ rời (vd hộp bao ống trên mặt cắt). Mặc định không có.</summary>
+        protected virtual IEnumerable<Rect2> ExtraObstacles() { return new Rect2[0]; }
 
         /// <summary>Hộp chữ kích thước và chữ rời hiện có trong hình (gọi sau khi đã vẽ kích thước, cao độ).</summary>
         private List<Rect2> Obstacles()

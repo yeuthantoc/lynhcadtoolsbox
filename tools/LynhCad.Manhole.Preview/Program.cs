@@ -122,6 +122,7 @@ namespace LynhCad.Manhole.Preview
             LeaderEnds();
             ShapeSchedule();
             LeaderRules();
+            SharedPrimitives();
             Validation();
             Json();
             Naming();
@@ -948,10 +949,22 @@ namespace LynhCad.Manhole.Preview
             foreach (var txt in new[] { "R1/", "R5/", "P3 DN375", "P1 DN300", "BENCHING BEYOND", "50 DEEP x" })
             {
                 var l = leaders.First(x => x.Text.StartsWith(txt));
+                // chữ cách cao độ điểm đặt ≥ 2h (dưới hoặc trên: leader đi vòng từ trên xuống khi phía dưới vướng);
                 // đoạn đầu xiên 45° hoặc đứng 90° (khi 45° vướng), không bao giờ ngang trùng hướng nét
-                True("leader '" + txt + "' arrives diagonally (text below target)", l.Points[0].Y - l.TextPosition.Y >= Annot.DiagFactor * h - 1e-6
+                True("leader '" + txt + "' arrives diagonally (text clear of target level)", Math.Abs(l.Points[0].Y - l.TextPosition.Y) >= Annot.DiagFactor * h - 1e-6
                     && l.Points.Count == 3 && (Math.Abs(Math.Abs(l.Points[1].X - l.Points[0].X) - Math.Abs(l.Points[1].Y - l.Points[0].Y)) < 1e-6 || Math.Abs(l.Points[1].X - l.Points[0].X) < 1e-6));
             }
+            // cặp ghi chú lớp trên / lớp dưới: cùng cột (bản nắp trái, bản đáy phải), lớp trên chữ ở trên điểm đặt, lớp dưới ở dưới
+            Func<string, PLeader> lead = txt => leaders.First(x => x.Text.StartsWith(txt));
+            var rTop = lead("R5/"); var rBot = lead("R1/"); var bTop = lead("B3/B4"); var bBot = lead("B1/B2");
+            True("roof pair in the same (left) column", Math.Abs(rTop.TextPosition.X - rBot.TextPosition.X) < 1e-6 && rTop.TextPosition.X < rTop.Points[0].X);
+            True("base pair in the same (right) column", Math.Abs(bTop.TextPosition.X - bBot.TextPosition.X) < 1e-6 && bTop.TextPosition.X > bTop.Points[0].X);
+            True("roof top mat: text above target (leader comes down)", rTop.TextPosition.Y >= rTop.Points[0].Y + Annot.DiagFactor * h - 1e-6);
+            // bản đáy: ống ra P3 nằm ngay trên bản ở bên phải → lớp trên không lên trên được, đặt dưới sát lớp dưới
+            True("base top mat: below, next to the bottom mat (pipe blocks the band above)", bTop.TextPosition.Y <= bTop.Points[0].Y - Annot.DiagFactor * h + 1e-6 && bTop.TextPosition.Y > bBot.TextPosition.Y);
+            True("bottom mats: text below target (leader comes up)", rBot.TextPosition.Y <= rBot.Points[0].Y - Annot.DiagFactor * h + 1e-6 && bBot.TextPosition.Y <= bBot.Points[0].Y - Annot.DiagFactor * h + 1e-6);
+            True("pair texts close together", Math.Abs(rTop.TextPosition.Y - rBot.TextPosition.Y) < 600 && Math.Abs(bTop.TextPosition.Y - bBot.TextPosition.Y) < 400);
+            // không có ống gần bản nắp: cả hai bản đều "trên / dưới" khi bỏ ống khỏi mặt cắt → kiểm tra bằng mẫu bản nắp là đủ
             // ghi chú lưới chỉ vào đoạn thẳng của thanh: điểm đặt nằm trên một polyline thép đúng cao độ Z lớp, cách mép cog / chỗ gãy
             var g = res.Geometry; var L = res.Rebar.Layout;
             var sec = new SectionBuilder(g, res.Rebar, st).Build();
@@ -979,6 +992,63 @@ namespace LynhCad.Manhole.Preview
                 && hh.Loops[0].Points.Any(q => Math.Abs(q.Y - gr.Outlet.ZInvert) < 1e-6)));
             True("benching closed outline", secR.Items.OfType<PPolyline>().Any(l => l.Layer == Layers.Concrete && l.Closed && l.Points.Count == 4 && l.Points.Any(q => Math.Abs(q.Y - gr.Outlet.ZInvert) < 1e-6)));
             True("no sand hatch left", !secR.Items.OfType<PHatch>().Any(hh => hh.Pattern == "AR-SAND"));
+            // leader không xuyên qua ống (ống cắt, ống phía sau) ở mọi mẫu; ghi chú ống có thể đặt chữ phía trên ống
+            foreach (var q in new[] { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular(), ManholeParams.SampleCircularCast() })
+            {
+                var gq = new ManholeGeometry(q); var rq = RebarDesigner.Design(gq);
+                var sq = new SectionBuilder(gq, rq, st).Build();
+                var rects = new List<Rect2>(); var marks = new List<string>();
+                foreach (var f in gq.Pipes)
+                {
+                    marks.Add(f.Spec.Mark);
+                    var ell = sq.Items.OfType<PEllipse>().FirstOrDefault(e => e.Key == f.Spec.Mark && Math.Abs(e.RadiusY - f.OD / 2) < 1e-6);
+                    if (ell != null) rects.Add(new Rect2(ell.Center.X - ell.RadiusX + 20, ell.Center.Y - ell.RadiusY + 20, ell.Center.X + ell.RadiusX - 20, ell.Center.Y + ell.RadiusY - 20));
+                    else if (!sq.Items.OfType<PPolyline>().Any(l => l.Key == f.Spec.Mark && (l.Layer == Layers.Pipe || l.Layer == Layers.PipeHidden))) marks.RemoveAt(marks.Count - 1);
+                    // hộp ống = các nét 2 điểm (bỏ nét gãy zigzag ở đầu ống, nó nhô ra ngoài OD)
+                    var lines = sq.Items.OfType<PPolyline>().Where(l => l.Key == f.Spec.Mark && (l.Layer == Layers.Pipe || l.Layer == Layers.PipeHidden) && l.Points.Count <= 5).ToList();
+                    if (ell == null && lines.Count > 0)
+                    {
+                        var b = new Bounds(); foreach (var l in lines) l.AddBounds(b);
+                        rects.Add(new Rect2(b.MinX + 20, b.MinY + 20, b.MaxX - 20, b.MaxY - 20));
+                    }
+                }
+                // leader của ống nào được đi qua chính ống đó; mọi leader khác không xuyên ống
+                foreach (var l in sq.Items.OfType<PLeader>())
+                    for (int i = 0; i + 1 < l.Points.Count; i++)
+                        True(q.Id + " leader '" + l.Text.Split('\n')[0] + "' does not pass through another pipe", !rects.Where((r, k) => !l.Text.StartsWith(marks[k] + " "))
+                            .Any(r => GeomUtil.SegmentIntersectsRect(l.Points[i], l.Points[i + 1], r)));
+            }
+        }
+
+        /// <summary>
+        /// Model không được chứa hai primitive dùng chung một đối tượng (vd polyline vừa là vòng biên hatch vừa là nét riêng):
+        /// khi dời model (tới điểm người dùng chọn) đối tượng đó bị dời hai lần. Kiểm tra bằng tham chiếu và bằng cách dời model.
+        /// </summary>
+        private static void SharedPrimitives()
+        {
+            foreach (var p in new[] { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular(), ManholeParams.SampleCircularCast() })
+            {
+                var res = DetailComposer.Compose(p);
+                var items = res.Model.Items;
+                var seen = new HashSet<object>();
+                bool shared = false;
+                foreach (var it in items)
+                {
+                    if (!seen.Add(it)) shared = true;
+                    var hh = it as PHatch;
+                    if (hh != null) foreach (var lp in hh.Loops) if (!seen.Add(lp)) shared = true;
+                }
+                True(p.Id + ": no primitive instance shared between items / hatch loops", !shared);
+                var b0 = res.Model.GetBounds();
+                res.Model.Translate(new Vec2(1234, -567));
+                var b1 = res.Model.GetBounds();
+                True(p.Id + ": translate moves the whole model exactly once", Math.Abs(b1.MinX - b0.MinX - 1234) < 1e-6 && Math.Abs(b1.MaxX - b0.MaxX - 1234) < 1e-6
+                    && Math.Abs(b1.MinY - b0.MinY + 567) < 1e-6 && Math.Abs(b1.MaxY - b0.MaxY + 567) < 1e-6);
+                // từng primitive cũng chỉ dời một lần: hatch benching và đường bao của nó trùng nhau sau khi dời
+                var hatchLoops = res.Model.Items.OfType<PHatch>().Where(hh => hh.Pattern == "AR-CONC").SelectMany(hh => hh.Loops).Where(lp => lp.Points.Count == 4 && lp.Bulges.All(bb => Math.Abs(bb) < 1e-9)).ToList();
+                var outlines = res.Model.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Concrete && l.Closed && l.Points.Count == 4).ToList();
+                True(p.Id + ": benching outline coincides with its hatch loop after translate", outlines.Any(o => hatchLoops.Any(lp => Enumerable.Range(0, 4).All(i => (lp.Points[i] - o.Points[i]).Length < 1e-6))));
+            }
         }
 
         private static void Validation()

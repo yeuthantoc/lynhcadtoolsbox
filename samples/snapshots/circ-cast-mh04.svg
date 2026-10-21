@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3655 -2100 18795 11418.3" width="2819" height="1713" font-family="Arial, Helvetica, sans-serif">
-<rect x="-3655" y="-2100" width="18795" height="11418.3" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3655 -2100 16085 11418.3" width="2413" height="1713" font-family="Arial, Helvetica, sans-serif">
+<rect x="-3655" y="-2100" width="16085" height="11418.3" fill="white"/>
 <path d="M896.26,-315 A950,950 0 0 0 230,-921.74 L230,-713.86 A750,750 0 0 1 680.64,-315 L896.26,-315 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-230,-921.74 A950,950 0 0 0 -909.33,-275 L-697.76,-275 A750,750 0 0 1 -230,-713.86 L-230,-921.74 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-909.33,275 A950,950 0 0 0 -21.04,949.77 A950,950 0 0 0 896.26,315 L680.64,315 A750,750 0 0 1 -21.76,749.68 A750,750 0 0 1 -697.76,275 L-909.33,275 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
@@ -8,7 +8,7 @@
 <path d="M6045,471.23 L6245,471.23 L6245,-1166.27 L6045,-1166.27 L6045,471.23 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M7745,443.73 L7945,443.73 L7945,-1166.27 L7745,-1166.27 L7745,443.73 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6045,-1166.27 L7945,-1166.27 L7945,-1366.27 L6045,-1366.27 L6045,-1166.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M13240,2147.47 L14740,2147.47 L14740,2057.47 L13240,2007.47 L13240,2147.47 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M6245,1073.73 L7745,1073.73 L7745,983.73 L6245,933.73 L6245,1073.73 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M896.26,-315 A950,950 0 0 0 230,-921.74" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M680.64,-315 A750,750 0 0 0 230,-713.86" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-230,-921.74 A950,950 0 0 0 -909.33,-275" stroke="#111111" stroke-width="7" fill="none"/>
@@ -178,7 +178,7 @@
 <path d="M7745,443.73 L7745,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M7945,443.73 L7945,-1366.27" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M8095,1323.73 L8095,1073.73" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M13240,2147.47 L14740,2147.47 L14740,2057.47 L13240,2007.47 L13240,2147.47 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6245,1073.73 L7745,1073.73 L7745,983.73 L6245,933.73 L6245,1073.73 Z" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M6245,533.73 L7745,533.73" stroke="#888888" stroke-width="3.6" fill="none"/>
 <path d="M6245,933.73 L5445,933.73" stroke="#0089a8" stroke-width="7" fill="none"/>
 <path d="M6245,558.73 L5445,558.73" stroke="#0089a8" stroke-width="7" fill="none"/>
@@ -355,27 +355,27 @@
 <path d="M5685,521.23 L5585,621.23 L4915,621.23 L4901,621.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <path d="M5685,521.23 L5658.13,565.07 L5641.16,548.1 Z" fill="#a07800"/>
 <text x="4885" y="604.57" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">P1 DN375 INLET</tspan><tspan x="4885" dy="83.33">IL 12.500</tspan></text>
-<path d="M6695,533.73 L6380.83,847.9 L4915,847.9 L4901,847.9" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M6695,533.73 L6255.83,972.9 L4915,972.9 L4901,972.9" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <path d="M6695,533.73 L6668.13,577.57 L6651.16,560.6 Z" fill="#a07800"/>
-<text x="4885" y="831.23" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">BENCHING BEYOND, FALL 1:12</tspan><tspan x="4885" dy="83.33">TO CHANNEL, STEEL TROWEL</tspan></text>
-<path d="M6770,1016.23 L6711.67,1074.57 L4915,1074.57 L4901,1074.57" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<text x="4885" y="956.23" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">BENCHING BEYOND, FALL 1:12</tspan><tspan x="4885" dy="83.33">TO CHANNEL, STEEL TROWEL</tspan></text>
+<path d="M6770,1016.23 L6461.67,1324.57 L4915,1324.57 L4901,1324.57" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <circle cx="6770" cy="1016.23" r="12" fill="#a07800"/>
-<text x="4885" y="1057.9" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">MASS CONCRETE BENCHING</tspan><tspan x="4885" dy="83.33">CHANNEL INVERT 12.500 → 12.450</tspan></text>
-<path d="M6579,1131.73 L6376.17,1334.57 L4915,1334.57 L4901,1334.57" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M6579,1131.73 L6552.13,1175.57 L6535.16,1158.6 Z" fill="#a07800"/>
-<text x="4885" y="1359.57" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">B3/B4 N16-200 TOP EW</tspan></text>
-<path d="M6575,1265.73 L6312.83,1527.9 L4915,1527.9 L4901,1527.9" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M6575,1265.73 L6548.13,1309.57 L6531.16,1292.6 Z" fill="#a07800"/>
-<text x="4885" y="1552.9" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">B1/B2 N16-200 BOT EW</tspan></text>
-<path d="M8305,493.73 L8405,593.73 L9248.2,593.73 L9262.2,593.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M8305,493.73 L8348.84,520.6 L8331.87,537.57 Z" fill="#a07800"/>
-<text x="9278.2" y="577.07" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9278.2" dy="0">P3 DN450 OUTLET</tspan><tspan x="9278.2" dy="83.33">IL 12.450</tspan></text>
-<path d="M6995,503.73 L7311.67,820.4 L9248.2,820.4 L9262.2,820.4" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M6995,503.73 L7038.84,530.6 L7021.87,547.57 Z" fill="#a07800"/>
-<text x="9278.2" y="803.73" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9278.2" dy="0">P2 DN300 INLET</tspan><tspan x="9278.2" dy="83.33">IL 12.600 (BEYOND)</tspan></text>
+<text x="4885" y="1307.9" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">MASS CONCRETE BENCHING</tspan><tspan x="4885" dy="83.33">CHANNEL INVERT 12.500 → 12.450</tspan></text>
+<path d="M6995,503.73 L9248.2,503.73 L9262.2,503.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M6995,503.73 L7045,491.73 L7045,515.73 Z" fill="#a07800"/>
+<text x="9278.2" y="487.07" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9278.2" dy="0">P2 DN300 INLET</tspan><tspan x="9278.2" dy="83.33">IL 12.600 (BEYOND)</tspan></text>
+<path d="M8305,493.73 L8530,268.73 L9248.2,268.73 L9262.2,268.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8305,493.73 L8331.87,449.89 L8348.84,466.86 Z" fill="#a07800"/>
+<text x="9278.2" y="252.07" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9278.2" dy="0">P3 DN450 OUTLET</tspan><tspan x="9278.2" dy="83.33">IL 12.450</tspan></text>
 <path d="M7845,1123.73 L9248.2,1123.73 L9262.2,1123.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <circle cx="7845" cy="1123.73" r="12" fill="#a07800"/>
 <text x="9278.2" y="1107.07" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9278.2" dy="0">T3/T4/T5 2-N16 TRIMMERS</tspan><tspan x="9278.2" dy="83.33">EACH SIDE OF PENETRATIONS EF</tspan></text>
+<path d="M7411,1131.73 L7613,1333.73 L9248.2,1333.73 L9262.2,1333.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7411,1131.73 L7454.84,1158.6 L7437.87,1175.57 Z" fill="#a07800"/>
+<text x="9278.2" y="1358.73" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9278.2" dy="0">B3/B4 N16-200 TOP EW</tspan></text>
+<path d="M7415,1265.73 L7676.33,1527.07 L9248.2,1527.07 L9262.2,1527.07" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7415,1265.73 L7458.84,1292.6 L7441.87,1309.57 Z" fill="#a07800"/>
+<text x="9278.2" y="1552.07" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9278.2" dy="0">B1/B2 N16-200 BOT EW</tspan></text>
 <text x="6995" y="1883.73" font-size="138.89" text-anchor="middle" fill="#111111" text-decoration="underline"><tspan x="6995" dy="0">SECTION A-A - MH04</tspan></text>
 <text x="6995" y="1978.73" font-size="69.44" text-anchor="middle" fill="#a07800"><tspan x="6995" dy="0">SCALE 1:20</tspan></text>
 <path d="M-950,4901.67 L950,4901.67 L950,3001.67 L-950,3001.67 L-950,4901.67 Z" stroke="#111111" stroke-width="7" fill="none"/>

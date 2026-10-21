@@ -79,6 +79,17 @@ namespace LynhCad.Manhole.Core.Drawing
         public PPolyline Add(Vec2 p, double bulge = 0) { Points.Add(p); Bulges.Add(bulge); return this; }
 
         /// <summary>
+        /// Bản sao độc lập (điểm + bulge). Một polyline KHÔNG được vừa là vòng biên của PHatch vừa là primitive riêng trong model:
+        /// khi dời model (DrawingModel.Translate) nó sẽ bị dời hai lần (benching nhảy ra ngoài bản vẽ, xem docs/lessons).
+        /// </summary>
+        public PPolyline Clone()
+        {
+            var c = new PPolyline { Layer = Layer, Closed = Closed, ConstantWidth = ConstantWidth, Key = Key, Tip = Tip };
+            for (int i = 0; i < Points.Count; i++) c.Add(Points[i], Bulges[i]);
+            return c;
+        }
+
+        /// <summary>
         /// Thêm cung tròn tâm center, bán kính r, từ góc a0 tới a1 (radian; a1 &lt; a0 = chiều kim đồng hồ),
         /// chia ≤ 90° mỗi đoạn có bulge. Thêm cả điểm cuối cung (bulge 0).
         /// </summary>
