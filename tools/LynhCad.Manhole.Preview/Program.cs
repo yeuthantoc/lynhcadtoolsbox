@@ -322,8 +322,10 @@ namespace LynhCad.Manhole.Preview
             True("unknown bar set throws", threw);
 
             // bản đáy: 1500+400+300 = 2200 x 1900 → thanh theo X dài 2100
+            // lưới dưới dài 2100; lưới trên (có cog, lùi 50 mỗi đầu) dài 2000 → hai mác riêng, cùng số thanh
             var bx = sch.Marks.First(m => m.Mark.StartsWith("B") && Math.Abs(m.A - 2100) < 1e-6);
-            Eq("base X count", GeomUtil.CountBars(1900 - 100 - 16, 200) * 2, bx.Count);
+            Eq("base X count", GeomUtil.CountBars(1900 - 100 - 16, 200), bx.Count);
+            Eq("base top X count", bx.Count, sch.Marks.First(m => m.Mark.StartsWith("B") && Math.Abs(m.A - 2000) < 1e-6).Count);
 
             // bản nắp: thanh bị lỗ cắt phải ngắn hơn thanh nguyên
             var roofX = rd.Layout.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofBot));
@@ -548,10 +550,10 @@ namespace LynhCad.Manhole.Preview
             var L = rd.Layout;
             True("bottom mat not dropped", L.RoofLayers.Where(l => !l.IsTop).All(l => l.Drop == null));
             var topX = L.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofTop));
-            True("top mat X has drop zone", topX.Drop != null && Math.Abs(topX.Drop.Along.Min + 600) < 1e-6 && Math.Abs(topX.Drop.Perp.Max - 450) < 1e-6);
+            True("top mat X has drop zone", topX.Drop != null && Math.Abs(topX.Drop.Along.Min + 600) < 1e-6 && Math.Abs(topX.Drop.Perp.Max - (450 + 100)) < 1e-6);
             Eq("crank run = 2 x depth", 100, topX.Drop.Run);
             // thanh ngoài dải rãnh: thẳng; thanh trong dải nhưng không bị lỗ cắt: nhấn 2 chỗ; thanh bị lỗ cắt: mỗi đoạn gãy 1 chỗ
-            double posOut = topX.Positions.First(y => Math.Abs(y) > 450 + 1e-6);
+            double posOut = topX.Positions.First(y => Math.Abs(y) > 550 + 1e-6);
             double posDrop = topX.Positions.First(y => Math.Abs(y) <= 450 && Math.Abs(y) > 300 + 50);
             double posCut = topX.Positions.First(y => Math.Abs(y) <= 300 + 50);
             True("top bar outside rebate band is straight", topX.Profile(posOut, topX.Run).Count == 2);
@@ -561,7 +563,7 @@ namespace LynhCad.Manhole.Preview
             Eq("cut top bar: 2 pieces", 2, cutPieces.Count);
             var cutProfile = topX.Profile(posCut, cutPieces[0]);
             True("cut top bar piece cranked once, ends low", cutProfile.Count == 4 && Math.Abs(cutProfile[3].Y - (topX.Z - 50)) < 1e-9);
-            Eq("cut top bar low leg = width - cover", 150 - 50, cutProfile[3].X - cutProfile[2].X, 1e-6);
+            Eq("cut top bar low leg = width - cover - inset", 150 - 50 - RebarDesigner.TopMatInset, cutProfile[3].X - cutProfile[2].X, 1e-6);
             Eq("top bar z outside", topX.Z, topX.ZAt(posDrop, -1000));
             Eq("top bar z under rebate", topX.Z - 50, topX.ZAt(posDrop, 0));
             var sch = rd.Schedule;
@@ -597,8 +599,10 @@ namespace LynhCad.Manhole.Preview
             // chấm thép lớp trên theo Y (cắt ngang) nằm trong rãnh phải ở cao độ hạ
             var topY = L.RoofLayers.First(l => l.Key == BarSets.Y(BarSets.RoofTop));
             var topDots = sec.Items.OfType<PDot>().Where(dd => dd.Key == "RoofTop" && Math.Abs(dd.Diameter - new DrawStyle(20).DotSize(topY.Dia)) < 1e-9).ToList();
+            // dải hạ của thanh vuông góc = rãnh + đoạn xiên (100): chấm dưới đoạn xiên cũng nằm thấp, ngay dưới đoạn nhấn
             True("section top Y dots follow the drop zone", topDots.Count > 0 && topDots.All(dd =>
-                Math.Abs(dd.Center.Y - (Math.Abs(dd.Center.X) <= 600 + 1e-6 ? topY.Z - 50 : topY.Z)) < 1e-6));
+                Math.Abs(dd.Center.Y - (Math.Abs(dd.Center.X) <= 700 + 1e-6 ? topY.Z - 50 : topY.Z)) < 1e-6));
+            True("section has a dropped dot under the ramp band", topDots.Any(dd => Math.Abs(dd.Center.X) > 600 && Math.Abs(dd.Center.X) <= 700));
             // lỗ thăm lệch để có thanh Y nằm trong dải rãnh mà không bị lỗ cắt → chấm ở cao độ hạ
             // (lỗ lệch 400: đường cắt y = 0 ngoài vùng lỗ cắt thép 50..750 nhưng trong rãnh −50..850)
             var shifted = p.Clone(); shifted.InternalWidth = 1600; shifted.OpeningOffsetY = 400;
@@ -608,7 +612,7 @@ namespace LynhCad.Manhole.Preview
             var secS = new SectionBuilder(gS, rdS, new DrawStyle(20)).Build();
             var topYS = rdS.Layout.RoofLayers.First(l => l.Key == BarSets.Y(BarSets.RoofTop));
             var lowDots = secS.Items.OfType<PDot>().Where(dd => dd.Key == "RoofTop" && Math.Abs(dd.Center.Y - (topYS.Z - 50)) < 1e-6).ToList();
-            True("section shows dropped top Y dots under rebate", lowDots.Count > 0 && lowDots.All(dd => Math.Abs(dd.Center.X) <= 600 + 1e-6));
+            True("section shows dropped top Y dots under rebate", lowDots.Count > 0 && lowDots.All(dd => Math.Abs(dd.Center.X) <= 700 + 1e-6));
 
             // preview tab General: kích thước rãnh có Tip và Key
             var dp = DimensionPreview.Build(p);
@@ -707,6 +711,15 @@ namespace LynhCad.Manhole.Preview
             // bản đáy 250, N16: cog tới lớp trên = 250 − 2·50 − 16 = 134 < 200
             Eq("base bottom cog limited by slab depth", 250 - 2 * 50 - 16, baseBotX.CogAt(baseBotX.Z), 1e-9);
             var baseTopX = L.BaseLayers.First(l => l.Key == BarSets.X(BarSets.BaseTop));
+            // lưới trên lùi 50 mỗi đầu để cog lồng trong cog lưới dưới (mép bản và mép lỗ thăm)
+            Eq("top mat inset at slab edge", baseBotX.Run.Max - RebarDesigner.TopMatInset, baseTopX.Run.Max);
+            var pReb = ParamsJson.LoadMany(Path.Combine(Snapshots.FindSamplesDir(), "rect-mh05-rebate.json"))[0];
+            var LReb = RebarDesigner.Design(new ManholeGeometry(pReb)).Layout;
+            Eq("top mat inset at opening", LReb.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofBot)).CutAlong.Value.Max + RebarDesigner.TopMatInset,
+               LReb.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofTop)).CutAlong.Value.Max);
+            var pNoCog = p.Clone(); pNoCog.Cogs = false; pNoCog.BaseTopMat = true;
+            var LNoCog = RebarDesigner.Design(new ManholeGeometry(pNoCog)).Layout;
+            Eq("no cogs: no inset", LNoCog.BaseLayers.First(l => l.Key == BarSets.X(BarSets.BaseBot)).Run.Max, LNoCog.BaseLayers.First(l => l.Key == BarSets.X(BarSets.BaseTop)).Run.Max);
             True("base top X cogs down", baseTopX.CogDir == -1 && Math.Abs(baseTopX.CogAt(baseTopX.Z) - (250 - 2 * 50 - 16)) < 1e-9);
             var roofBotX = L.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofBot));
             // bản nắp 200, N12: 200 − 100 − 12 = 88

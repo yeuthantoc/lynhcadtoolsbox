@@ -176,6 +176,8 @@ namespace LynhCad.Manhole.Core.Rebar
         public const double TrimmerPitch = 75;
         /// <summary>Độ dốc đoạn xiên của thanh nhấn xuống dưới rãnh khung nắp: chiều ngang = CrankSlope × độ nhấn (1:2).</summary>
         public const double CrankSlope = 2;
+        /// <summary>Lưới trên có cog lùi đầu thanh vào so với lưới dưới (mm) để cog lớp trên (móc xuống) lồng trong cog lớp dưới (móc lên), không trùng chỗ.</summary>
+        public const double TopMatInset = 50;
 
         public static RebarDesign Design(ManholeGeometry g)
         {
@@ -207,8 +209,11 @@ namespace LynhCad.Manhole.Core.Rebar
                     var rx = new Interval(o.X - g.RebateHalfX, o.X + g.RebateHalfX);
                     var ry = new Interval(o.Y - g.RebateHalfY, o.Y + g.RebateHalfY);
                     double run = g.RebateDepth * CrankSlope;
-                    dropX = new DropZone { Along = rx, Perp = ry, Depth = g.RebateDepth, Run = run };
-                    dropY = new DropZone { Along = ry, Perp = rx, Depth = g.RebateDepth, Run = run };
+                    // dải thanh bị nhấn (Perp) rộng thêm một đoạn xiên để thanh vuông góc nằm dưới đoạn xiên cũng hạ theo
+                    var rxP = new Interval(rx.Min - run, rx.Max + run);
+                    var ryP = new Interval(ry.Min - run, ry.Max + run);
+                    dropX = new DropZone { Along = rx, Perp = ryP, Depth = g.RebateDepth, Run = run };
+                    dropY = new DropZone { Along = ry, Perp = rxP, Depth = g.RebateDepth, Run = run };
                 }
                 AddMat(g, L.RoofLayers, items, sets, BarSets.RoofTop, P.RoofTop, true, 'R', c,
                        g.RoofHalfX, g.RoofHalfY, g.H + g.Ts, g.Ts, cutX, cutY, dropX, dropY);
@@ -234,6 +239,8 @@ namespace LynhCad.Manhole.Core.Rebar
             string suffix = isTop ? "TOP" : "BOT";
             double zOpp = isTop ? zFace - thickness + c + d / 2.0 : zFace + thickness - c - d / 2.0;
             double bendDia = P.BendFactor * d;
+            // lưới trên có cog: đầu thanh (mép bản và mép lỗ thăm) lùi vào TopMatInset để cog không trùng cog lưới dưới
+            double inset = isTop && P.Cogs ? TopMatInset : 0;
             // Lớp 1 (ngoài cùng) chạy theo X, lớp 2 chạy theo Y
             double z1 = isTop ? zFace - c - d / 2.0 : zFace + c + d / 2.0;
             double z2 = isTop ? z1 - d : z1 + d;
@@ -247,11 +254,12 @@ namespace LynhCad.Manhole.Core.Rebar
                     Dia = d, Spacing = s, AlongX = alongX, IsTop = isTop, Z = alongX ? z1 : z2,
                 };
                 double hRun = alongX ? hx : hy, hPerp = alongX ? hy : hx;
-                layer.Run = new Interval(-hRun + c, hRun - c);
+                layer.Run = new Interval(-hRun + c + inset, hRun - c - inset);
                 layer.Positions = GeomUtil.Distribute(-hPerp + c + d / 2.0, hPerp - c - d / 2.0, s);
                 if (cutX != null && cutY != null)
                 {
-                    layer.CutAlong = alongX ? cutX : cutY;
+                    var ca = alongX ? cutX.Value : cutY.Value;
+                    layer.CutAlong = new Interval(ca.Min - inset, ca.Max + inset);
                     layer.CutPerp = alongX ? cutY : cutX;
                 }
                 layer.Drop = alongX ? dropX : dropY;

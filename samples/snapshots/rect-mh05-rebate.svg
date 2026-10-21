@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3655 -1950 16485 9295.8" width="2473" height="1394" font-family="Arial, Helvetica, sans-serif">
-<rect x="-3655" y="-1950" width="16485" height="9295.8" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3655 -1950 16485 9895.8" width="2473" height="1484" font-family="Arial, Helvetica, sans-serif">
+<rect x="-3655" y="-1950" width="16485" height="9895.8" fill="white"/>
 <path d="M-950,-600 L-387.5,-600 L-387.5,-800 L-950,-800 L-950,-600 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-12.5,-600 L950,-600 L950,-800 L-12.5,-800 L-12.5,-600 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-950,800 L950,800 L950,600 L-950,600 L-950,800 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
@@ -7,15 +7,15 @@
 <path d="M750,-275 L950,-275 L950,-600 L750,-600 L750,-275 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-950,600 L-750,600 L-750,230 L-950,230 L-950,600 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-950,-230 L-750,-230 L-750,-600 L-950,-600 L-950,-230 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M6175,1521.23 L8375,1521.23 L8375,1271.23 L6175,1271.23 L6175,1521.23 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M6325,1271.23 L6525,1271.23 L6525,1213.73 L6325,1213.73 L6325,1271.23 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M6325,753.73 L6525,753.73 L6525,-966.27 L6325,-966.27 L6325,753.73 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M8025,721.23 L8225,721.23 L8225,-966.27 L8025,-966.27 L8025,721.23 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M6325,-966.27 L6675,-966.27 L6675,-1216.27 L6325,-1216.27 L6325,-966.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M6675,-966.27 L6825,-966.27 L6825,-1166.27 L6675,-1166.27 L6675,-966.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M7875,-966.27 L8225,-966.27 L8225,-1216.27 L7875,-1216.27 L7875,-966.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M7725,-966.27 L7875,-966.27 L7875,-1166.27 L7725,-1166.27 L7725,-966.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
-<path d="M6525,1271.23 L8025,1271.23 L8025,1183.73 L6525,1133.73 L6525,1271.23 Z" fill="#efe6cc" fill-rule="evenodd" stroke="none"/>
+<path d="M6415,1521.23 L8615,1521.23 L8615,1271.23 L6415,1271.23 L6415,1521.23 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M6565,1271.23 L6765,1271.23 L6765,1213.73 L6565,1213.73 L6565,1271.23 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M6565,753.73 L6765,753.73 L6765,-966.27 L6565,-966.27 L6565,753.73 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M8265,721.23 L8465,721.23 L8465,-966.27 L8265,-966.27 L8265,721.23 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M6565,-966.27 L6915,-966.27 L6915,-1216.27 L6565,-1216.27 L6565,-966.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M6915,-966.27 L7065,-966.27 L7065,-1166.27 L6915,-1166.27 L6915,-966.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M8115,-966.27 L8465,-966.27 L8465,-1216.27 L8115,-1216.27 L8115,-966.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M7965,-966.27 L8115,-966.27 L8115,-1166.27 L7965,-1166.27 L7965,-966.27 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M6765,1271.23 L8265,1271.23 L8265,1183.73 L6765,1133.73 L6765,1271.23 Z" fill="#efe6cc" fill-rule="evenodd" stroke="none"/>
 <path d="M-950,800 L950,800" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-750,600 L750,600" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M750,275 L950,275" stroke="#111111" stroke-width="7" fill="none"/>
@@ -232,251 +232,251 @@
 <text x="2085" y="453.33" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="2085" dy="0">CHANNEL &amp; BENCHING</tspan><tspan x="2085" dy="83.33">(FALL 1:12 TO CHANNEL)</tspan></text>
 <text x="0" y="2237.5" font-size="138.89" text-anchor="middle" fill="#111111" text-decoration="underline"><tspan x="0" dy="0">PLAN - MH05</tspan></text>
 <text x="0" y="2332.5" font-size="69.44" text-anchor="middle" fill="#a07800"><tspan x="0" dy="0">SCALE 1:20</tspan></text>
-<path d="M6175,1521.23 L8375,1521.23" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6175,1271.23 L6325,1271.23" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6525,1271.23 L8375,1271.23" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6325,1213.73 L6525,1213.73" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6325,753.73 L6525,753.73" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M8025,721.23 L8225,721.23" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6525,-966.27 L6825,-966.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M7725,-966.27 L8025,-966.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6675,-1166.27 L6825,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M7725,-1166.27 L7875,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6325,-1216.27 L6675,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M7875,-1216.27 L8225,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6175,1521.23 L6175,1271.23" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6325,1271.23 L6325,1213.73" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6325,753.73 L6325,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6525,1271.23 L6525,1213.73" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6525,753.73 L6525,-966.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6675,-1166.27 L6675,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6825,-966.27 L6825,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M7725,-966.27 L7725,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M7875,-1166.27 L7875,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M8025,721.23 L8025,-966.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M8225,721.23 L8225,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M8375,1521.23 L8375,1271.23" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6525,1133.73 L8025,1183.73" stroke="#111111" stroke-width="7" fill="none"/>
-<path d="M6525,808.73 L8025,808.73" stroke="#888888" stroke-width="3.6" fill="none"/>
-<path d="M6525,1133.73 L5725,1133.73" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M6525,833.73 L5725,833.73" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M6525,1163.73 L5725,1163.73" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M6525,803.73 L5725,803.73" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M5725,1203.73 L5725,1023.73 L5685,1003.73 L5765,963.73 L5725,943.73 L5725,763.73" stroke="#0089a8" stroke-width="7" fill="none"/>
-<ellipse cx="7075" cy="871.23" rx="112.5" ry="112.5" stroke="#0089a8" stroke-width="7" fill="none"/>
-<ellipse cx="7075" cy="871.23" rx="137.5" ry="137.5" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M8025,1183.73 L8825,1183.73" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M8025,808.73 L8825,808.73" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M8025,1221.23 L8825,1221.23" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M8025,771.23 L8825,771.23" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M8825,1261.23 L8825,1036.23 L8785,1016.23 L8865,976.23 L8825,956.23 L8825,731.23" stroke="#0089a8" stroke-width="7" fill="none"/>
-<path d="M6225,1329.23 L6225,1415.23 A48,48 0 0 0 6273,1463.23 L8277,1463.23 A48,48 0 0 0 8325,1415.23 L8325,1329.23" stroke="#d62828" stroke-width="10" fill="none"/>
-<circle cx="6233" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="6422.45" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="6611.91" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="6801.36" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="6990.82" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="7180.27" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="7369.73" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="7559.18" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="7748.64" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="7938.09" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="8127.55" cy="1447.23" r="8" fill="#d62828"/>
-<circle cx="8317" cy="1447.23" r="8" fill="#d62828"/>
-<path d="M6225,1463.23 L6225,1377.23 A48,48 0 0 1 6273,1329.23 L8277,1329.23 A48,48 0 0 1 8325,1377.23 L8325,1463.23" stroke="#d62828" stroke-width="10" fill="none"/>
-<circle cx="6233" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="6422.45" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="6611.91" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="6801.36" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="6990.82" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="7180.27" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="7369.73" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="7559.18" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="7748.64" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="7938.09" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="8127.55" cy="1345.23" r="8" fill="#d62828"/>
-<circle cx="8317" cy="1345.23" r="8" fill="#d62828"/>
-<path d="M6375,-1160.27 L6375,-1058.27 A36,36 0 0 0 6411,-1022.27 L6739,-1022.27 A36,36 0 0 0 6775,-1058.27 L6775,-1160.27" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M7775,-1160.27 L7775,-1058.27 A36,36 0 0 0 7811,-1022.27 L8139,-1022.27 A36,36 0 0 0 8175,-1058.27 L8175,-1160.27" stroke="#d62828" stroke-width="10" fill="none"/>
-<circle cx="6381" cy="-1034.27" r="7" fill="#d62828"/>
-<circle cx="6579.67" cy="-1034.27" r="7" fill="#d62828"/>
-<circle cx="7970.33" cy="-1034.27" r="7" fill="#d62828"/>
-<circle cx="8169" cy="-1034.27" r="7" fill="#d62828"/>
-<path d="M6375,-1022.27 L6375,-1124.27 A36,36 0 0 1 6411,-1160.27 L6566.5,-1160.27 A36,36 0 0 1 6582.6,-1156.47 L6667.4,-1114.07 A36,36 0 0 0 6683.5,-1110.27 L6739,-1110.27 A36,36 0 0 1 6775,-1074.27 L6775,-1022.27" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M7775,-1022.27 L7775,-1074.27 A36,36 0 0 1 7811,-1110.27 L7866.5,-1110.27 A36,36 0 0 0 7882.6,-1114.07 L7967.4,-1156.47 A36,36 0 0 1 7983.5,-1160.27 L8139,-1160.27 A36,36 0 0 1 8175,-1124.27 L8175,-1022.27" stroke="#d62828" stroke-width="10" fill="none"/>
-<circle cx="6381" cy="-1148.27" r="7" fill="#d62828"/>
-<circle cx="6579.67" cy="-1148.27" r="7" fill="#d62828"/>
-<circle cx="7970.33" cy="-1148.27" r="7" fill="#d62828"/>
-<circle cx="8169" cy="-1148.27" r="7" fill="#d62828"/>
-<circle cx="6767" cy="-1034.27" r="8" fill="#d62828"/>
-<circle cx="6692" cy="-1034.27" r="8" fill="#d62828"/>
-<circle cx="7783" cy="-1034.27" r="8" fill="#d62828"/>
-<circle cx="7858" cy="-1034.27" r="8" fill="#d62828"/>
-<circle cx="6767" cy="-1098.27" r="8" fill="#d62828"/>
-<circle cx="6692" cy="-1098.27" r="8" fill="#d62828"/>
-<circle cx="7783" cy="-1098.27" r="8" fill="#d62828"/>
-<circle cx="7858" cy="-1098.27" r="8" fill="#d62828"/>
-<circle cx="6469" cy="638.28" r="7" fill="#d62828"/>
-<circle cx="6469" cy="443.96" r="7" fill="#d62828"/>
-<circle cx="6469" cy="249.64" r="7" fill="#d62828"/>
-<circle cx="6469" cy="55.32" r="7" fill="#d62828"/>
-<circle cx="6469" cy="-138.99" r="7" fill="#d62828"/>
-<circle cx="6469" cy="-333.31" r="7" fill="#d62828"/>
-<circle cx="6469" cy="-527.63" r="7" fill="#d62828"/>
-<circle cx="6469" cy="-721.95" r="7" fill="#d62828"/>
-<circle cx="6469" cy="-916.27" r="7" fill="#d62828"/>
-<circle cx="6381" cy="638.28" r="7" fill="#d62828"/>
-<circle cx="6381" cy="443.96" r="7" fill="#d62828"/>
-<circle cx="6381" cy="249.64" r="7" fill="#d62828"/>
-<circle cx="6381" cy="55.32" r="7" fill="#d62828"/>
-<circle cx="6381" cy="-138.99" r="7" fill="#d62828"/>
-<circle cx="6381" cy="-333.31" r="7" fill="#d62828"/>
-<circle cx="6381" cy="-527.63" r="7" fill="#d62828"/>
-<circle cx="6381" cy="-721.95" r="7" fill="#d62828"/>
-<circle cx="6381" cy="-916.27" r="7" fill="#d62828"/>
-<path d="M6757,1439.23 L6493,1439.23 A36,36 0 0 1 6457,1403.23 L6457,1263.73" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M6457,703.73 L6457,-1106.27 A36,36 0 0 1 6493,-1142.27 L6627,-1142.27" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M6693,1439.23 L6429,1439.23 A36,36 0 0 1 6393,1403.23 L6393,1263.73" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M6393,703.73 L6393,-1106.27 A36,36 0 0 1 6429,-1142.27 L6563,-1142.27" stroke="#d62828" stroke-width="10" fill="none"/>
-<circle cx="8081" cy="638.28" r="7" fill="#d62828"/>
-<circle cx="8081" cy="443.96" r="7" fill="#d62828"/>
-<circle cx="8081" cy="249.64" r="7" fill="#d62828"/>
-<circle cx="8081" cy="55.32" r="7" fill="#d62828"/>
-<circle cx="8081" cy="-138.99" r="7" fill="#d62828"/>
-<circle cx="8081" cy="-333.31" r="7" fill="#d62828"/>
-<circle cx="8081" cy="-527.63" r="7" fill="#d62828"/>
-<circle cx="8081" cy="-721.95" r="7" fill="#d62828"/>
-<circle cx="8081" cy="-916.27" r="7" fill="#d62828"/>
-<circle cx="8169" cy="638.28" r="7" fill="#d62828"/>
-<circle cx="8169" cy="443.96" r="7" fill="#d62828"/>
-<circle cx="8169" cy="249.64" r="7" fill="#d62828"/>
-<circle cx="8169" cy="55.32" r="7" fill="#d62828"/>
-<circle cx="8169" cy="-138.99" r="7" fill="#d62828"/>
-<circle cx="8169" cy="-333.31" r="7" fill="#d62828"/>
-<circle cx="8169" cy="-527.63" r="7" fill="#d62828"/>
-<circle cx="8169" cy="-721.95" r="7" fill="#d62828"/>
-<circle cx="8169" cy="-916.27" r="7" fill="#d62828"/>
-<path d="M7793,1439.23 L8057,1439.23 A36,36 0 0 0 8093,1403.23 L8093,1321.23" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M8093,671.23 L8093,-1106.27 A36,36 0 0 0 8057,-1142.27 L7923,-1142.27" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M7857,1439.23 L8121,1439.23 A36,36 0 0 0 8157,1403.23 L8157,1321.23" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M8157,671.23 L8157,-1106.27 A36,36 0 0 0 8121,-1142.27 L7987,-1142.27" stroke="#d62828" stroke-width="10" fill="none"/>
-<path d="M6690,-1166.27 L7860,-1166.27 L7860,-1416.27 L6690,-1416.27 L6690,-1166.27 Z" stroke="#888888" stroke-width="3.6" fill="none"/>
-<path d="M6690,-1376.27 L7860,-1376.27" stroke="#888888" stroke-width="3.6" fill="none"/>
-<path d="M7860,-1416.27 L8905,-1416.27" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
-<path d="M8905,-1416.27 L8883.4,-1452.27 L8926.6,-1452.27 L8905,-1416.27 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M8905,-1416.27 L8883.4,-1452.27 L8926.6,-1452.27 L8905,-1416.27 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8905,-1452.27 L9425,-1452.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<text x="8948.2" y="-1466.67" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8948.2" dy="0">CL RL 15.000</tspan></text>
-<path d="M8225,-1216.27 L8905,-1216.27" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
-<path d="M8905,-1216.27 L8883.4,-1252.27 L8926.6,-1252.27 L8905,-1216.27 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M8905,-1216.27 L8883.4,-1252.27 L8926.6,-1252.27 L8905,-1216.27 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8905,-1252.27 L9425,-1252.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<text x="8948.2" y="-1266.67" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8948.2" dy="0">TOS RL 14.800</tspan></text>
-<path d="M8375,1271.23 L8905,1271.23" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
-<path d="M8905,1271.23 L8883.4,1235.23 L8926.6,1235.23 L8905,1271.23 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M8905,1271.23 L8883.4,1235.23 L8926.6,1235.23 L8905,1271.23 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8905,1235.23 L9425,1235.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<text x="8948.2" y="1220.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8948.2" dy="0">TOB RL 12.313</tspan></text>
-<path d="M8375,1521.23 L8905,1521.23" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
-<path d="M8905,1521.23 L8883.4,1485.23 L8926.6,1485.23 L8905,1521.23 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M8905,1521.23 L8883.4,1485.23 L8926.6,1485.23 L8905,1521.23 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
-<path d="M8905,1485.23 L9425,1485.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<text x="8948.2" y="1470.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8948.2" dy="0">USB RL 12.063</tspan></text>
-<path d="M6145,1521.23 L5535,1521.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6145,1271.23 L5535,1271.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M5565,1551.23 L5565,1241.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M5581.97,1538.2 L5548.03,1504.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<path d="M5581.97,1288.2 L5548.03,1254.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<text x="5545" y="1396.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 5545 1396.23)">250</text>
-<path d="M6295,1271.23 L5535,1271.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6295,-966.27 L5535,-966.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M5565,1301.23 L5565,-996.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M5581.97,1288.2 L5548.03,1254.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<path d="M5581.97,-949.3 L5548.03,-983.24" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<text x="5545" y="152.48" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 5545 152.48)">2238</text>
-<path d="M6295,-966.27 L5535,-966.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6295,-1216.27 L5535,-1216.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M5565,-936.27 L5565,-1246.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M5581.97,-949.3 L5548.03,-983.24" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<path d="M5581.97,-1199.3 L5548.03,-1233.24" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<text x="5545" y="-1091.27" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 5545 -1091.27)">250</text>
-<path d="M6145,1521.23 L5395,1521.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6145,-1216.27 L5395,-1216.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M5425,1551.23 L5425,-1246.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M5441.97,1538.2 L5408.03,1504.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<path d="M5441.97,-1199.3 L5408.03,-1233.24" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<text x="5405" y="152.48" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 5405 152.48)">2738</text>
-<path d="M6325,1551.23 L6325,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6525,1551.23 L6525,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6295,1681.23 L6555,1681.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6308.03,1698.2 L6341.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<path d="M6508.03,1698.2 L6541.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<text x="6425" y="1661.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a">200</text>
-<path d="M6525,1551.23 L6525,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M8025,1551.23 L8025,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6495,1681.23 L8055,1681.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6508.03,1698.2 L6541.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<path d="M8008.03,1698.2 L8041.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<text x="7275" y="1661.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a">1500</text>
-<path d="M8025,1551.23 L8025,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M8225,1551.23 L8225,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M7995,1681.23 L8255,1681.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M8008.03,1698.2 L8041.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<path d="M8208.03,1698.2 L8241.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<text x="8125" y="1661.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a">200</text>
-<path d="M6175,1551.23 L6175,1851.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M8375,1551.23 L8375,1851.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6145,1821.23 L8405,1821.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
-<path d="M6158.03,1838.2 L6191.97,1804.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<path d="M8358.03,1838.2 L8391.97,1804.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
-<text x="7275" y="1801.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a">2200</text>
-<path d="M6675,-1166.27 L6475,-966.27 L5195,-966.27 L5181,-966.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M6675,-1166.27 L6648.13,-1122.43 L6631.16,-1139.4 Z" fill="#a07800"/>
-<text x="5165" y="-982.93" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">50 DEEP x 1200x900 REBATE</tspan><tspan x="5165" dy="83.33">FOR COVER FRAME</tspan></text>
-<path d="M6800,-1160.27 L6421,-781.27 L5195,-781.27 L5181,-781.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<circle cx="6800" cy="-1160.27" r="12" fill="#a07800"/>
-<text x="5165" y="-756.27" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">R1/R5/R6/R7/R3/R8/R9 N12-200 TOP EW</tspan></text>
-<path d="M6800,-1022.27 L6415.67,-637.93 L5195,-637.93 L5181,-637.93" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<circle cx="6800" cy="-1022.27" r="12" fill="#a07800"/>
-<text x="5165" y="-612.93" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">R1/R2/R3/R4 N12-200 BOT EW</tspan></text>
-<path d="M6457,-295.02 L5195,-295.02 L5181,-295.02" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<circle cx="6457" cy="-295.02" r="12" fill="#a07800"/>
-<text x="5165" y="-270.02" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">W1 N12-200 EF VERT</tspan></text>
-<path d="M6381,249.64 L6331,299.64 L5195,299.64 L5181,299.64" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<circle cx="6381" cy="249.64" r="12" fill="#a07800"/>
-<text x="5165" y="324.64" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">W2/W3 N12-200 EF HORIZ</tspan></text>
-<path d="M7075,733.73 L5195,733.73 L5181,733.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M7075,733.73 L7025,745.73 L7025,721.73 Z" fill="#a07800"/>
-<text x="5165" y="717.07" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">P2 DN225 INLET</tspan><tspan x="5165" dy="83.33">IL 12.600 (BEYOND)</tspan></text>
-<path d="M5965,803.73 L5808.33,960.4 L5195,960.4 L5181,960.4" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M5965,803.73 L5938.13,847.57 L5921.16,830.6 Z" fill="#a07800"/>
-<text x="5165" y="943.73" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">P1 DN300 INLET</tspan><tspan x="5165" dy="83.33">IL 12.450</tspan></text>
-<path d="M6975,808.73 L6596.67,1187.07 L5195,1187.07 L5181,1187.07" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M6975,808.73 L6948.13,852.57 L6931.16,835.6 Z" fill="#a07800"/>
-<text x="5165" y="1170.4" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">BENCHING BEYOND, FALL 1:12</tspan><tspan x="5165" dy="83.33">TO CHANNEL, STEEL TROWEL</tspan></text>
-<path d="M7050,1214.98 L6726.25,1538.73 L5195,1538.73 L5181,1538.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M7050,1214.98 L7023.13,1258.82 L7006.16,1241.85 Z" fill="#a07800"/>
-<text x="5165" y="1522.07" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">MASS CONCRETE BENCHING</tspan><tspan x="5165" dy="83.33">CHANNEL INVERT 12.450 → 12.400</tspan></text>
-<path d="M6945,1329.23 L6550.5,1723.73 L5195,1723.73 L5181,1723.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<circle cx="6945" cy="1329.23" r="12" fill="#a07800"/>
-<text x="5165" y="1748.73" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">B1/B2 N16-200 TOP EW</tspan></text>
-<path d="M6945,1463.23 L6541.17,1867.07 L5195,1867.07 L5181,1867.07" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<circle cx="6945" cy="1463.23" r="12" fill="#a07800"/>
-<text x="5165" y="1892.07" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5165" dy="0">B1/B2 N16-200 BOT EW</tspan></text>
-<path d="M7860,-1291.27 L7960,-1191.27 L9528.2,-1191.27 L9542.2,-1191.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M7860,-1291.27 L7903.84,-1264.4 L7886.87,-1247.43 Z" fill="#a07800"/>
-<text x="9558.2" y="-1249.6" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9558.2" dy="0">ACCESS COVER &amp; FRAME BEDDED IN</tspan><tspan x="9558.2" dy="83.33">REBATE, ADJUSTMENT RINGS AS</tspan><tspan x="9558.2" dy="83.33">REQUIRED (BY OTHERS)</tspan></text>
-<path d="M7795,-1022.27 L7852.67,-964.6 L9528.2,-964.6 L9542.2,-964.6" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<circle cx="7795" cy="-1022.27" r="12" fill="#a07800"/>
-<text x="9558.2" y="-939.6" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9558.2" dy="0">T1/T2/T3/T4 2-N16 TRIMMERS EACH SIDE OF OPENING T&amp;B</tspan></text>
-<path d="M8585,771.23 L9528.2,771.23 L9542.2,771.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<path d="M8585,771.23 L8635,759.23 L8635,783.23 Z" fill="#a07800"/>
-<text x="9558.2" y="754.57" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9558.2" dy="0">P3 DN375 OUTLET</tspan><tspan x="9558.2" dy="83.33">IL 12.400</tspan></text>
-<path d="M8125,1321.23 L9528.2,1321.23 L9542.2,1321.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
-<circle cx="8125" cy="1321.23" r="12" fill="#a07800"/>
-<text x="9558.2" y="1304.57" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9558.2" dy="0">T5/T6/T7 2-N16 TRIMMERS</tspan><tspan x="9558.2" dy="83.33">EACH SIDE OF PENETRATIONS EF</tspan></text>
-<text x="7275" y="2168.73" font-size="138.89" text-anchor="middle" fill="#111111" text-decoration="underline"><tspan x="7275" dy="0">SECTION A-A - MH05</tspan></text>
-<text x="7275" y="2263.73" font-size="69.44" text-anchor="middle" fill="#a07800"><tspan x="7275" dy="0">SCALE 1:20</tspan></text>
+<path d="M6415,1521.23 L8615,1521.23" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6415,1271.23 L6565,1271.23" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6765,1271.23 L8615,1271.23" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6565,1213.73 L6765,1213.73" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6565,753.73 L6765,753.73" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M8265,721.23 L8465,721.23" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6765,-966.27 L7065,-966.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M7965,-966.27 L8265,-966.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6915,-1166.27 L7065,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M7965,-1166.27 L8115,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6565,-1216.27 L6915,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M8115,-1216.27 L8465,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6415,1521.23 L6415,1271.23" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6565,1271.23 L6565,1213.73" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6565,753.73 L6565,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6765,1271.23 L6765,1213.73" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6765,753.73 L6765,-966.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6915,-1166.27 L6915,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M7065,-966.27 L7065,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M7965,-966.27 L7965,-1166.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M8115,-1166.27 L8115,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M8265,721.23 L8265,-966.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M8465,721.23 L8465,-1216.27" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M8615,1521.23 L8615,1271.23" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6765,1133.73 L8265,1183.73" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M6765,808.73 L8265,808.73" stroke="#888888" stroke-width="3.6" fill="none"/>
+<path d="M6765,1133.73 L5965,1133.73" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M6765,833.73 L5965,833.73" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M6765,1163.73 L5965,1163.73" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M6765,803.73 L5965,803.73" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M5965,1203.73 L5965,1023.73 L5925,1003.73 L6005,963.73 L5965,943.73 L5965,763.73" stroke="#0089a8" stroke-width="7" fill="none"/>
+<ellipse cx="7315" cy="871.23" rx="112.5" ry="112.5" stroke="#0089a8" stroke-width="7" fill="none"/>
+<ellipse cx="7315" cy="871.23" rx="137.5" ry="137.5" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M8265,1183.73 L9065,1183.73" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M8265,808.73 L9065,808.73" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M8265,1221.23 L9065,1221.23" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M8265,771.23 L9065,771.23" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M9065,1261.23 L9065,1036.23 L9025,1016.23 L9105,976.23 L9065,956.23 L9065,731.23" stroke="#0089a8" stroke-width="7" fill="none"/>
+<path d="M6465,1329.23 L6465,1415.23 A48,48 0 0 0 6513,1463.23 L8517,1463.23 A48,48 0 0 0 8565,1415.23 L8565,1329.23" stroke="#d62828" stroke-width="10" fill="none"/>
+<circle cx="6473" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="6662.45" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="6851.91" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="7041.36" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="7230.82" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="7420.27" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="7609.73" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="7799.18" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="7988.64" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="8178.09" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="8367.55" cy="1447.23" r="8" fill="#d62828"/>
+<circle cx="8557" cy="1447.23" r="8" fill="#d62828"/>
+<path d="M6515,1463.23 L6515,1377.23 A48,48 0 0 1 6563,1329.23 L8467,1329.23 A48,48 0 0 1 8515,1377.23 L8515,1463.23" stroke="#d62828" stroke-width="10" fill="none"/>
+<circle cx="6473" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="6662.45" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="6851.91" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="7041.36" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="7230.82" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="7420.27" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="7609.73" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="7799.18" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="7988.64" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="8178.09" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="8367.55" cy="1345.23" r="8" fill="#d62828"/>
+<circle cx="8557" cy="1345.23" r="8" fill="#d62828"/>
+<path d="M6615,-1160.27 L6615,-1058.27 A36,36 0 0 0 6651,-1022.27 L6979,-1022.27 A36,36 0 0 0 7015,-1058.27 L7015,-1160.27" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M8015,-1160.27 L8015,-1058.27 A36,36 0 0 0 8051,-1022.27 L8379,-1022.27 A36,36 0 0 0 8415,-1058.27 L8415,-1160.27" stroke="#d62828" stroke-width="10" fill="none"/>
+<circle cx="6621" cy="-1034.27" r="7" fill="#d62828"/>
+<circle cx="6819.67" cy="-1034.27" r="7" fill="#d62828"/>
+<circle cx="8210.33" cy="-1034.27" r="7" fill="#d62828"/>
+<circle cx="8409" cy="-1034.27" r="7" fill="#d62828"/>
+<path d="M6665,-1022.27 L6665,-1124.27 A36,36 0 0 1 6701,-1160.27 L6806.5,-1160.27 A36,36 0 0 1 6822.6,-1156.47 L6907.4,-1114.07 A36,36 0 0 0 6923.5,-1110.27 L6940,-1110.27 A25,25 0 0 1 6965,-1085.27 L6965,-1022.27" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M8065,-1022.27 L8065,-1085.27 A25,25 0 0 1 8090,-1110.27 L8106.5,-1110.27 A36,36 0 0 0 8122.6,-1114.07 L8207.4,-1156.47 A36,36 0 0 1 8223.5,-1160.27 L8329,-1160.27 A36,36 0 0 1 8365,-1124.27 L8365,-1022.27" stroke="#d62828" stroke-width="10" fill="none"/>
+<circle cx="6621" cy="-1148.27" r="7" fill="#d62828"/>
+<circle cx="6819.67" cy="-1098.27" r="7" fill="#d62828"/>
+<circle cx="8210.33" cy="-1098.27" r="7" fill="#d62828"/>
+<circle cx="8409" cy="-1148.27" r="7" fill="#d62828"/>
+<circle cx="7007" cy="-1034.27" r="8" fill="#d62828"/>
+<circle cx="6932" cy="-1034.27" r="8" fill="#d62828"/>
+<circle cx="8023" cy="-1034.27" r="8" fill="#d62828"/>
+<circle cx="8098" cy="-1034.27" r="8" fill="#d62828"/>
+<circle cx="7007" cy="-1098.27" r="8" fill="#d62828"/>
+<circle cx="6932" cy="-1098.27" r="8" fill="#d62828"/>
+<circle cx="8023" cy="-1098.27" r="8" fill="#d62828"/>
+<circle cx="8098" cy="-1098.27" r="8" fill="#d62828"/>
+<circle cx="6709" cy="638.28" r="7" fill="#d62828"/>
+<circle cx="6709" cy="443.96" r="7" fill="#d62828"/>
+<circle cx="6709" cy="249.64" r="7" fill="#d62828"/>
+<circle cx="6709" cy="55.32" r="7" fill="#d62828"/>
+<circle cx="6709" cy="-138.99" r="7" fill="#d62828"/>
+<circle cx="6709" cy="-333.31" r="7" fill="#d62828"/>
+<circle cx="6709" cy="-527.63" r="7" fill="#d62828"/>
+<circle cx="6709" cy="-721.95" r="7" fill="#d62828"/>
+<circle cx="6709" cy="-916.27" r="7" fill="#d62828"/>
+<circle cx="6621" cy="638.28" r="7" fill="#d62828"/>
+<circle cx="6621" cy="443.96" r="7" fill="#d62828"/>
+<circle cx="6621" cy="249.64" r="7" fill="#d62828"/>
+<circle cx="6621" cy="55.32" r="7" fill="#d62828"/>
+<circle cx="6621" cy="-138.99" r="7" fill="#d62828"/>
+<circle cx="6621" cy="-333.31" r="7" fill="#d62828"/>
+<circle cx="6621" cy="-527.63" r="7" fill="#d62828"/>
+<circle cx="6621" cy="-721.95" r="7" fill="#d62828"/>
+<circle cx="6621" cy="-916.27" r="7" fill="#d62828"/>
+<path d="M6997,1439.23 L6733,1439.23 A36,36 0 0 1 6697,1403.23 L6697,1263.73" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M6697,703.73 L6697,-1106.27 A36,36 0 0 1 6733,-1142.27 L6867,-1142.27" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M6933,1439.23 L6669,1439.23 A36,36 0 0 1 6633,1403.23 L6633,1263.73" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M6633,703.73 L6633,-1106.27 A36,36 0 0 1 6669,-1142.27 L6803,-1142.27" stroke="#d62828" stroke-width="10" fill="none"/>
+<circle cx="8321" cy="638.28" r="7" fill="#d62828"/>
+<circle cx="8321" cy="443.96" r="7" fill="#d62828"/>
+<circle cx="8321" cy="249.64" r="7" fill="#d62828"/>
+<circle cx="8321" cy="55.32" r="7" fill="#d62828"/>
+<circle cx="8321" cy="-138.99" r="7" fill="#d62828"/>
+<circle cx="8321" cy="-333.31" r="7" fill="#d62828"/>
+<circle cx="8321" cy="-527.63" r="7" fill="#d62828"/>
+<circle cx="8321" cy="-721.95" r="7" fill="#d62828"/>
+<circle cx="8321" cy="-916.27" r="7" fill="#d62828"/>
+<circle cx="8409" cy="638.28" r="7" fill="#d62828"/>
+<circle cx="8409" cy="443.96" r="7" fill="#d62828"/>
+<circle cx="8409" cy="249.64" r="7" fill="#d62828"/>
+<circle cx="8409" cy="55.32" r="7" fill="#d62828"/>
+<circle cx="8409" cy="-138.99" r="7" fill="#d62828"/>
+<circle cx="8409" cy="-333.31" r="7" fill="#d62828"/>
+<circle cx="8409" cy="-527.63" r="7" fill="#d62828"/>
+<circle cx="8409" cy="-721.95" r="7" fill="#d62828"/>
+<circle cx="8409" cy="-916.27" r="7" fill="#d62828"/>
+<path d="M8033,1439.23 L8297,1439.23 A36,36 0 0 0 8333,1403.23 L8333,1321.23" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M8333,671.23 L8333,-1106.27 A36,36 0 0 0 8297,-1142.27 L8163,-1142.27" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M8097,1439.23 L8361,1439.23 A36,36 0 0 0 8397,1403.23 L8397,1321.23" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M8397,671.23 L8397,-1106.27 A36,36 0 0 0 8361,-1142.27 L8227,-1142.27" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M6930,-1166.27 L8100,-1166.27 L8100,-1416.27 L6930,-1416.27 L6930,-1166.27 Z" stroke="#888888" stroke-width="3.6" fill="none"/>
+<path d="M6930,-1376.27 L8100,-1376.27" stroke="#888888" stroke-width="3.6" fill="none"/>
+<path d="M8100,-1416.27 L9145,-1416.27" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M9145,-1416.27 L9123.4,-1452.27 L9166.6,-1452.27 L9145,-1416.27 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M9145,-1416.27 L9123.4,-1452.27 L9166.6,-1452.27 L9145,-1416.27 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
+<path d="M9145,-1452.27 L9665,-1452.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<text x="9188.2" y="-1466.67" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9188.2" dy="0">CL RL 15.000</tspan></text>
+<path d="M8465,-1216.27 L9145,-1216.27" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M9145,-1216.27 L9123.4,-1252.27 L9166.6,-1252.27 L9145,-1216.27 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M9145,-1216.27 L9123.4,-1252.27 L9166.6,-1252.27 L9145,-1216.27 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
+<path d="M9145,-1252.27 L9665,-1252.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<text x="9188.2" y="-1266.67" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9188.2" dy="0">TOS RL 14.800</tspan></text>
+<path d="M8615,1271.23 L9145,1271.23" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M9145,1271.23 L9123.4,1235.23 L9166.6,1235.23 L9145,1271.23 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M9145,1271.23 L9123.4,1235.23 L9166.6,1235.23 L9145,1271.23 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
+<path d="M9145,1235.23 L9665,1235.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<text x="9188.2" y="1220.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9188.2" dy="0">TOB RL 12.313</tspan></text>
+<path d="M8615,1521.23 L9145,1521.23" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M9145,1521.23 L9123.4,1485.23 L9166.6,1485.23 L9145,1521.23 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M9145,1521.23 L9123.4,1485.23 L9166.6,1485.23 L9145,1521.23 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
+<path d="M9145,1485.23 L9665,1485.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<text x="9188.2" y="1470.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9188.2" dy="0">USB RL 12.063</tspan></text>
+<path d="M6385,1521.23 L5775,1521.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6385,1271.23 L5775,1271.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M5805,1551.23 L5805,1241.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M5821.97,1538.2 L5788.03,1504.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M5821.97,1288.2 L5788.03,1254.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="5785" y="1396.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 5785 1396.23)">250</text>
+<path d="M6535,1271.23 L5775,1271.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6535,-966.27 L5775,-966.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M5805,1301.23 L5805,-996.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M5821.97,1288.2 L5788.03,1254.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M5821.97,-949.3 L5788.03,-983.24" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="5785" y="152.48" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 5785 152.48)">2238</text>
+<path d="M6535,-966.27 L5775,-966.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6535,-1216.27 L5775,-1216.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M5805,-936.27 L5805,-1246.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M5821.97,-949.3 L5788.03,-983.24" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M5821.97,-1199.3 L5788.03,-1233.24" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="5785" y="-1091.27" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 5785 -1091.27)">250</text>
+<path d="M6385,1521.23 L5635,1521.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6385,-1216.27 L5635,-1216.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M5665,1551.23 L5665,-1246.27" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M5681.97,1538.2 L5648.03,1504.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M5681.97,-1199.3 L5648.03,-1233.24" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="5645" y="152.48" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 5645 152.48)">2738</text>
+<path d="M6565,1551.23 L6565,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6765,1551.23 L6765,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6535,1681.23 L6795,1681.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6548.03,1698.2 L6581.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M6748.03,1698.2 L6781.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="6665" y="1661.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a">200</text>
+<path d="M6765,1551.23 L6765,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M8265,1551.23 L8265,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6735,1681.23 L8295,1681.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6748.03,1698.2 L6781.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M8248.03,1698.2 L8281.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="7515" y="1661.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a">1500</text>
+<path d="M8265,1551.23 L8265,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M8465,1551.23 L8465,1711.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M8235,1681.23 L8495,1681.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M8248.03,1698.2 L8281.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M8448.03,1698.2 L8481.97,1664.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="8365" y="1661.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a">200</text>
+<path d="M6415,1551.23 L6415,1851.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M8615,1551.23 L8615,1851.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6385,1821.23 L8645,1821.23" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M6398.03,1838.2 L6431.97,1804.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M8598.03,1838.2 L8631.97,1804.26" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="7515" y="1801.23" font-size="69.44" text-anchor="middle" fill="#2a8a2a">2200</text>
+<path d="M6915,-1166.27 L6715,-966.27 L5435,-966.27 L5421,-966.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M6915,-1166.27 L6888.13,-1122.43 L6871.16,-1139.4 Z" fill="#a07800"/>
+<text x="5405" y="-982.93" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">50 DEEP x 1200x900 REBATE</tspan><tspan x="5405" dy="83.33">FOR COVER FRAME</tspan></text>
+<path d="M7040,-1160.27 L6661,-781.27 L5435,-781.27 L5421,-781.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="7040" cy="-1160.27" r="12" fill="#a07800"/>
+<text x="5405" y="-756.27" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">R5/R6/R7/R8/R9/R10/R11/R12 N12-200 TOP EW</tspan></text>
+<path d="M7040,-1022.27 L6655.67,-637.93 L5435,-637.93 L5421,-637.93" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="7040" cy="-1022.27" r="12" fill="#a07800"/>
+<text x="5405" y="-612.93" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">R1/R2/R3/R4 N12-200 BOT EW</tspan></text>
+<path d="M6697,-295.02 L5435,-295.02 L5421,-295.02" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="6697" cy="-295.02" r="12" fill="#a07800"/>
+<text x="5405" y="-270.02" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">W1 N12-200 EF VERT</tspan></text>
+<path d="M6621,249.64 L6571,299.64 L5435,299.64 L5421,299.64" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="6621" cy="249.64" r="12" fill="#a07800"/>
+<text x="5405" y="324.64" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">W2/W3 N12-200 EF HORIZ</tspan></text>
+<path d="M7315,733.73 L5435,733.73 L5421,733.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7315,733.73 L7265,745.73 L7265,721.73 Z" fill="#a07800"/>
+<text x="5405" y="717.07" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">P2 DN225 INLET</tspan><tspan x="5405" dy="83.33">IL 12.600 (BEYOND)</tspan></text>
+<path d="M6205,803.73 L6048.33,960.4 L5435,960.4 L5421,960.4" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M6205,803.73 L6178.13,847.57 L6161.16,830.6 Z" fill="#a07800"/>
+<text x="5405" y="943.73" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">P1 DN300 INLET</tspan><tspan x="5405" dy="83.33">IL 12.450</tspan></text>
+<path d="M7215,808.73 L6836.67,1187.07 L5435,1187.07 L5421,1187.07" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7215,808.73 L7188.13,852.57 L7171.16,835.6 Z" fill="#a07800"/>
+<text x="5405" y="1170.4" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">BENCHING BEYOND, FALL 1:12</tspan><tspan x="5405" dy="83.33">TO CHANNEL, STEEL TROWEL</tspan></text>
+<path d="M7290,1214.98 L6966.25,1538.73 L5435,1538.73 L5421,1538.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M7290,1214.98 L7263.13,1258.82 L7246.16,1241.85 Z" fill="#a07800"/>
+<text x="5405" y="1522.07" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">MASS CONCRETE BENCHING</tspan><tspan x="5405" dy="83.33">CHANNEL INVERT 12.450 → 12.400</tspan></text>
+<path d="M7185,1329.23 L6790.5,1723.73 L5435,1723.73 L5421,1723.73" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="7185" cy="1329.23" r="12" fill="#a07800"/>
+<text x="5405" y="1748.73" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">B3/B4 N16-200 TOP EW</tspan></text>
+<path d="M7185,1463.23 L6781.17,1867.07 L5435,1867.07 L5421,1867.07" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="7185" cy="1463.23" r="12" fill="#a07800"/>
+<text x="5405" y="1892.07" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="5405" dy="0">B1/B2 N16-200 BOT EW</tspan></text>
+<path d="M8100,-1291.27 L8200,-1191.27 L9768.2,-1191.27 L9782.2,-1191.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8100,-1291.27 L8143.84,-1264.4 L8126.87,-1247.43 Z" fill="#a07800"/>
+<text x="9798.2" y="-1249.6" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9798.2" dy="0">ACCESS COVER &amp; FRAME BEDDED IN</tspan><tspan x="9798.2" dy="83.33">REBATE, ADJUSTMENT RINGS AS</tspan><tspan x="9798.2" dy="83.33">REQUIRED (BY OTHERS)</tspan></text>
+<path d="M8035,-1022.27 L8092.67,-964.6 L9768.2,-964.6 L9782.2,-964.6" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="8035" cy="-1022.27" r="12" fill="#a07800"/>
+<text x="9798.2" y="-939.6" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9798.2" dy="0">T1/T2/T3/T4 2-N16 TRIMMERS EACH SIDE OF OPENING T&amp;B</tspan></text>
+<path d="M8825,771.23 L9768.2,771.23 L9782.2,771.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M8825,771.23 L8875,759.23 L8875,783.23 Z" fill="#a07800"/>
+<text x="9798.2" y="754.57" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9798.2" dy="0">P3 DN375 OUTLET</tspan><tspan x="9798.2" dy="83.33">IL 12.400</tspan></text>
+<path d="M8365,1321.23 L9768.2,1321.23 L9782.2,1321.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="8365" cy="1321.23" r="12" fill="#a07800"/>
+<text x="9798.2" y="1304.57" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="9798.2" dy="0">T5/T6/T7 2-N16 TRIMMERS</tspan><tspan x="9798.2" dy="83.33">EACH SIDE OF PENETRATIONS EF</tspan></text>
+<text x="7515" y="2168.73" font-size="138.89" text-anchor="middle" fill="#111111" text-decoration="underline"><tspan x="7515" dy="0">SECTION A-A - MH05</tspan></text>
+<text x="7515" y="2263.73" font-size="69.44" text-anchor="middle" fill="#a07800"><tspan x="7515" dy="0">SCALE 1:20</tspan></text>
 <path d="M-950,4549.17 L950,4549.17 L950,2949.17 L-950,2949.17 L-950,4549.17 Z" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-450,4049.17 L450,4049.17 L450,3449.17 L-450,3449.17 L-450,4049.17 Z" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-600,4199.17 L600,4199.17 L600,3299.17 L-600,3299.17 L-600,4199.17 Z" stroke="#111111" stroke-width="7" fill="none"/>
@@ -635,7 +635,7 @@
 <text x="1190" y="3416.17" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="1190" dy="0">T1/T2/T3/T4 2-N16 TRIMMERS EACH SIDE OF OPENING T&amp;B</tspan></text>
 <path d="M570,4229.17 L1160,4229.17 L1174,4229.17" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <path d="M570,4229.17 L620,4217.17 L620,4241.17 Z" fill="#a07800"/>
-<text x="1190" y="4170.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="1190" dy="0">R1/R5/R6/R7/R3/R8/R9 N12-200 TOP EW</tspan><tspan x="1190" dy="83.33">CRANKED DOWN 50 UNDER REBATE</tspan><tspan x="1190" dy="83.33">(NOT SHOWN FOR CLARITY)</tspan></text>
+<text x="1190" y="4170.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="1190" dy="0">R5/R6/R7/R8/R9/R10/R11/R12 N12-200 TOP EW</tspan><tspan x="1190" dy="83.33">CRANKED DOWN 50 UNDER REBATE</tspan><tspan x="1190" dy="83.33">(NOT SHOWN FOR CLARITY)</tspan></text>
 <text x="0" y="5109.17" font-size="138.89" text-anchor="middle" fill="#111111" text-decoration="underline"><tspan x="0" dy="0">ROOF SLAB REINFORCEMENT - MH05</tspan></text>
 <text x="0" y="5204.17" font-size="69.44" text-anchor="middle" fill="#a07800"><tspan x="0" dy="0">SCALE 1:20</tspan></text>
 <path d="M3830,2949.17 L7350,2949.17" stroke="#111111" stroke-width="3.6" fill="none"/>
@@ -663,18 +663,23 @@
 <path d="M3830,5589.17 L7350,5589.17" stroke="#111111" stroke-width="3.6" fill="none"/>
 <path d="M3830,5709.17 L7350,5709.17" stroke="#111111" stroke-width="3.6" fill="none"/>
 <path d="M3830,5829.17 L7350,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M3830,2949.17 L3830,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M7350,2949.17 L7350,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M4110,3069.17 L4110,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M4350,3069.17 L4350,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M4710,3069.17 L4710,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M5030,3069.17 L5030,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M5350,3069.17 L5350,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M5670,3069.17 L5670,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M5990,3069.17 L5990,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M6350,3069.17 L6350,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M6590,3069.17 L6590,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M6990,3069.17 L6990,5829.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3830,5949.17 L7350,5949.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3830,6069.17 L7350,6069.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3830,6189.17 L7350,6189.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3830,6309.17 L7350,6309.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3830,6429.17 L7350,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3830,2949.17 L3830,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M7350,2949.17 L7350,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M4110,3069.17 L4110,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M4350,3069.17 L4350,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M4710,3069.17 L4710,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M5030,3069.17 L5030,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M5350,3069.17 L5350,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M5670,3069.17 L5670,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M5990,3069.17 L5990,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M6350,3069.17 L6350,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M6590,3069.17 L6590,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M6990,3069.17 L6990,6429.17" stroke="#111111" stroke-width="3.6" fill="none"/>
 <text x="5590" y="3039.17" font-size="83.33" text-anchor="middle" fill="#111111"><tspan x="5590" dy="0">BAR SCHEDULE - MH05</tspan></text>
 <text x="3970" y="3154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">MARK</tspan></text>
 <text x="4230" y="3154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">SIZE</tspan></text>
@@ -728,9 +733,9 @@
 <text x="5510" y="3634.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="3634.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
 <text x="6170" y="3634.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x140</tspan></text>
-<text x="6470" y="3634.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">20</tspan></text>
+<text x="6470" y="3634.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">10</tspan></text>
 <text x="6790" y="3634.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2339</tspan></text>
-<text x="7170" y="3634.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">73.9</tspan></text>
+<text x="7170" y="3634.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">37.0</tspan></text>
 <text x="3970" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">B2</tspan></text>
 <text x="4230" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
 <text x="4530" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
@@ -739,195 +744,250 @@
 <text x="5510" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
 <text x="6170" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x120</tspan></text>
-<text x="6470" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">24</tspan></text>
+<text x="6470" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">12</tspan></text>
 <text x="6790" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1999</tspan></text>
-<text x="7170" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">75.8</tspan></text>
-<text x="3970" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R1</tspan></text>
-<text x="4230" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
+<text x="7170" y="3754.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">37.9</tspan></text>
+<text x="3970" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">B3</tspan></text>
+<text x="4230" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
 <text x="4530" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
-<text x="4870" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1800</tspan></text>
+<text x="4870" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">2000</tspan></text>
 <text x="5190" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
 <text x="5510" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
 <text x="6170" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x140</tspan></text>
 <text x="6470" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">10</tspan></text>
-<text x="6790" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2049</tspan></text>
-<text x="7170" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">18.2</tspan></text>
-<text x="3970" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R2</tspan></text>
-<text x="4230" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
+<text x="6790" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2239</tspan></text>
+<text x="7170" y="3874.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">35.4</tspan></text>
+<text x="3970" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">B4</tspan></text>
+<text x="4230" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
 <text x="4530" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
-<text x="4870" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">400</tspan></text>
+<text x="4870" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1700</tspan></text>
 <text x="5190" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
 <text x="5510" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x140</tspan></text>
-<text x="6470" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">6</tspan></text>
-<text x="6790" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">649</tspan></text>
-<text x="7170" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">3.5</tspan></text>
-<text x="3970" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R3</tspan></text>
+<text x="6170" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x120</tspan></text>
+<text x="6470" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">12</tspan></text>
+<text x="6790" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1899</tspan></text>
+<text x="7170" y="3994.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">36.0</tspan></text>
+<text x="3970" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R1</tspan></text>
 <text x="4230" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
 <text x="4530" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
-<text x="4870" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1500</tspan></text>
+<text x="4870" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1800</tspan></text>
 <text x="5190" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
 <text x="5510" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x130</tspan></text>
-<text x="6470" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">8</tspan></text>
-<text x="6790" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1729</tspan></text>
-<text x="7170" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">12.3</tspan></text>
-<text x="3970" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R4</tspan></text>
+<text x="6170" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x140</tspan></text>
+<text x="6470" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">6</tspan></text>
+<text x="6790" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2049</tspan></text>
+<text x="7170" y="4114.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">10.9</tspan></text>
+<text x="3970" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R2</tspan></text>
 <text x="4230" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
 <text x="4530" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
 <text x="4870" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">400</tspan></text>
 <text x="5190" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
 <text x="5510" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x130</tspan></text>
-<text x="6470" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">12</tspan></text>
-<text x="6790" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">629</tspan></text>
-<text x="7170" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">6.7</tspan></text>
-<text x="3970" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R5</tspan></text>
+<text x="6170" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x140</tspan></text>
+<text x="6470" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">6</tspan></text>
+<text x="6790" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">649</tspan></text>
+<text x="7170" y="4234.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">3.5</tspan></text>
+<text x="3970" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R3</tspan></text>
 <text x="4230" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
-<text x="4530" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">DROPPED</tspan></text>
-<text x="4870" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">200</tspan></text>
-<text x="5190" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
-<text x="5510" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">1200</tspan></text>
-<text x="5830" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">200</tspan></text>
-<text x="6170" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x140</tspan></text>
-<text x="6470" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">2</tspan></text>
-<text x="6790" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2071</tspan></text>
-<text x="7170" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">3.7</tspan></text>
-<text x="3970" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R6</tspan></text>
+<text x="4530" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
+<text x="4870" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1500</tspan></text>
+<text x="5190" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
+<text x="5510" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
+<text x="5830" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
+<text x="6170" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x130</tspan></text>
+<text x="6470" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
+<text x="6790" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1729</tspan></text>
+<text x="7170" y="4354.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">6.1</tspan></text>
+<text x="3970" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R4</tspan></text>
 <text x="4230" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
-<text x="4530" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">CRANKED</tspan></text>
-<text x="4870" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">200</tspan></text>
-<text x="5190" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
-<text x="5510" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">100</tspan></text>
+<text x="4530" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
+<text x="4870" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">400</tspan></text>
+<text x="5190" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
+<text x="5510" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">140+90</tspan></text>
-<text x="6470" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">3</tspan></text>
-<text x="6790" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">610</tspan></text>
-<text x="7170" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">1.6</tspan></text>
-<text x="3970" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R7</tspan></text>
+<text x="6170" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x130</tspan></text>
+<text x="6470" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">12</tspan></text>
+<text x="6790" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">629</tspan></text>
+<text x="7170" y="4474.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">6.7</tspan></text>
+<text x="3970" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R5</tspan></text>
 <text x="4230" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
-<text x="4530" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">CRANKED</tspan></text>
-<text x="4870" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">200</tspan></text>
-<text x="5190" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
-<text x="5510" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">100</tspan></text>
+<text x="4530" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
+<text x="4870" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1700</tspan></text>
+<text x="5190" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
+<text x="5510" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">90+140</tspan></text>
-<text x="6470" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">3</tspan></text>
-<text x="6790" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">610</tspan></text>
-<text x="7170" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">1.6</tspan></text>
-<text x="3970" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R8</tspan></text>
+<text x="6170" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x140</tspan></text>
+<text x="6470" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
+<text x="6790" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1949</tspan></text>
+<text x="7170" y="4594.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">6.9</tspan></text>
+<text x="3970" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R6</tspan></text>
 <text x="4230" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
-<text x="4530" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">CRANKED</tspan></text>
-<text x="4870" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">200</tspan></text>
+<text x="4530" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">DROPPED</tspan></text>
+<text x="4870" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">150</tspan></text>
 <text x="5190" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
-<text x="5510" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">100</tspan></text>
-<text x="5830" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">130+80</tspan></text>
-<text x="6470" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">6</tspan></text>
-<text x="6790" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">590</tspan></text>
-<text x="7170" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">3.1</tspan></text>
-<text x="3970" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R9</tspan></text>
+<text x="5510" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">1200</tspan></text>
+<text x="5830" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">150</tspan></text>
+<text x="6170" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x140</tspan></text>
+<text x="6470" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">2</tspan></text>
+<text x="6790" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1971</tspan></text>
+<text x="7170" y="4714.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">3.5</tspan></text>
+<text x="3970" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R7</tspan></text>
 <text x="4230" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
 <text x="4530" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">CRANKED</tspan></text>
-<text x="4870" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">200</tspan></text>
+<text x="4870" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">150</tspan></text>
 <text x="5190" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
-<text x="5510" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">100</tspan></text>
+<text x="5510" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">50</tspan></text>
 <text x="5830" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">80+130</tspan></text>
-<text x="6470" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">6</tspan></text>
-<text x="6790" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">590</tspan></text>
-<text x="7170" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">3.1</tspan></text>
-<text x="3970" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T1</tspan></text>
-<text x="4230" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
-<text x="4530" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
-<text x="4870" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1800</tspan></text>
-<text x="5190" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
-<text x="5510" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
+<text x="6170" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">140+90</tspan></text>
+<text x="6470" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">3</tspan></text>
+<text x="6790" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">510</tspan></text>
+<text x="7170" y="4834.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">1.4</tspan></text>
+<text x="3970" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R8</tspan></text>
+<text x="4230" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
+<text x="4530" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">CRANKED</tspan></text>
+<text x="4870" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">150</tspan></text>
+<text x="5190" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
+<text x="5510" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">50</tspan></text>
 <text x="5830" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
-<text x="6470" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
-<text x="6790" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1800</tspan></text>
-<text x="7170" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">11.4</tspan></text>
-<text x="3970" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T2</tspan></text>
-<text x="4230" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
+<text x="6170" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">90+140</tspan></text>
+<text x="6470" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">3</tspan></text>
+<text x="6790" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">510</tspan></text>
+<text x="7170" y="4954.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">1.4</tspan></text>
+<text x="3970" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R9</tspan></text>
+<text x="4230" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
 <text x="4530" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
-<text x="4870" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1500</tspan></text>
+<text x="4870" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1400</tspan></text>
 <text x="5190" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
 <text x="5510" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
-<text x="6470" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
-<text x="6790" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1500</tspan></text>
-<text x="7170" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">9.5</tspan></text>
-<text x="3970" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T3</tspan></text>
-<text x="4230" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
+<text x="6170" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x130</tspan></text>
+<text x="6470" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">2</tspan></text>
+<text x="6790" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1629</tspan></text>
+<text x="7170" y="5074.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">2.9</tspan></text>
+<text x="3970" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R10</tspan></text>
+<text x="4230" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
 <text x="4530" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">DROPPED</tspan></text>
-<text x="4870" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">200</tspan></text>
+<text x="4870" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">150</tspan></text>
 <text x="5190" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
-<text x="5510" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">1200</tspan></text>
-<text x="5830" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">200</tspan></text>
-<text x="6170" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
-<text x="6470" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
-<text x="6790" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1822</tspan></text>
-<text x="7170" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">11.5</tspan></text>
-<text x="3970" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T4</tspan></text>
-<text x="4230" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
-<text x="4530" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">DROPPED</tspan></text>
-<text x="4870" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">200</tspan></text>
+<text x="5510" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">900</tspan></text>
+<text x="5830" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">150</tspan></text>
+<text x="6170" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">2x130</tspan></text>
+<text x="6470" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">2</tspan></text>
+<text x="6790" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1651</tspan></text>
+<text x="7170" y="5194.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">2.9</tspan></text>
+<text x="3970" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R11</tspan></text>
+<text x="4230" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
+<text x="4530" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">CRANKED</tspan></text>
+<text x="4870" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">150</tspan></text>
 <text x="5190" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
-<text x="5510" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">900</tspan></text>
-<text x="5830" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">200</tspan></text>
-<text x="6170" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
-<text x="6470" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
-<text x="6790" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1522</tspan></text>
-<text x="7170" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">9.6</tspan></text>
-<text x="3970" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T5</tspan></text>
-<text x="4230" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
-<text x="4530" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
-<text x="4870" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">2060</tspan></text>
-<text x="5190" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
-<text x="5510" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
+<text x="5510" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">50</tspan></text>
+<text x="5830" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
+<text x="6170" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">130+80</tspan></text>
+<text x="6470" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">6</tspan></text>
+<text x="6790" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">490</tspan></text>
+<text x="7170" y="5314.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">2.6</tspan></text>
+<text x="3970" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">R12</tspan></text>
+<text x="4230" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N12</tspan></text>
+<text x="4530" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">CRANKED</tspan></text>
+<text x="4870" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">150</tspan></text>
+<text x="5190" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
+<text x="5510" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">50</tspan></text>
 <text x="5830" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
-<text x="6170" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
-<text x="6470" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">16</tspan></text>
-<text x="6790" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2060</tspan></text>
-<text x="7170" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">52.1</tspan></text>
-<text x="3970" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T6</tspan></text>
+<text x="6170" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">80+130</tspan></text>
+<text x="6470" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">6</tspan></text>
+<text x="6790" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">490</tspan></text>
+<text x="7170" y="5434.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">2.6</tspan></text>
+<text x="3970" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T1</tspan></text>
 <text x="4230" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
 <text x="4530" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
-<text x="4870" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1980</tspan></text>
+<text x="4870" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1800</tspan></text>
 <text x="5190" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
 <text x="5510" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
 <text x="6170" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
-<text x="6470" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">16</tspan></text>
-<text x="6790" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1980</tspan></text>
-<text x="7170" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">50.1</tspan></text>
-<text x="3970" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T7</tspan></text>
+<text x="6470" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
+<text x="6790" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1800</tspan></text>
+<text x="7170" y="5554.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">11.4</tspan></text>
+<text x="3970" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T2</tspan></text>
 <text x="4230" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
 <text x="4530" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
-<text x="4870" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">2150</tspan></text>
+<text x="4870" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1500</tspan></text>
 <text x="5190" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
 <text x="5510" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
 <text x="5830" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
 <text x="6170" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
-<text x="6470" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">16</tspan></text>
-<text x="6790" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2150</tspan></text>
-<text x="7170" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">54.4</tspan></text>
-<text x="3970" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">TOTAL</tspan></text>
-<text x="4230" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0"></tspan></text>
-<text x="4530" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0"></tspan></text>
-<text x="4870" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0"></tspan></text>
-<text x="5190" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0"></tspan></text>
-<text x="5510" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0"></tspan></text>
-<text x="5830" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0"></tspan></text>
-<text x="6170" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0"></tspan></text>
-<text x="6470" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">284</tspan></text>
-<text x="6790" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0"></tspan></text>
-<text x="7170" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">752.7</tspan></text>
-<text x="3830" y="6079.17" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3830" dy="0">NOTES:</tspan><tspan x="3830" dy="83.33">1. ALL DIMENSIONS IN MILLIMETRES AND LEVELS IN METRES (AHD) UNLESS NOTED OTHERWISE.</tspan><tspan x="3830" dy="83.33">2. CONCRETE N40. COVER TO REINFORCEMENT 50 UNLESS NOTED OTHERWISE.</tspan><tspan x="3830" dy="83.33">3. REINFORCEMENT TO AS/NZS 4671 GRADE D500N.</tspan><tspan x="3830" dy="83.33">4. LAP LENGTHS 50d MINIMUM UNLESS NOTED OTHERWISE.</tspan><tspan x="3830" dy="83.33">5. BAR DIMENSIONS ARE TO BAR CENTRELINE. MINIMUM INTERNAL BEND DIAMETER 5d (AS 3600 TABLE 17.2.3.2); SCHEDULED LENGTHS ALLOW FOR BENDS.</tspan><tspan x="3830" dy="83.33">6. REINFORCEMENT INTERRUPTED BY OPENINGS SHALL BE CUT AND TRIMMER BARS PROVIDED AS SHOWN.</tspan><tspan x="3830" dy="83.33">7. PIPE PENETRATIONS SHALL BE SEALED WITH NON-SHRINK GROUT AND FLEXIBLE JOINT TO PIPE SUPPLIER'S DETAILS.</tspan><tspan x="3830" dy="83.33">8. COG = STANDARD 90° COG TO AS 3600 CL 13.1.2.7, LENGTH AS SCHEDULED (SHORTENED WHERE LIMITED BY SLAB DEPTH). SLAB BARS COGGED AT BOTH ENDS (BOTTOM BARS UP, TOP BARS DOWN); WALL VERTICAL BARS COGGED INTO ROOF SLAB.</tspan><tspan x="3830" dy="83.33">9. ROOF SLAB REBATED 50 DEEP AROUND THE ACCESS OPENING FOR THE COVER FRAME. TOP REINFORCEMENT UNDER THE REBATE IS CRANKED DOWN 50 AT 1:2 (CRANKED / DROPPED BARS: B = CRANK DEPTH).</tspan><tspan x="3830" dy="83.33">10. DRAFT GENERATED BY LYNHCADTOOLSBOX - TO BE CHECKED BY THE DESIGN ENGINEER.</tspan></text>
+<text x="6470" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
+<text x="6790" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1500</tspan></text>
+<text x="7170" y="5674.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">9.5</tspan></text>
+<text x="3970" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T3</tspan></text>
+<text x="4230" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
+<text x="4530" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">DROPPED</tspan></text>
+<text x="4870" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">150</tspan></text>
+<text x="5190" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
+<text x="5510" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">1200</tspan></text>
+<text x="5830" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">150</tspan></text>
+<text x="6170" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
+<text x="6470" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
+<text x="6790" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1722</tspan></text>
+<text x="7170" y="5794.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">10.9</tspan></text>
+<text x="3970" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T4</tspan></text>
+<text x="4230" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
+<text x="4530" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">DROPPED</tspan></text>
+<text x="4870" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">150</tspan></text>
+<text x="5190" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">50</tspan></text>
+<text x="5510" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">900</tspan></text>
+<text x="5830" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">150</tspan></text>
+<text x="6170" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
+<text x="6470" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">4</tspan></text>
+<text x="6790" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1422</tspan></text>
+<text x="7170" y="5914.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">9.0</tspan></text>
+<text x="3970" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T5</tspan></text>
+<text x="4230" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
+<text x="4530" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
+<text x="4870" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">2060</tspan></text>
+<text x="5190" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
+<text x="5510" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
+<text x="5830" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
+<text x="6170" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
+<text x="6470" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">16</tspan></text>
+<text x="6790" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2060</tspan></text>
+<text x="7170" y="6034.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">52.1</tspan></text>
+<text x="3970" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T6</tspan></text>
+<text x="4230" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
+<text x="4530" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
+<text x="4870" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">1980</tspan></text>
+<text x="5190" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
+<text x="5510" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
+<text x="5830" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
+<text x="6170" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
+<text x="6470" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">16</tspan></text>
+<text x="6790" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">1980</tspan></text>
+<text x="7170" y="6154.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">50.1</tspan></text>
+<text x="3970" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">T7</tspan></text>
+<text x="4230" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0">N16</tspan></text>
+<text x="4530" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0">STRAIGHT</tspan></text>
+<text x="4870" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0">2150</tspan></text>
+<text x="5190" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">-</tspan></text>
+<text x="5510" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0">-</tspan></text>
+<text x="5830" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0">-</tspan></text>
+<text x="6170" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0">-</tspan></text>
+<text x="6470" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">16</tspan></text>
+<text x="6790" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0">2150</tspan></text>
+<text x="7170" y="6274.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">54.4</tspan></text>
+<text x="3970" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3970" dy="0">TOTAL</tspan></text>
+<text x="4230" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4230" dy="0"></tspan></text>
+<text x="4530" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4530" dy="0"></tspan></text>
+<text x="4870" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4870" dy="0"></tspan></text>
+<text x="5190" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0"></tspan></text>
+<text x="5510" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5510" dy="0"></tspan></text>
+<text x="5830" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5830" dy="0"></tspan></text>
+<text x="6170" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6170" dy="0"></tspan></text>
+<text x="6470" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6470" dy="0">284</tspan></text>
+<text x="6790" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6790" dy="0"></tspan></text>
+<text x="7170" y="6394.17" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="7170" dy="0">745.5</tspan></text>
+<text x="3830" y="6679.17" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3830" dy="0">NOTES:</tspan><tspan x="3830" dy="83.33">1. ALL DIMENSIONS IN MILLIMETRES AND LEVELS IN METRES (AHD) UNLESS NOTED OTHERWISE.</tspan><tspan x="3830" dy="83.33">2. CONCRETE N40. COVER TO REINFORCEMENT 50 UNLESS NOTED OTHERWISE.</tspan><tspan x="3830" dy="83.33">3. REINFORCEMENT TO AS/NZS 4671 GRADE D500N.</tspan><tspan x="3830" dy="83.33">4. LAP LENGTHS 50d MINIMUM UNLESS NOTED OTHERWISE.</tspan><tspan x="3830" dy="83.33">5. BAR DIMENSIONS ARE TO BAR CENTRELINE. MINIMUM INTERNAL BEND DIAMETER 5d (AS 3600 TABLE 17.2.3.2); SCHEDULED LENGTHS ALLOW FOR BENDS.</tspan><tspan x="3830" dy="83.33">6. REINFORCEMENT INTERRUPTED BY OPENINGS SHALL BE CUT AND TRIMMER BARS PROVIDED AS SHOWN.</tspan><tspan x="3830" dy="83.33">7. PIPE PENETRATIONS SHALL BE SEALED WITH NON-SHRINK GROUT AND FLEXIBLE JOINT TO PIPE SUPPLIER'S DETAILS.</tspan><tspan x="3830" dy="83.33">8. COG = STANDARD 90° COG TO AS 3600 CL 13.1.2.7, LENGTH AS SCHEDULED (SHORTENED WHERE LIMITED BY SLAB DEPTH). SLAB BARS COGGED AT BOTH ENDS (BOTTOM BARS UP, TOP BARS DOWN); WALL VERTICAL BARS COGGED INTO ROOF SLAB.</tspan><tspan x="3830" dy="83.33">9. ROOF SLAB REBATED 50 DEEP AROUND THE ACCESS OPENING FOR THE COVER FRAME. TOP REINFORCEMENT UNDER THE REBATE IS CRANKED DOWN 50 AT 1:2 (CRANKED / DROPPED BARS: B = CRANK DEPTH).</tspan><tspan x="3830" dy="83.33">10. DRAFT GENERATED BY LYNHCADTOOLSBOX - TO BE CHECKED BY THE DESIGN ENGINEER.</tspan></text>
 </svg>

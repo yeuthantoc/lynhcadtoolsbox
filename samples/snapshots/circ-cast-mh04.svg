@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3655 -2100 16085 8658.3" width="2413" height="1299" font-family="Arial, Helvetica, sans-serif">
-<rect x="-3655" y="-2100" width="16085" height="8658.3" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3655 -2100 16085 8898.3" width="2413" height="1335" font-family="Arial, Helvetica, sans-serif">
+<rect x="-3655" y="-2100" width="16085" height="8898.3" fill="white"/>
 <path d="M896.26,-315 A950,950 0 0 0 230,-921.74 L230,-713.86 A750,750 0 0 1 680.64,-315 L896.26,-315 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-230,-921.74 A950,950 0 0 0 -909.33,-275 L-697.76,-275 A750,750 0 0 1 -230,-713.86 L-230,-921.74 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-909.33,275 A950,950 0 0 0 -21.04,949.77 A950,950 0 0 0 896.26,315 L680.64,315 A750,750 0 0 1 -21.76,749.68 A750,750 0 0 1 -697.76,275 L-909.33,275 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
@@ -202,7 +202,7 @@
 <circle cx="7658.09" cy="1249.73" r="8" fill="#d62828"/>
 <circle cx="7847.55" cy="1249.73" r="8" fill="#d62828"/>
 <circle cx="8037" cy="1249.73" r="8" fill="#d62828"/>
-<path d="M5945,1265.73 L5945,1179.73 A48,48 0 0 1 5993,1131.73 L7997,1131.73 A48,48 0 0 1 8045,1179.73 L8045,1265.73" stroke="#d62828" stroke-width="10" fill="none"/>
+<path d="M5995,1265.73 L5995,1179.73 A48,48 0 0 1 6043,1131.73 L7947,1131.73 A48,48 0 0 1 7995,1179.73 L7995,1265.73" stroke="#d62828" stroke-width="10" fill="none"/>
 <circle cx="5953" cy="1147.73" r="8" fill="#d62828"/>
 <circle cx="6142.45" cy="1147.73" r="8" fill="#d62828"/>
 <circle cx="6331.91" cy="1147.73" r="8" fill="#d62828"/>
@@ -358,7 +358,7 @@
 <text x="4885" y="999.57" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">MASS CONCRETE BENCHING</tspan><tspan x="4885" dy="83.33">CHANNEL INVERT 12.500 → 12.450</tspan></text>
 <path d="M6145,1131.73 L5950.5,1326.23 L4915,1326.23 L4901,1326.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <circle cx="6145" cy="1131.73" r="12" fill="#a07800"/>
-<text x="4885" y="1351.23" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">B1/B2 N16-200 TOP EW</tspan></text>
+<text x="4885" y="1351.23" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">B3/B4 N16-200 TOP EW</tspan></text>
 <path d="M6445,1265.73 L6445,1544.57 L4915,1544.57 L4901,1544.57" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <circle cx="6445" cy="1265.73" r="12" fill="#a07800"/>
 <text x="4885" y="1569.57" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="4885" dy="0">B1/B2 N16-200 BOT EW</tspan></text>
@@ -534,18 +534,20 @@
 <path d="M3430,4801.67 L6950,4801.67" stroke="#111111" stroke-width="3.6" fill="none"/>
 <path d="M3430,4921.67 L6950,4921.67" stroke="#111111" stroke-width="3.6" fill="none"/>
 <path d="M3430,5041.67 L6950,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M3430,3001.67 L3430,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M6950,3001.67 L6950,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M3710,3121.67 L3710,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M3950,3121.67 L3950,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M4310,3121.67 L4310,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M4630,3121.67 L4630,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M4950,3121.67 L4950,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M5270,3121.67 L5270,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M5590,3121.67 L5590,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M5950,3121.67 L5950,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M6190,3121.67 L6190,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
-<path d="M6590,3121.67 L6590,5041.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3430,5161.67 L6950,5161.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3430,5281.67 L6950,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3430,3001.67 L3430,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M6950,3001.67 L6950,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3710,3121.67 L3710,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M3950,3121.67 L3950,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M4310,3121.67 L4310,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M4630,3121.67 L4630,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M4950,3121.67 L4950,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M5270,3121.67 L5270,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M5590,3121.67 L5590,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M5950,3121.67 L5950,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M6190,3121.67 L6190,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
+<path d="M6590,3121.67 L6590,5281.67" stroke="#111111" stroke-width="3.6" fill="none"/>
 <text x="5190" y="3091.67" font-size="83.33" text-anchor="middle" fill="#111111"><tspan x="5190" dy="0">BAR SCHEDULE - MH04</tspan></text>
 <text x="3570" y="3206.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">MARK</tspan></text>
 <text x="3830" y="3206.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">SIZE</tspan></text>
@@ -599,9 +601,9 @@
 <text x="5110" y="3686.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="3686.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
 <text x="5770" y="3686.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x140</tspan></text>
-<text x="6070" y="3686.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">24</tspan></text>
+<text x="6070" y="3686.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">12</tspan></text>
 <text x="6390" y="3686.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2339</tspan></text>
-<text x="6770" y="3686.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">88.7</tspan></text>
+<text x="6770" y="3686.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">44.3</tspan></text>
 <text x="3570" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">B2</tspan></text>
 <text x="3830" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
 <text x="4130" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
@@ -610,118 +612,140 @@
 <text x="5110" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
 <text x="5770" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x120</tspan></text>
-<text x="6070" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">24</tspan></text>
+<text x="6070" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">12</tspan></text>
 <text x="6390" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2299</tspan></text>
-<text x="6770" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">87.2</tspan></text>
-<text x="3570" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">R1</tspan></text>
-<text x="3830" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N12</tspan></text>
+<text x="6770" y="3806.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">43.6</tspan></text>
+<text x="3570" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">B3</tspan></text>
+<text x="3830" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
 <text x="4130" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
-<text x="4470" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">1800</tspan></text>
+<text x="4470" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">2000</tspan></text>
 <text x="4790" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
-<text x="5770" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x90</tspan></text>
-<text x="6070" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">6</tspan></text>
-<text x="6390" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1949</tspan></text>
-<text x="6770" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">10.4</tspan></text>
-<text x="3570" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">R2</tspan></text>
-<text x="3830" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N12</tspan></text>
+<text x="5770" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x140</tspan></text>
+<text x="6070" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">12</tspan></text>
+<text x="6390" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2239</tspan></text>
+<text x="6770" y="3926.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">42.4</tspan></text>
+<text x="3570" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">B4</tspan></text>
+<text x="3830" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
 <text x="4130" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
-<text x="4470" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">550</tspan></text>
+<text x="4470" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">2000</tspan></text>
 <text x="4790" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
-<text x="5770" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x90</tspan></text>
-<text x="6070" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">8</tspan></text>
-<text x="6390" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">699</tspan></text>
-<text x="6770" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">5.0</tspan></text>
-<text x="3570" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">R3</tspan></text>
+<text x="5770" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x120</tspan></text>
+<text x="6070" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">12</tspan></text>
+<text x="6390" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2199</tspan></text>
+<text x="6770" y="4046.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">41.7</tspan></text>
+<text x="3570" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">R1</tspan></text>
 <text x="3830" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N12</tspan></text>
 <text x="4130" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
 <text x="4470" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">1800</tspan></text>
 <text x="4790" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
-<text x="5770" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x80</tspan></text>
+<text x="5770" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x90</tspan></text>
 <text x="6070" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">6</tspan></text>
-<text x="6390" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1929</tspan></text>
-<text x="6770" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">10.3</tspan></text>
-<text x="3570" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">R4</tspan></text>
+<text x="6390" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1949</tspan></text>
+<text x="6770" y="4166.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">10.4</tspan></text>
+<text x="3570" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">R2</tspan></text>
 <text x="3830" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N12</tspan></text>
 <text x="4130" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
-<text x="4470" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">900</tspan></text>
+<text x="4470" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">550</tspan></text>
 <text x="4790" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
-<text x="5770" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x80</tspan></text>
-<text x="6070" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">4</tspan></text>
-<text x="6390" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1029</tspan></text>
-<text x="6770" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">3.7</tspan></text>
-<text x="3570" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T1</tspan></text>
-<text x="3830" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
+<text x="5770" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x90</tspan></text>
+<text x="6070" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">8</tspan></text>
+<text x="6390" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">699</tspan></text>
+<text x="6770" y="4286.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">5.0</tspan></text>
+<text x="3570" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">R3</tspan></text>
+<text x="3830" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N12</tspan></text>
 <text x="4130" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
 <text x="4470" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">1800</tspan></text>
 <text x="4790" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
-<text x="5770" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">-</tspan></text>
-<text x="6070" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">4</tspan></text>
-<text x="6390" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1800</tspan></text>
-<text x="6770" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">11.4</tspan></text>
-<text x="3570" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T2</tspan></text>
-<text x="3830" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
+<text x="5770" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x80</tspan></text>
+<text x="6070" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">6</tspan></text>
+<text x="6390" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1929</tspan></text>
+<text x="6770" y="4406.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">10.3</tspan></text>
+<text x="3570" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">R4</tspan></text>
+<text x="3830" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N12</tspan></text>
 <text x="4130" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
-<text x="4470" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">1650</tspan></text>
+<text x="4470" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">900</tspan></text>
 <text x="4790" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
-<text x="5770" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">-</tspan></text>
+<text x="5770" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">2x80</tspan></text>
 <text x="6070" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">4</tspan></text>
-<text x="6390" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1650</tspan></text>
-<text x="6770" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">10.4</tspan></text>
-<text x="3570" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T3</tspan></text>
+<text x="6390" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1029</tspan></text>
+<text x="6770" y="4526.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">3.7</tspan></text>
+<text x="3570" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T1</tspan></text>
 <text x="3830" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
 <text x="4130" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
-<text x="4470" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">2150</tspan></text>
+<text x="4470" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">1800</tspan></text>
 <text x="4790" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
 <text x="5770" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">-</tspan></text>
-<text x="6070" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">16</tspan></text>
-<text x="6390" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2150</tspan></text>
-<text x="6770" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">54.4</tspan></text>
-<text x="3570" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T4</tspan></text>
+<text x="6070" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">4</tspan></text>
+<text x="6390" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1800</tspan></text>
+<text x="6770" y="4646.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">11.4</tspan></text>
+<text x="3570" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T2</tspan></text>
 <text x="3830" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
 <text x="4130" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
-<text x="4470" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">2060</tspan></text>
+<text x="4470" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">1650</tspan></text>
 <text x="4790" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
 <text x="5770" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">-</tspan></text>
-<text x="6070" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">16</tspan></text>
-<text x="6390" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2060</tspan></text>
-<text x="6770" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">52.1</tspan></text>
-<text x="3570" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T5</tspan></text>
+<text x="6070" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">4</tspan></text>
+<text x="6390" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">1650</tspan></text>
+<text x="6770" y="4766.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">10.4</tspan></text>
+<text x="3570" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T3</tspan></text>
 <text x="3830" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
 <text x="4130" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
-<text x="4470" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">2230</tspan></text>
+<text x="4470" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">2150</tspan></text>
 <text x="4790" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
 <text x="5110" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
 <text x="5430" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
 <text x="5770" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">-</tspan></text>
 <text x="6070" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">16</tspan></text>
-<text x="6390" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2230</tspan></text>
-<text x="6770" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">56.4</tspan></text>
-<text x="3570" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">TOTAL</tspan></text>
-<text x="3830" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0"></tspan></text>
-<text x="4130" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0"></tspan></text>
-<text x="4470" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0"></tspan></text>
-<text x="4790" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0"></tspan></text>
-<text x="5110" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0"></tspan></text>
-<text x="5430" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0"></tspan></text>
-<text x="5770" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0"></tspan></text>
-<text x="6070" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">208</tspan></text>
-<text x="6390" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0"></tspan></text>
-<text x="6770" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">665.8</tspan></text>
-<text x="3430" y="5291.67" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3430" dy="0">NOTES:</tspan><tspan x="3430" dy="83.33">1. ALL DIMENSIONS IN MILLIMETRES AND LEVELS IN METRES (AHD) UNLESS NOTED OTHERWISE.</tspan><tspan x="3430" dy="83.33">2. CONCRETE N40. COVER TO REINFORCEMENT 50 UNLESS NOTED OTHERWISE.</tspan><tspan x="3430" dy="83.33">3. REINFORCEMENT TO AS/NZS 4671 GRADE D500N.</tspan><tspan x="3430" dy="83.33">4. LAP LENGTHS 50d MINIMUM UNLESS NOTED OTHERWISE.</tspan><tspan x="3430" dy="83.33">5. BAR DIMENSIONS ARE TO BAR CENTRELINE. MINIMUM INTERNAL BEND DIAMETER 5d (AS 3600 TABLE 17.2.3.2); SCHEDULED LENGTHS ALLOW FOR BENDS.</tspan><tspan x="3430" dy="83.33">6. REINFORCEMENT INTERRUPTED BY OPENINGS SHALL BE CUT AND TRIMMER BARS PROVIDED AS SHOWN.</tspan><tspan x="3430" dy="83.33">7. PIPE PENETRATIONS SHALL BE SEALED WITH NON-SHRINK GROUT AND FLEXIBLE JOINT TO PIPE SUPPLIER'S DETAILS.</tspan><tspan x="3430" dy="83.33">8. COG = STANDARD 90° COG TO AS 3600 CL 13.1.2.7, LENGTH AS SCHEDULED (SHORTENED WHERE LIMITED BY SLAB DEPTH). SLAB BARS COGGED AT BOTH ENDS (BOTTOM BARS UP, TOP BARS DOWN); WALL VERTICAL BARS COGGED INTO ROOF SLAB.</tspan><tspan x="3430" dy="83.33">9. STEP IRONS GALVANISED OR PLASTIC ENCAPSULATED TO AUTHORITY STANDARD, AT 300 CTS, 350 WIDE, 150 PROJECTION.</tspan><tspan x="3430" dy="83.33">10. DRAFT GENERATED BY LYNHCADTOOLSBOX - TO BE CHECKED BY THE DESIGN ENGINEER.</tspan></text>
+<text x="6390" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2150</tspan></text>
+<text x="6770" y="4886.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">54.4</tspan></text>
+<text x="3570" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T4</tspan></text>
+<text x="3830" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
+<text x="4130" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
+<text x="4470" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">2060</tspan></text>
+<text x="4790" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
+<text x="5110" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
+<text x="5430" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
+<text x="5770" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">-</tspan></text>
+<text x="6070" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">16</tspan></text>
+<text x="6390" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2060</tspan></text>
+<text x="6770" y="5006.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">52.1</tspan></text>
+<text x="3570" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">T5</tspan></text>
+<text x="3830" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0">N16</tspan></text>
+<text x="4130" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0">STRAIGHT</tspan></text>
+<text x="4470" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0">2230</tspan></text>
+<text x="4790" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0">-</tspan></text>
+<text x="5110" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0">-</tspan></text>
+<text x="5430" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0">-</tspan></text>
+<text x="5770" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0">-</tspan></text>
+<text x="6070" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">16</tspan></text>
+<text x="6390" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0">2230</tspan></text>
+<text x="6770" y="5126.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">56.4</tspan></text>
+<text x="3570" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3570" dy="0">TOTAL</tspan></text>
+<text x="3830" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="3830" dy="0"></tspan></text>
+<text x="4130" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4130" dy="0"></tspan></text>
+<text x="4470" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4470" dy="0"></tspan></text>
+<text x="4790" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="4790" dy="0"></tspan></text>
+<text x="5110" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5110" dy="0"></tspan></text>
+<text x="5430" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5430" dy="0"></tspan></text>
+<text x="5770" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="5770" dy="0"></tspan></text>
+<text x="6070" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6070" dy="0">208</tspan></text>
+<text x="6390" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6390" dy="0"></tspan></text>
+<text x="6770" y="5246.67" font-size="69.44" text-anchor="middle" fill="#111111"><tspan x="6770" dy="0">662.0</tspan></text>
+<text x="3430" y="5531.67" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3430" dy="0">NOTES:</tspan><tspan x="3430" dy="83.33">1. ALL DIMENSIONS IN MILLIMETRES AND LEVELS IN METRES (AHD) UNLESS NOTED OTHERWISE.</tspan><tspan x="3430" dy="83.33">2. CONCRETE N40. COVER TO REINFORCEMENT 50 UNLESS NOTED OTHERWISE.</tspan><tspan x="3430" dy="83.33">3. REINFORCEMENT TO AS/NZS 4671 GRADE D500N.</tspan><tspan x="3430" dy="83.33">4. LAP LENGTHS 50d MINIMUM UNLESS NOTED OTHERWISE.</tspan><tspan x="3430" dy="83.33">5. BAR DIMENSIONS ARE TO BAR CENTRELINE. MINIMUM INTERNAL BEND DIAMETER 5d (AS 3600 TABLE 17.2.3.2); SCHEDULED LENGTHS ALLOW FOR BENDS.</tspan><tspan x="3430" dy="83.33">6. REINFORCEMENT INTERRUPTED BY OPENINGS SHALL BE CUT AND TRIMMER BARS PROVIDED AS SHOWN.</tspan><tspan x="3430" dy="83.33">7. PIPE PENETRATIONS SHALL BE SEALED WITH NON-SHRINK GROUT AND FLEXIBLE JOINT TO PIPE SUPPLIER'S DETAILS.</tspan><tspan x="3430" dy="83.33">8. COG = STANDARD 90° COG TO AS 3600 CL 13.1.2.7, LENGTH AS SCHEDULED (SHORTENED WHERE LIMITED BY SLAB DEPTH). SLAB BARS COGGED AT BOTH ENDS (BOTTOM BARS UP, TOP BARS DOWN); WALL VERTICAL BARS COGGED INTO ROOF SLAB.</tspan><tspan x="3430" dy="83.33">9. STEP IRONS GALVANISED OR PLASTIC ENCAPSULATED TO AUTHORITY STANDARD, AT 300 CTS, 350 WIDE, 150 PROJECTION.</tspan><tspan x="3430" dy="83.33">10. DRAFT GENERATED BY LYNHCADTOOLSBOX - TO BE CHECKED BY THE DESIGN ENGINEER.</tspan></text>
 </svg>
