@@ -63,19 +63,21 @@ namespace LynhCad.Manhole.Core.Drawing
 
         private static string Mm(double v) { return v.ToString("0"); }
 
-        /// <summary>Kích thước ngang có chú thích "tên ô = giá trị mm".</summary>
-        private static void DimH(DrawingModel m, double x1, double x2, double yRef, double yLine, string tip)
+        /// <summary>Kích thước ngang có chú thích "tên ô = giá trị mm" và Key = tên thuộc tính ManholeParams của ô đó ("" = suy ra, không có ô).</summary>
+        private static void DimH(DrawingModel m, double x1, double x2, double yRef, double yLine, string tip, string key)
         {
             double v = Math.Abs(x2 - x1);
             if (v < 0.5) return;
-            Annot.DimH(m, x1, x2, yRef, yLine, Mm(v)).Tip = tip + " = " + Mm(v) + " mm";
+            var d = Annot.DimH(m, x1, x2, yRef, yLine, Mm(v));
+            d.Tip = tip + " = " + Mm(v) + " mm"; d.Key = key;
         }
 
-        private static void DimV(DrawingModel m, double y1, double y2, double xRef, double xLine, string tip)
+        private static void DimV(DrawingModel m, double y1, double y2, double xRef, double xLine, string tip, string key)
         {
             double v = Math.Abs(y2 - y1);
             if (v < 0.5) return;
-            Annot.DimV(m, y1, y2, xRef, xLine, Mm(v)).Tip = tip + " = " + Mm(v) + " mm";
+            var d = Annot.DimV(m, y1, y2, xRef, xLine, Mm(v));
+            d.Tip = tip + " = " + Mm(v) + " mm"; d.Key = key;
         }
 
         private static void Hatched(DrawingModel m, PPolyline outer, PPolyline inner)
@@ -116,6 +118,7 @@ namespace LynhCad.Manhole.Core.Drawing
             {
                 var basePl = g.IsRect ? PPolyline.Rect(Rect2.Centered(0, 0, 2 * bx, 2 * by), Layers.ConcreteHidden) : Circle(bx, Layers.ConcreteHidden);
                 basePl.Tip = TipBaseProj + " = " + Mm(P.BaseProjection) + " mm (base slab edge)";
+                basePl.Key = "BaseProjection";
                 m.Add(basePl);
             }
             if (hx > 0 && hy > 0)
@@ -135,25 +138,25 @@ namespace LynhCad.Manhole.Core.Drawing
             double innerHalf = g.IsRect ? g.Li / 2 : g.Ri;
             double outerHalf = g.OuterHalfX;
             string wallTip = g.IsPrecast ? TipPrecastWall : TipWall;
-            DimH(m, -innerHalf, innerHalf, g.IsRect ? -g.Wi / 2 : 0, yBot, g.IsRect ? TipLength : TipDiameter);
-            DimH(m, -outerHalf, -innerHalf, g.IsRect ? -g.Wo / 2 : 0, yBot, wallTip);
-            if (P.BaseProjection > 0) DimH(m, -bx, -outerHalf, -by, yBot, TipBaseProj);
+            DimH(m, -innerHalf, innerHalf, g.IsRect ? -g.Wi / 2 : 0, yBot, g.IsRect ? TipLength : TipDiameter, g.IsRect ? "InternalLength" : "InternalDiameter");
+            DimH(m, -outerHalf, -innerHalf, g.IsRect ? -g.Wo / 2 : 0, yBot, wallTip, g.IsPrecast ? "PrecastWallThickness" : "WallThickness");
+            if (P.BaseProjection > 0) DimH(m, -bx, -outerHalf, -by, yBot, TipBaseProj, "BaseProjection");
 
             // ---- phải: chiều rộng lòng hố (hố chữ nhật) ----
-            if (g.IsRect) DimV(m, -g.Wi / 2, g.Wi / 2, g.Li / 2, bx + off, TipWidth);
+            if (g.IsRect) DimV(m, -g.Wi / 2, g.Wi / 2, g.Li / 2, bx + off, TipWidth, "InternalWidth");
 
             // ---- trên / trái: lỗ thăm và độ lệch ----
             if (hx > 0 && hy > 0)
             {
                 double yTop = by + off;
-                if (g.OpeningIsCircle) DimH(m, ox - hx, ox + hx, oy, yTop, TipOpeningDia);
+                if (g.OpeningIsCircle) DimH(m, ox - hx, ox + hx, oy, yTop, TipOpeningDia, "OpeningDiameter");
                 else
                 {
-                    DimH(m, ox - hx, ox + hx, oy + hy, yTop, TipOpenX);
-                    DimV(m, oy - hy, oy + hy, ox - hx, -bx - off, TipOpenY);
+                    DimH(m, ox - hx, ox + hx, oy + hy, yTop, TipOpenX, "OpeningX");
+                    DimV(m, oy - hy, oy + hy, ox - hx, -bx - off, TipOpenY, "OpeningY");
                 }
-                if (Math.Abs(ox) > 0.5) DimH(m, 0, ox, oy, yTop + off, TipOffX);
-                if (Math.Abs(oy) > 0.5) DimV(m, 0, oy, ox, -bx - 2 * off, TipOffY);
+                if (Math.Abs(ox) > 0.5) DimH(m, 0, ox, oy, yTop + off, TipOffX, "OpeningOffsetX");
+                if (Math.Abs(oy) > 0.5) DimV(m, 0, oy, ox, -bx - 2 * off, TipOffY, "OpeningOffsetY");
             }
         }
 
@@ -176,7 +179,11 @@ namespace LynhCad.Manhole.Core.Drawing
                 Hatched(m, PPolyline.Rect(wall, Layers.Concrete), null);
                 if (g.IsPrecast && P.RingHeight > 0)
                     for (double z = P.RingHeight; z < H - 1; z += P.RingHeight)
-                        m.Add(PPolyline.Line(new Vec2(wall.X1, z), new Vec2(wall.X2, z), Layers.ConcreteBeyond));
+                    {
+                        var joint = PPolyline.Line(new Vec2(wall.X1, z), new Vec2(wall.X2, z), Layers.ConcreteBeyond);
+                        joint.Tip = "Precast ring joint"; joint.Key = "RingHeight";
+                        m.Add(joint);
+                    }
             }
             if (hx > 0)
             {
@@ -186,6 +193,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 {
                     var frame = PPolyline.Rect(new Rect2(ox - hx - 100, zTop, ox + hx + 100, zCL), Layers.ConcreteBeyond);
                     frame.Tip = "Cover, frame and adjustment rings (CL to top of roof)";
+                    frame.Key = "CoverAllowance";
                     m.Add(frame);
                 }
             }
@@ -194,36 +202,38 @@ namespace LynhCad.Manhole.Core.Drawing
             // mặt đất tại CL
             var ground = PPolyline.Line(new Vec2(-bx - off * 0.5, zCL), new Vec2(bx + off * 0.5, zCL), Layers.ConcreteBeyond);
             ground.Tip = TipCL + " = RL " + P.CoverLevel.ToString("0.000");
+            ground.Key = "CoverLevel";
             m.Add(ground);
             m.Add(new PText
             {
                 // đặt đầu trái (bên phải còn kích thước Roof projection phía trên đường mặt đất)
                 Layer = PipeLayoutPreview.HintLayer, Position = new Vec2(-bx - off * 0.5, zCL + off * 0.1), Height = off * 0.4,
-                Text = "CL " + P.CoverLevel.ToString("0.000"), Align = TextAlign.Left, VAlign = TextVAlign.Bottom, Tip = ground.Tip,
+                Text = "CL " + P.CoverLevel.ToString("0.000"), Align = TextAlign.Left, VAlign = TextVAlign.Bottom, Tip = ground.Tip, Key = "CoverLevel",
             });
             // đáy ngoài ống thấp nhất = mặt bản đáy + sump
             if (P.SumpDepth > 0)
             {
                 var pipeBot = PPolyline.Line(new Vec2(innerHalf * 0.3, P.SumpDepth), new Vec2(innerHalf, P.SumpDepth), Layers.PipeHidden);
                 pipeBot.Tip = "Outside bottom of the lowest pipe";
+                pipeBot.Key = "SumpDepth";
                 m.Add(pipeBot);
             }
 
             // ---- trái: chuỗi đứng bản đáy / lòng hố / bản nắp / nắp ----
             double xL = -bx - off;
-            DimV(m, -Tb, 0, -bx, xL, TipBase);
-            DimV(m, 0, H, -outerHalf, xL, TipHeight);
-            DimV(m, H, zTop, -rx, xL, TipRoof);
-            if (zCL - zTop > 0.5) DimV(m, zTop, zCL, ox - hx - 100, xL, TipAllowance);
+            DimV(m, -Tb, 0, -bx, xL, TipBase, "BaseThickness");
+            DimV(m, 0, H, -outerHalf, xL, TipHeight, "");
+            DimV(m, H, zTop, -rx, xL, TipRoof, "RoofThickness");
+            if (zCL - zTop > 0.5) DimV(m, zTop, zCL, ox - hx - 100, xL, TipAllowance, "CoverAllowance");
 
             // ---- phải: sump, đốt đúc sẵn ----
             double xR = bx + off;
-            if (P.SumpDepth > 0) DimV(m, 0, P.SumpDepth, innerHalf, xR, TipSump);
-            if (g.IsPrecast && P.RingHeight > 0 && P.RingHeight < H) DimV(m, 0, P.RingHeight, outerHalf, xR + off, TipRing);
+            if (P.SumpDepth > 0) DimV(m, 0, P.SumpDepth, innerHalf, xR, TipSump, "SumpDepth");
+            if (g.IsPrecast && P.RingHeight > 0 && P.RingHeight < H) DimV(m, 0, P.RingHeight, outerHalf, xR + off, TipRing, "RingHeight");
 
             // ---- dưới / trên: phần bản thò ra ----
-            if (P.BaseProjection > 0) DimH(m, -bx, -outerHalf, -Tb, -Tb - off, TipBaseProj);
-            if (P.RoofProjection > 0) DimH(m, outerHalf, rx, zTop, zCL + off, TipRoofProj);
+            if (P.BaseProjection > 0) DimH(m, -bx, -outerHalf, -Tb, -Tb - off, TipBaseProj, "BaseProjection");
+            if (P.RoofProjection > 0) DimH(m, outerHalf, rx, zTop, zCL + off, TipRoofProj, "RoofProjection");
         }
     }
 }

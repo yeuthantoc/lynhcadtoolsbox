@@ -57,6 +57,8 @@ namespace LynhCad.Manhole.Core.Drawing
         public string Layer;
         /// <summary>Chú thích khi rê chuột (chỉ preview trong hộp thoại; SVG / AutoCAD bỏ qua).</summary>
         public string Tip;
+        /// <summary>Khoá liên kết với ô nhập (tên thuộc tính ManholeParams) để preview làm nổi bật khi ô đó có focus; chỉ preview dùng.</summary>
+        public string Key;
         public abstract void AddBounds(Bounds b);
         public abstract void Translate(Vec2 d);
         /// <summary>Biến đổi đồng dạng tại chỗ (dùng khi khai triển block).</summary>

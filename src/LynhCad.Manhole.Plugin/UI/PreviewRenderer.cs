@@ -19,10 +19,17 @@ namespace LynhCad.Manhole.Plugin.UI
         private readonly Canvas canvas;
         private readonly double k, ox, oy, minX, maxY;
         private readonly Dictionary<string, Brush> brushes = new Dictionary<string, Brush>();
+        /// <summary>Key của ô nhập đang có focus: primitive cùng Key vẽ nổi bật, primitive có Key khác mờ đi, không Key giữ nguyên.</summary>
+        private readonly string highlight;
+        private static readonly Brush HighlightBrush = Freeze(new SolidColorBrush(Color.FromRgb(0xe8, 0x59, 0x0c)));
+        private const double DimOpacity = 0.25;
 
-        private PreviewRenderer(Canvas canvas, Bounds b)
+        private static Brush Freeze(Brush b) { b.Freeze(); return b; }
+
+        private PreviewRenderer(Canvas canvas, Bounds b, string highlight)
         {
             this.canvas = canvas;
+            this.highlight = string.IsNullOrEmpty(highlight) ? null : highlight;
             double w = Math.Max(1, canvas.ActualWidth - 2 * Margin), h = Math.Max(1, canvas.ActualHeight - 2 * Margin);
             k = Math.Min(w / Math.Max(1, b.Width), h / Math.Max(1, b.Height));
             minX = b.MinX; maxY = b.MaxY;
@@ -30,14 +37,17 @@ namespace LynhCad.Manhole.Plugin.UI
             oy = Margin + (h - b.Height * k) / 2;
         }
 
-        /// <summary>Xoá Canvas rồi vẽ model vừa khung hiện tại. Model rỗng hoặc khung chưa có kích thước → để trống.</summary>
-        public static void Render(Canvas canvas, DrawingModel model)
+        /// <summary>
+        /// Xoá Canvas rồi vẽ model vừa khung hiện tại. Model rỗng hoặc khung chưa có kích thước → để trống.
+        /// highlightKey (tuỳ chọn) = Key của ô nhập đang có focus → kích thước đó nổi bật, các kích thước khác mờ.
+        /// </summary>
+        public static void Render(Canvas canvas, DrawingModel model, string highlightKey = null)
         {
             canvas.Children.Clear();
             if (model == null || model.Items.Count == 0 || canvas.ActualWidth < 10 || canvas.ActualHeight < 10) return;
             var b = model.GetBounds();
             if (!b.IsValid) return;
-            var r = new PreviewRenderer(canvas, b);
+            var r = new PreviewRenderer(canvas, b, highlightKey);
             // hatch trước để nằm dưới nét
             foreach (var p in model.Items) if (p is PHatch) p.Accept(r);
             foreach (var p in model.Items) if (!(p is PHatch)) p.Accept(r);
@@ -68,12 +78,32 @@ namespace LynhCad.Manhole.Plugin.UI
             else if (def != null && def.Linetype == "CENTER") s.StrokeDashArray = new DoubleCollection { 10, 3, 2, 3 };
         }
 
-        private void AddPath(Geometry geom, string layer, bool fill, string tip = null)
+        /// <summary>Trạng thái nổi bật của một primitive theo Key: 1 = nổi bật, -1 = mờ, 0 = bình thường.</summary>
+        private int Emphasis(string key)
+        {
+            if (highlight == null || string.IsNullOrEmpty(key)) return 0;
+            return key == highlight ? 1 : -1;
+        }
+
+        private void AddPath(Geometry geom, string layer, bool fill, string tip = null, string key = null)
         {
             var path = new Path { Data = geom };
             if (fill) path.Fill = BrushOf(layer); else Stroke(path, layer);
             if (!string.IsNullOrEmpty(tip)) path.ToolTip = tip;
+            int em = Emphasis(key);
+            if (em > 0)
+            {
+                if (fill) path.Fill = HighlightBrush; else { path.Stroke = HighlightBrush; path.StrokeThickness = 2.5; }
+            }
+            else if (em < 0) path.Opacity = DimOpacity;
             canvas.Children.Add(path);
+        }
+
+        private void Emphasize(TextBlock tb, string key)
+        {
+            int em = Emphasis(key);
+            if (em > 0) { tb.Foreground = HighlightBrush; tb.FontWeight = FontWeights.Bold; }
+            else if (em < 0) tb.Opacity = DimOpacity;
         }
 
         private PathFigure Figure(PPolyline pl)
@@ -101,19 +131,19 @@ namespace LynhCad.Manhole.Plugin.UI
             if (pl.Points.Count < 2) return;
             var g = new PathGeometry();
             g.Figures.Add(Figure(pl));
-            AddPath(g, pl.Layer, false, pl.Tip);
+            AddPath(g, pl.Layer, false, pl.Tip, pl.Key);
         }
 
         public void Visit(PHatch h)
         {
             var g = new PathGeometry { FillRule = FillRule.EvenOdd };
             foreach (var loop in h.Loops) if (loop.Points.Count >= 2) g.Figures.Add(Figure(loop));
-            AddPath(g, h.Layer, true, h.Tip);
+            AddPath(g, h.Layer, true, h.Tip, h.Key);
         }
 
         public void Visit(PCircle c)
         {
-            AddPath(new EllipseGeometry(P(c.Center), c.Radius * k, c.Radius * k), c.Layer, false, c.Tip);
+            AddPath(new EllipseGeometry(P(c.Center), c.Radius * k, c.Radius * k), c.Layer, false, c.Tip, c.Key);
         }
 
         public void Visit(PArc a)
@@ -124,18 +154,18 @@ namespace LynhCad.Manhole.Plugin.UI
                 sweep > Math.PI, SweepDirection.Counterclockwise, true));
             var g = new PathGeometry();
             g.Figures.Add(fig);
-            AddPath(g, a.Layer, false, a.Tip);
+            AddPath(g, a.Layer, false, a.Tip, a.Key);
         }
 
         public void Visit(PEllipse e)
         {
-            AddPath(new EllipseGeometry(P(e.Center), e.RadiusX * k, e.RadiusY * k), e.Layer, false, e.Tip);
+            AddPath(new EllipseGeometry(P(e.Center), e.RadiusX * k, e.RadiusY * k), e.Layer, false, e.Tip, e.Key);
         }
 
         public void Visit(PDot d)
         {
             double r = Math.Max(1.5, d.Diameter / 2 * k);
-            AddPath(new EllipseGeometry(P(d.Center), r, r), d.Layer, true, d.Tip);
+            AddPath(new EllipseGeometry(P(d.Center), r, r), d.Layer, true, d.Tip, d.Key);
         }
 
         public void Visit(PText t)
@@ -148,6 +178,7 @@ namespace LynhCad.Manhole.Plugin.UI
                 TextAlignment = t.Align == TextAlign.Left ? TextAlignment.Left : t.Align == TextAlign.Center ? TextAlignment.Center : TextAlignment.Right,
             };
             if (!string.IsNullOrEmpty(t.Tip)) tb.ToolTip = t.Tip;
+            Emphasize(tb, t.Key);
             tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             var sz = tb.DesiredSize;
             var p = P(t.Position);
@@ -195,7 +226,7 @@ namespace LynhCad.Manhole.Plugin.UI
                 f.Segments.Add(new LineSegment(q + t, true));
                 g.Figures.Add(f);
             }
-            AddPath(g, d.Layer, false, d.Tip);
+            AddPath(g, d.Layer, false, d.Tip, d.Key);
 
             // dải trong suốt để tooltip bắt được khi rê chuột gần đường kích thước
             if (!string.IsNullOrEmpty(d.Tip))
@@ -207,6 +238,7 @@ namespace LynhCad.Manhole.Plugin.UI
             string text = string.IsNullOrEmpty(d.TextOverride) ? d.Measured.ToString("0") : d.TextOverride;
             var tb = new TextBlock { Text = text, FontSize = fontSize, Foreground = BrushOf(d.Layer) };
             if (!string.IsNullOrEmpty(d.Tip)) tb.ToolTip = d.Tip;
+            Emphasize(tb, d.Key);
             bool vertical = Math.Abs(Math.Abs(dp.Y) - 1) < 1e-6;
             if (vertical) tb.LayoutTransform = new RotateTransform(-90);
             tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -223,7 +255,7 @@ namespace LynhCad.Manhole.Plugin.UI
 
         public void Visit(PLeader l)
         {
-            Visit(new PText { Layer = l.Layer, Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align, Tip = l.Tip });
+            Visit(new PText { Layer = l.Layer, Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align, Tip = l.Tip, Key = l.Key });
         }
 
         public void Visit(PTable t) { }

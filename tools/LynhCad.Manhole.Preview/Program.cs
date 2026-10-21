@@ -232,6 +232,13 @@ namespace LynhCad.Manhole.Preview
                                         DimensionPreview.TipAllowance, DimensionPreview.TipSump, DimensionPreview.TipHeight })
                 True("dim preview tip: " + tip, dims.Any(d => d.Tip.StartsWith(tip + " =")));
             True("dim preview wall tip value", dims.Any(d => d.Tip == DimensionPreview.TipWall + " = 200 mm"));
+            // Key = tên thuộc tính ManholeParams (hộp thoại nổi bật theo đường dẫn binding của ô nhập)
+            var keyed = dp.Model.Items.Where(i => !string.IsNullOrEmpty(i.Key)).ToList();
+            True("dim preview keys are ManholeParams properties", keyed.Count > 0
+                && keyed.All(i => typeof(ManholeParams).GetProperty(i.Key) != null));
+            True("dim preview: every field dim has a key", dims.All(d => !string.IsNullOrEmpty(d.Key) || d.Tip.StartsWith(DimensionPreview.TipHeight)));
+            True("dim preview wall key", dims.Any(d => d.Key == "WallThickness"));
+            True("dim preview CL key", dp.Model.Items.OfType<PText>().Any(t => t.Key == "CoverLevel"));
             True("dim preview no offset dims when centred", !dims.Any(d => d.Tip.StartsWith(DimensionPreview.TipOffX)));
             var pOff = p.Clone(); pOff.OpeningOffsetX = 150;
             True("dim preview offset dim appears", DimensionPreview.Build(pOff).Model.Items.OfType<PDim>().Any(d => d.Tip.StartsWith(DimensionPreview.TipOffX + " = 150")));
@@ -323,6 +330,9 @@ namespace LynhCad.Manhole.Preview
             foreach (var tip in new[] { DimensionPreview.TipDiameter, DimensionPreview.TipPrecastWall, DimensionPreview.TipRing, DimensionPreview.TipOpeningDia })
                 True("circ precast dim preview tip: " + tip, dpPre.Any(t => t.StartsWith(tip + " =")));
             True("circ precast dim preview: no rect tips", !dpPre.Any(t => t.StartsWith(DimensionPreview.TipLength) || t.StartsWith(DimensionPreview.TipWall + " =")));
+            var preKeys = DimensionPreview.Build(ManholeParams.SampleCircular()).Model.Items.Select(i => i.Key).Where(k => !string.IsNullOrEmpty(k)).Distinct().ToList();
+            True("circ precast keys", preKeys.Contains("PrecastWallThickness") && preKeys.Contains("RingHeight") && preKeys.Contains("InternalDiameter")
+                && preKeys.All(k => typeof(ManholeParams).GetProperty(k) != null));
             var dpCast = DimensionPreview.Build(p).Model.Items.OfType<PDim>().Select(d => d.Tip).ToList();
             True("circ cast dim preview wall tip", dpCast.Any(t => t.StartsWith(DimensionPreview.TipWall + " =")) && !dpCast.Any(t => t.StartsWith(DimensionPreview.TipRing)));
             True("circ cast rebar preview", RebarLayoutPreview.Build(p).Errors.Count == 0);

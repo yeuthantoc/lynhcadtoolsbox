@@ -68,7 +68,8 @@
                     </Grid.ColumnDefinitions>
                 <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
                     <StackPanel LostFocus="OnFieldChanged" Selector.SelectionChanged="OnFieldSelectionChanged"
-                                ToggleButton.Checked="OnFieldChanged" ToggleButton.Unchecked="OnFieldChanged">
+                                ToggleButton.Checked="OnFieldChanged" ToggleButton.Unchecked="OnFieldChanged"
+                                GotKeyboardFocus="OnGeneralFieldFocus">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -240,7 +241,7 @@
                 </ScrollViewer>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" />
                 <DockPanel Grid.Column="2">
-                    <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" FontWeight="SemiBold" Text="Preview (plan + section) - hover a dimension to see its field" />
+                    <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" FontWeight="SemiBold" Text="Preview (plan + section) - the focused field is highlighted; hover a dimension for its field" />
                     <TextBlock x:Name="txtGeneralPreviewInfo" DockPanel.Dock="Bottom" Margin="2,4,0,0" TextWrapping="Wrap" Foreground="DarkRed" />
                     <Border BorderBrush="#FFCCCCCC" BorderThickness="1" Background="White" ClipToBounds="True">
                         <Canvas x:Name="cvGeneralPreview" SizeChanged="OnPreviewSizeChanged" />

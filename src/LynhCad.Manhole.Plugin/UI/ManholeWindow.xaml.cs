@@ -17,6 +17,8 @@ namespace LynhCad.Manhole.Plugin.UI
     {
         private ObservableCollection<PipeRow> pipes;
         private bool previewQueued;
+        /// <summary>Tên thuộc tính ManholeParams của ô đang có focus ở tab General (null = không nổi bật gì).</summary>
+        private string generalHighlight;
 
         /// <summary>Thông số sau khi người dùng bấm Draw (đã kiểm tra hợp lệ).</summary>
         public ManholeParams Params { get; private set; }
@@ -119,7 +121,7 @@ namespace LynhCad.Manhole.Plugin.UI
             try
             {
                 var dp = DimensionPreview.Build(p);
-                PreviewRenderer.Render(cvGeneralPreview, dp.Model);
+                PreviewRenderer.Render(cvGeneralPreview, dp.Model, generalHighlight);
                 txtGeneralPreviewInfo.Text = dp.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", dp.Errors);
             }
             catch (Exception ex)
@@ -156,6 +158,24 @@ namespace LynhCad.Manhole.Plugin.UI
         private void OnFieldChanged(object sender, RoutedEventArgs e) { QueuePreview(); }
 
         private void OnFieldSelectionChanged(object sender, SelectionChangedEventArgs e) { QueuePreview(); }
+
+        /// <summary>
+        /// Ô nhập tab General nhận focus: lấy tên thuộc tính từ binding của ô (vd "WallThickness") làm khoá nổi bật
+        /// trên sơ đồ kích thước; focus vào thứ không phải ô bind (checkbox, combobox) thì bỏ nổi bật.
+        /// </summary>
+        private void OnGeneralFieldFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            string key = null;
+            var tb = e.NewFocus as TextBox;
+            if (tb != null)
+            {
+                var be = tb.GetBindingExpression(TextBox.TextProperty);
+                if (be != null && be.ParentBinding != null && be.ParentBinding.Path != null) key = be.ParentBinding.Path.Path;
+            }
+            if (key == generalHighlight) return;
+            generalHighlight = key;
+            QueuePreview();
+        }
 
         private void OnPipeCellEditEnding(object sender, DataGridCellEditEndingEventArgs e) { QueuePreview(); }
 
