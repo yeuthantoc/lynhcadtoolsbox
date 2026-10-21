@@ -68,10 +68,11 @@ namespace LynhCad.Manhole.Plugin.UI
             else if (def != null && def.Linetype == "CENTER") s.StrokeDashArray = new DoubleCollection { 10, 3, 2, 3 };
         }
 
-        private void AddPath(Geometry geom, string layer, bool fill)
+        private void AddPath(Geometry geom, string layer, bool fill, string tip = null)
         {
             var path = new Path { Data = geom };
             if (fill) path.Fill = BrushOf(layer); else Stroke(path, layer);
+            if (!string.IsNullOrEmpty(tip)) path.ToolTip = tip;
             canvas.Children.Add(path);
         }
 
@@ -100,19 +101,19 @@ namespace LynhCad.Manhole.Plugin.UI
             if (pl.Points.Count < 2) return;
             var g = new PathGeometry();
             g.Figures.Add(Figure(pl));
-            AddPath(g, pl.Layer, false);
+            AddPath(g, pl.Layer, false, pl.Tip);
         }
 
         public void Visit(PHatch h)
         {
             var g = new PathGeometry { FillRule = FillRule.EvenOdd };
             foreach (var loop in h.Loops) if (loop.Points.Count >= 2) g.Figures.Add(Figure(loop));
-            AddPath(g, h.Layer, true);
+            AddPath(g, h.Layer, true, h.Tip);
         }
 
         public void Visit(PCircle c)
         {
-            AddPath(new EllipseGeometry(P(c.Center), c.Radius * k, c.Radius * k), c.Layer, false);
+            AddPath(new EllipseGeometry(P(c.Center), c.Radius * k, c.Radius * k), c.Layer, false, c.Tip);
         }
 
         public void Visit(PArc a)
@@ -123,18 +124,18 @@ namespace LynhCad.Manhole.Plugin.UI
                 sweep > Math.PI, SweepDirection.Counterclockwise, true));
             var g = new PathGeometry();
             g.Figures.Add(fig);
-            AddPath(g, a.Layer, false);
+            AddPath(g, a.Layer, false, a.Tip);
         }
 
         public void Visit(PEllipse e)
         {
-            AddPath(new EllipseGeometry(P(e.Center), e.RadiusX * k, e.RadiusY * k), e.Layer, false);
+            AddPath(new EllipseGeometry(P(e.Center), e.RadiusX * k, e.RadiusY * k), e.Layer, false, e.Tip);
         }
 
         public void Visit(PDot d)
         {
             double r = Math.Max(1.5, d.Diameter / 2 * k);
-            AddPath(new EllipseGeometry(P(d.Center), r, r), d.Layer, true);
+            AddPath(new EllipseGeometry(P(d.Center), r, r), d.Layer, true, d.Tip);
         }
 
         public void Visit(PText t)
@@ -146,6 +147,7 @@ namespace LynhCad.Manhole.Plugin.UI
                 Foreground = BrushOf(t.Layer),
                 TextAlignment = t.Align == TextAlign.Left ? TextAlignment.Left : t.Align == TextAlign.Center ? TextAlignment.Center : TextAlignment.Right,
             };
+            if (!string.IsNullOrEmpty(t.Tip)) tb.ToolTip = t.Tip;
             tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             var sz = tb.DesiredSize;
             var p = P(t.Position);
@@ -156,12 +158,72 @@ namespace LynhCad.Manhole.Plugin.UI
             canvas.Children.Add(tb);
         }
 
-        // Sơ đồ ống không sinh kích thước / leader / bảng; nếu sau này có thì vẽ phần chữ cho khỏi mất thông tin.
-        public void Visit(PDim d) { }
+        /// <summary>
+        /// Kích thước vẽ theo đơn vị pixel (đường gióng, đường kích thước, gạch chéo 45°, chữ 10px) để nhìn được ở mọi tỉ lệ
+        /// co giãn; Tip của kích thước thành tooltip trên chữ và trên một dải trong suốt dọc đường kích thước cho dễ rê chuột trúng.
+        /// </summary>
+        public void Visit(PDim d)
+        {
+            var dir = Vec2.FromAngle(d.AngleDeg * GeomUtil.Deg);
+            var n = dir.Perp();
+            var q1 = d.P1 + n * (d.DimLinePoint - d.P1).Dot(n);
+            var q2 = d.P2 + n * (d.DimLinePoint - d.P2).Dot(n);
+            Point a1 = P(d.P1), a2 = P(d.P2), b1 = P(q1), b2 = P(q2);
+            const double gap = 2, over = 3, tick = 3.5, fontSize = 10;
+
+            var g = new PathGeometry();
+            foreach (var pr in new[] { new[] { a1, b1 }, new[] { a2, b2 } })
+            {
+                var v = pr[1] - pr[0];
+                if (v.Length < 0.5) continue;
+                v.Normalize();
+                var f = new PathFigure { StartPoint = pr[0] + v * gap };
+                f.Segments.Add(new LineSegment(pr[1] + v * over, true));
+                g.Figures.Add(f);
+            }
+            var dp = b2 - b1;
+            if (dp.Length < 0.5) return;
+            dp.Normalize();
+            var np = new Vector(-dp.Y, dp.X);
+            var line = new PathFigure { StartPoint = b1 - dp * over };
+            line.Segments.Add(new LineSegment(b2 + dp * over, true));
+            g.Figures.Add(line);
+            var t = dp + np; t.Normalize(); t *= tick;
+            foreach (var q in new[] { b1, b2 })
+            {
+                var f = new PathFigure { StartPoint = q - t };
+                f.Segments.Add(new LineSegment(q + t, true));
+                g.Figures.Add(f);
+            }
+            AddPath(g, d.Layer, false, d.Tip);
+
+            // dải trong suốt để tooltip bắt được khi rê chuột gần đường kích thước
+            if (!string.IsNullOrEmpty(d.Tip))
+            {
+                var hit = new Path { Data = new LineGeometry(b1, b2), Stroke = Brushes.Transparent, StrokeThickness = 10, ToolTip = d.Tip };
+                canvas.Children.Add(hit);
+            }
+
+            string text = string.IsNullOrEmpty(d.TextOverride) ? d.Measured.ToString("0") : d.TextOverride;
+            var tb = new TextBlock { Text = text, FontSize = fontSize, Foreground = BrushOf(d.Layer) };
+            if (!string.IsNullOrEmpty(d.Tip)) tb.ToolTip = d.Tip;
+            bool vertical = Math.Abs(Math.Abs(dp.Y) - 1) < 1e-6;
+            if (vertical) tb.LayoutTransform = new RotateTransform(-90);
+            tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            var sz = tb.DesiredSize;
+            // chữ nằm phía DimLinePoint so với P1/P2 (phía n trong model = phía -np hay +np tuỳ hướng), cách đường 2px
+            var mid = new Point((b1.X + b2.X) / 2, (b1.Y + b2.Y) / 2);
+            var side = P(d.DimLinePoint + n) - P(d.DimLinePoint);
+            if (side.Length > 1e-9) side.Normalize(); else side = np;
+            var centre = mid + side * (2 + (vertical ? sz.Width : sz.Height) / 2);
+            Canvas.SetLeft(tb, centre.X - sz.Width / 2);
+            Canvas.SetTop(tb, centre.Y - sz.Height / 2);
+            canvas.Children.Add(tb);
+        }
 
         public void Visit(PLeader l)
         {
-            Visit(new PText { Layer = l.Layer, Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align });
+            Visit(new PText { Layer = l.Layer, Position = l.TextPosition, Height = l.TextHeight, Text = l.Text, Align = l.Align, Tip = l.Tip });
         }
 
         public void Visit(PTable t) { }

@@ -104,7 +104,7 @@ namespace LynhCad.Manhole.Plugin.UI
         private void RenderPreview()
         {
             previewQueued = false;
-            if (cvPreview == null || cvRebarPreview == null || Params == null || pipes == null) return;
+            if (cvPreview == null || cvRebarPreview == null || cvGeneralPreview == null || Params == null || pipes == null) return;
             ManholeParams p;
             try
             {
@@ -113,8 +113,19 @@ namespace LynhCad.Manhole.Plugin.UI
             }
             catch (Exception ex)
             {
-                txtPreviewInfo.Text = txtRebarPreviewInfo.Text = "Không xem trước được: " + ex.Message;
+                txtPreviewInfo.Text = txtRebarPreviewInfo.Text = txtGeneralPreviewInfo.Text = "Không xem trước được: " + ex.Message;
                 return;
+            }
+            try
+            {
+                var dp = DimensionPreview.Build(p);
+                PreviewRenderer.Render(cvGeneralPreview, dp.Model);
+                txtGeneralPreviewInfo.Text = dp.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", dp.Errors);
+            }
+            catch (Exception ex)
+            {
+                cvGeneralPreview.Children.Clear();
+                txtGeneralPreviewInfo.Text = "Không xem trước được: " + ex.Message;
             }
             try
             {
@@ -141,10 +152,10 @@ namespace LynhCad.Manhole.Plugin.UI
             }
         }
 
-        /// <summary>Ô thép mất focus / checkbox đổi: binding đã cập nhật → vẽ lại preview thép.</summary>
-        private void OnRebarChanged(object sender, RoutedEventArgs e) { QueuePreview(); }
+        /// <summary>Ô nhập mất focus / checkbox / combobox đổi (tab General, Reinforcement): binding đã cập nhật → vẽ lại preview.</summary>
+        private void OnFieldChanged(object sender, RoutedEventArgs e) { QueuePreview(); }
 
-        private void OnRebarSelectionChanged(object sender, SelectionChangedEventArgs e) { QueuePreview(); }
+        private void OnFieldSelectionChanged(object sender, SelectionChangedEventArgs e) { QueuePreview(); }
 
         private void OnPipeCellEditEnding(object sender, DataGridCellEditEndingEventArgs e) { QueuePreview(); }
 

@@ -40,12 +40,18 @@ namespace LynhCad.Manhole.Preview
                         foreach (var e in pv.Geometry.Errors) Console.WriteLine("ERROR: " + e);
                         File.WriteAllText(args[2], SvgExporter.Export(pv.Model, 20));
                         return 0;
+                    case "dims":
+                        if (args.Length < 3) { Console.WriteLine("usage: dims <params.json> <out.svg>"); return 2; }
+                        var dv = DimensionPreview.Build(ParamsJson.Load(args[1]));
+                        foreach (var e in dv.Errors) Console.WriteLine("ERROR: " + e);
+                        File.WriteAllText(args[2], SvgExporter.Export(dv.Model, 20));
+                        return 0;
                     case "snapshot":
                         string samples = Snapshots.FindSamplesDir();
                         if (samples == null) { Console.WriteLine("samples/ not found"); return 2; }
                         return Snapshots.Write(samples);
                     default:
-                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | sample <folder> | snapshot");
+                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | dims <json> <svg> | sample <folder> | snapshot");
                         return 2;
                 }
             }
@@ -216,6 +222,24 @@ namespace LynhCad.Manhole.Preview
             True("single layer default: horizontal towards outer face", rd1.Layout.HorizFromInner[0] > rd1.Layout.VertFromInner[0]);
             True("horiz inside compose ok", DetailComposer.Compose(pIn).Ok);
 
+            // preview kích thước (tab General): mỗi thông số hình học là một kích thước có Tip = tên ô nhập
+            var dp = DimensionPreview.Build(p);
+            True("dim preview builds", dp.Errors.Count == 0 && dp.Model.Items.Count > 0);
+            var dims = dp.Model.Items.OfType<PDim>().ToList();
+            True("dim preview: every dim has a tip", dims.Count > 0 && dims.All(d => !string.IsNullOrEmpty(d.Tip) && !string.IsNullOrEmpty(d.TextOverride)));
+            foreach (var tip in new[] { DimensionPreview.TipLength, DimensionPreview.TipWidth, DimensionPreview.TipWall, DimensionPreview.TipBase,
+                                        DimensionPreview.TipRoof, DimensionPreview.TipBaseProj, DimensionPreview.TipOpenX, DimensionPreview.TipOpenY,
+                                        DimensionPreview.TipAllowance, DimensionPreview.TipSump, DimensionPreview.TipHeight })
+                True("dim preview tip: " + tip, dims.Any(d => d.Tip.StartsWith(tip + " =")));
+            True("dim preview wall tip value", dims.Any(d => d.Tip == DimensionPreview.TipWall + " = 200 mm"));
+            True("dim preview no offset dims when centred", !dims.Any(d => d.Tip.StartsWith(DimensionPreview.TipOffX)));
+            var pOff = p.Clone(); pOff.OpeningOffsetX = 150;
+            True("dim preview offset dim appears", DimensionPreview.Build(pOff).Model.Items.OfType<PDim>().Any(d => d.Tip.StartsWith(DimensionPreview.TipOffX + " = 150")));
+            True("dim preview CL text", dp.Model.Items.OfType<PText>().Any(t => t.Text.StartsWith("CL ") && t.Tip.StartsWith(DimensionPreview.TipCL)));
+            var noPipes = p.Clone(); noPipes.Pipes.Clear();
+            var dpNo = DimensionPreview.Build(noPipes);
+            True("dim preview without pipes still draws", dpNo.Errors.Count > 0 && dpNo.Model.Items.OfType<PDim>().Any(d => d.Tip.StartsWith(DimensionPreview.TipBase)));
+
             // preview bố trí thép (tab Reinforcement)
             var rp = RebarLayoutPreview.Build(p);
             True("rebar preview builds", rp.Errors.Count == 0 && rp.Model.Items.Count > 0);
@@ -295,6 +319,12 @@ namespace LynhCad.Manhole.Preview
             var ringPts = RebarDesigner.VerticalPositions(g, rd.Layout);
             True("circ cast faces share angles", ringPts.Take(28).Zip(ringPts.Skip(28), (a, b) => Math.Abs(a.Angle() - b.Angle()) < 1e-9).All(x => x));
             True("circ precast rebar preview", RebarLayoutPreview.Build(ManholeParams.SampleCircular()).Errors.Count == 0);
+            var dpPre = DimensionPreview.Build(ManholeParams.SampleCircular()).Model.Items.OfType<PDim>().Select(d => d.Tip).ToList();
+            foreach (var tip in new[] { DimensionPreview.TipDiameter, DimensionPreview.TipPrecastWall, DimensionPreview.TipRing, DimensionPreview.TipOpeningDia })
+                True("circ precast dim preview tip: " + tip, dpPre.Any(t => t.StartsWith(tip + " =")));
+            True("circ precast dim preview: no rect tips", !dpPre.Any(t => t.StartsWith(DimensionPreview.TipLength) || t.StartsWith(DimensionPreview.TipWall + " =")));
+            var dpCast = DimensionPreview.Build(p).Model.Items.OfType<PDim>().Select(d => d.Tip).ToList();
+            True("circ cast dim preview wall tip", dpCast.Any(t => t.StartsWith(DimensionPreview.TipWall + " =")) && !dpCast.Any(t => t.StartsWith(DimensionPreview.TipRing)));
             True("circ cast rebar preview", RebarLayoutPreview.Build(p).Errors.Count == 0);
             var rings = sch.Marks.Where(m => m.Shape == BarShape.Ring).ToList();
             Eq("circ cast 2 ring marks (inner/outer face)", 2, rings.Count);
