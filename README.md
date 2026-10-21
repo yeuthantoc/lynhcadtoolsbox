@@ -114,6 +114,7 @@ Hộp thoại có nút **Load JSON / Save JSON** để lưu cấu hình chuẩn 
 - Hố tròn: ống khai báo theo **góc** (0° = +X, ngược chiều kim đồng hồ), hướng tâm.
 - Tab Pipes: **DN**, **OD** và **Material** chọn từ danh sách (hoặc gõ giá trị khác). Đổi DN / vật liệu thì OD tự điền theo danh mục (`PipeCatalog`: PVC-U AS/NZS 1260, PE100, DICL; vật liệu khác OD ≈ 1.2·DN) — chỉ là giá trị gợi ý, cần kiểm tra theo catalogue nhà sản xuất.
 - **Mặt bản đáy** = đáy ngoài thấp nhất của các ống − `sumpDepth`. **Mặt bản nắp** = `coverLevel` − `coverAllowance`.
+- **Cog và đường kính uốn**: mặc định `"cogs": true` — thanh lưới bản đáy / bản nắp có cog chuẩn 90° (AS 3600 13.1.2.7) ở hai đầu (lớp dưới móc lên, lớp trên móc xuống, rút ngắn khi bản mỏng để không vượt lớp đối diện); thép đứng tường chân L vào đáy + cog vào bản nắp (thanh chữ U: A = chân, B = đoạn đứng, C = cog). `bendFactor` (5) = đường kính trong chỗ uốn tính theo d (AS 3600 Bảng 17.2.3.2); mọi chỗ uốn (chân, cog, góc thanh U, chỗ gãy) vẽ cung đúng bán kính tim và chiều dài cắt trong bảng đã trừ phần uốn. Bảng thống kê có cột `COG` (vd `2x170`, `1x170`, `170+120`) và cột `D`; kích thước A–D đo theo tim thanh. Thanh gia cường và vòng tròn không có cog.
 - **Rãnh khung nắp** (`coverRebate`): mặt bản nắp hạ xuống `coverRebateDepth` trong phạm vi lỗ thăm + `coverRebateWidth` mỗi phía (hố tròn: rãnh tròn); khung nắp vẽ đặt trong rãnh. Lưới thép **trên** của bản nắp và thanh gia cường lớp trên nằm trong phạm vi rãnh được **nhấn xuống** bằng đúng chiều sâu rãnh (đoạn xiên dốc 1:2), thống kê thành thanh `CRANKED` (gãy một chỗ: A, B = độ nhấn, C) hoặc `DROPPED` (nhấn ở giữa: A, B, C, D — bảng có thêm cột D). Lưới dưới không đổi.
 - **Mặt cắt A-A** luôn đi dọc trục ống ra (ống ra nằm bên phải), nhìn về phía trái của hướng ống ra.
 - **Ghi chú (callout)**: xếp thành cột hai bên hình, cách nhau ≥ 1.2 × chiều cao chữ; leader ngang khi chữ cùng cao độ với điểm đặt, nếu phải dời chữ thì gãy khúc 45° (hoặc 90°) tính từ điểm đặt rồi landing ngang; các leader không cắt nhau và giữ khoảng trống 1.2 × chiều cao chữ với số kích thước / nhãn cao độ. Mặt bằng thép bản nắp đặt thẳng tim dưới mặt bằng.
@@ -136,7 +137,7 @@ Ví dụ đầy đủ trong [`samples/`](samples). Trường bị thiếu sẽ l
   "wallHorizontal": { "dia": 12, "spacing": 200 }, "wallSingleLayer": false, "wallHorizontalInside": false,
   "baseBottom": { "dia": 16, "spacing": 200 }, "baseTopMat": true,
   "roofBottom": { "dia": 12, "spacing": 200 }, "roofTopMat": false,
-  "trimmerDia": 16, "trimmerCount": 2, "lapFactor": 50,
+  "trimmerDia": 16, "trimmerCount": 2, "lapFactor": 50, "cogs": true, "bendFactor": 5,
   "pipes": [
     { "mark": "P1", "role": "Inlet",  "dn": 300, "od": 360, "il": 12.450, "wall": "West" },
     { "mark": "P3", "role": "Outlet", "dn": 375, "od": 450, "il": 12.400, "wall": "East" }

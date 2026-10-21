@@ -173,13 +173,25 @@ namespace LynhCad.Manhole.Core.Drawing
 
             // Thép ngang: vòng trong & vòng ngoài, đứt tại lỗ ống
             var horizLoops = RebarDesigner.HorizontalLoops(g, L);
+            double rb = L.HorizBendRadius;
             foreach (var loop in horizLoops)
             {
                 double bx = loop.X, by = loop.Y;
-                DrawLoopSide(new Vec2(-bx, by), new Vec2(bx, by), WallSide.North, true, c);
-                DrawLoopSide(new Vec2(-bx, -by), new Vec2(bx, -by), WallSide.South, true, c);
-                DrawLoopSide(new Vec2(bx, -by), new Vec2(bx, by), WallSide.East, false, c);
-                DrawLoopSide(new Vec2(-bx, -by), new Vec2(-bx, by), WallSide.West, false, c);
+                // các cạnh lùi vào rb ở góc, góc vẽ cung bán kính tim uốn
+                DrawLoopSide(new Vec2(-bx + rb, by), new Vec2(bx - rb, by), WallSide.North, true, c);
+                DrawLoopSide(new Vec2(-bx + rb, -by), new Vec2(bx - rb, -by), WallSide.South, true, c);
+                DrawLoopSide(new Vec2(bx, -by + rb), new Vec2(bx, by - rb), WallSide.East, false, c);
+                DrawLoopSide(new Vec2(-bx, -by + rb), new Vec2(-bx, by - rb), WallSide.West, false, c);
+                if (rb > 1e-9)
+                    foreach (int sx in new[] { -1, 1 })
+                        foreach (int sy in new[] { -1, 1 })
+                        {
+                            var centre = new Vec2(sx * (bx - rb), sy * (by - rb));
+                            double a0 = sx > 0 ? (sy > 0 ? 0 : -Math.PI / 2) : (sy > 0 ? Math.PI / 2 : Math.PI);
+                            var arc = new PPolyline { Layer = Layers.Rebar, Key = RebarKeys.WallHorizontal };
+                            arc.AddArc(centre, rb, a0, a0 + Math.PI / 2);
+                            m.Add(arc);
+                        }
             }
 
             // Thép đứng: chấm, các mặt thẳng hàng với nhau (cùng vị trí dọc tường)

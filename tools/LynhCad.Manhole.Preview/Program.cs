@@ -118,6 +118,7 @@ namespace LynhCad.Manhole.Preview
             PipePreview();
             Steps();
             Rebate();
+            CogsAndBends();
             Validation();
             Json();
             Naming();
@@ -183,8 +184,12 @@ namespace LynhCad.Manhole.Preview
             var w1 = sch.Marks.First(m => m.Mark == "W1");
             // vòng trong 1616×1316 → 10 + 8 vị trí mỗi phương = 32 thanh; vòng ngoài cùng vị trí + 4 góc = 40
             Eq("W1 count (72 EF)", 72, w1.Count);
-            True("W1 is L", w1.Shape == BarShape.L);
-            Eq("W1 leg", 300, w1.B);
+            // chân L vào đáy + cog vào bản nắp → chữ U: A = chân 300, B = đoạn đứng, C = cog chuẩn N12 (5d)
+            True("W1 is U (leg + cog)", w1.Shape == BarShape.U);
+            Eq("W1 leg", 300, w1.A);
+            Eq("W1 cog", RebarCatalog.StandardCog(12, 5), w1.C);
+            Eq("W1 bend dia 5d", 60, w1.BendDia);
+            True("W1 length allows for bends", w1.Length < w1.A + w1.B + w1.C && w1.Length > w1.A + w1.B + w1.C - 4 * 12);
             // hai mặt thẳng hàng: mỗi thanh mặt ngoài (trừ 4 góc) có thanh mặt trong cùng X (tường N/S) hoặc cùng Y (tường E/W)
             var loops = RebarDesigner.VerticalLoops(g, rd.Layout);
             var pts = RebarDesigner.VerticalPositions(g, rd.Layout);
@@ -210,8 +215,8 @@ namespace LynhCad.Manhole.Preview
             True("single layer: CENTRAL suffix", rd1.Schedule.Callout(BarSets.WallVert).EndsWith(" CENTRAL VERT")
                 && rd1.Schedule.Callout(BarSets.WallHoriz).EndsWith(" CENTRAL HORIZ"));
             True("single layer: pipe trimmers not EF", !rd1.Schedule.Set(BarSets.PipeTrim).Suffix.EndsWith(" EF"));
-            Eq("single layer: half the U-bars", sch.Marks.Where(m => m.Shape == BarShape.U).Sum(m => m.Count) / 2,
-                rd1.Schedule.Marks.Where(m => m.Shape == BarShape.U).Sum(m => m.Count));
+            Eq("single layer: half the U-bars", sch.Marks.Where(m => m.Shape == BarShape.U && m.Mark != "W1").Sum(m => m.Count) / 2,
+                rd1.Schedule.Marks.Where(m => m.Shape == BarShape.U && m.Mark != "W1").Sum(m => m.Count));
             True("single layer: compose ok", DetailComposer.Compose(p1).Ok);
             var secOne = new SectionBuilder(g1, rd1, new DrawStyle(20)).Build();
             // mỗi tường một đường thép đứng (đoạn đứng ≥ 300 trên S-REIN, gộp theo X) thay vì hai
@@ -308,7 +313,7 @@ namespace LynhCad.Manhole.Preview
             var bad = p.Clone(); bad.WallThickness = 50;
             var rpBad = RebarLayoutPreview.Build(bad);
             True("rebar preview invalid params -> errors, no model", rpBad.Errors.Count > 0 && rpBad.Model.Items.Count == 0);
-            True("has W2/W3 U-bars", sch.Marks.Count(m => m.Shape == BarShape.U) == 2);
+            True("has W2/W3 U-bars", sch.Marks.Count(m => m.Shape == BarShape.U && m.Mark != "W1") == 2);
             True("WallHoriz callout", sch.Callout(BarSets.WallHoriz).StartsWith("W2/W3 N12-200 EF HORIZ"));
             True("base mat callout", sch.MatCallout(BarSets.BaseBot, false).EndsWith(" N16-200 BOT EW"));
             True("missing roof top mat -> null", sch.MatCallout(BarSets.RoofTop, true) == null);
@@ -317,7 +322,7 @@ namespace LynhCad.Manhole.Preview
             True("unknown bar set throws", threw);
 
             // bản đáy: 1500+400+300 = 2200 x 1900 → thanh theo X dài 2100
-            var bx = sch.Marks.First(m => m.Mark.StartsWith("B") && Math.Abs(m.Length - 2100) < 1e-6);
+            var bx = sch.Marks.First(m => m.Mark.StartsWith("B") && Math.Abs(m.A - 2100) < 1e-6);
             Eq("base X count", GeomUtil.CountBars(1900 - 100 - 16, 200) * 2, bx.Count);
 
             // bản nắp: thanh bị lỗ cắt phải ngắn hơn thanh nguyên
@@ -371,7 +376,7 @@ namespace LynhCad.Manhole.Preview
             var rd = RebarDesigner.Design(g);
             var sch = rd.Schedule;
             var vert = sch.Marks.First(m => m.Mark == "W1");
-            True("circ cast W1 is L", vert.Shape == BarShape.L);
+            True("circ cast W1 is U (leg + cog)", vert.Shape == BarShape.U);
             // vòng ngoài r = 950-68 = 882 → ceil(2πr/200) = 28; vòng trong cùng số thanh, cùng góc (thẳng hàng)
             Eq("circ cast vertical count", 28 + 28, vert.Count);
             var ringPts = RebarDesigner.VerticalPositions(g, rd.Layout);
@@ -510,7 +515,7 @@ namespace LynhCad.Manhole.Preview
             True("rebate off: no drop zones", rdOff.Layout.RoofLayers.All(l => l.Drop == null) && rdOff.Layout.RoofTrimmers.All(t => t.Drop == null));
             True("rebate off: no cranked bars", rdOff.Schedule.Marks.All(mk => mk.Shape != BarShape.Cranked && mk.Shape != BarShape.Dropped));
             var tblOff = DetailComposer.Compose(off).Model.Items.OfType<PTable>().First();
-            Eq("rebate off: schedule has 9 columns", 9, tblOff.ColumnCount);
+            True("rebate off: no DROPPED row, D column empty", tblOff.Rows.Skip(1).All(r => r[6] == "-" || r[6] == ""));
 
             // trắc dọc thanh qua vùng nhấn
             var dz = new DropZone { Along = new Interval(-600, 600), Perp = new Interval(-450, 450), Depth = 50, Run = 100 };
@@ -573,8 +578,8 @@ namespace LynhCad.Manhole.Preview
             var res = DetailComposer.Compose(p);
             True("rebate compose ok: " + string.Join("; ", res.Errors), res.Ok);
             var tbl = res.Model.Items.OfType<PTable>().First();
-            Eq("rebate schedule has D column", 10, tbl.ColumnCount);
-            True("rebate schedule D header", tbl.Rows[0][6] == "D");
+            Eq("schedule columns (MARK..MASS with D and COG)", 11, tbl.ColumnCount);
+            True("schedule D / COG headers", tbl.Rows[0][6] == "D" && tbl.Rows[0][7] == "COG");
             True("rebate schedule DROPPED row has D", tbl.Rows.Any(r => r[2] == "DROPPED" && r[6] != "-" && r[5] != "-"));
             True("rebate schedule CRANKED row has C, no D", tbl.Rows.Any(r => r[2] == "CRANKED" && r[5] != "-" && r[6] == "-"));
             True("rebate note", res.Model.Items.OfType<PText>().Any(t => t.Text.Contains("REBATED 50 DEEP")));
@@ -646,6 +651,112 @@ namespace LynhCad.Manhole.Preview
             True("json default rebate", !partial.CoverRebate && Math.Abs(partial.CoverRebateDepth - 50) < 1e-9 && Math.Abs(partial.CoverRebateWidth - 150) < 1e-9);
             var back = ParamsJson.Deserialize(ParamsJson.Serialize(p));
             True("json rebate roundtrip", back.CoverRebate && Math.Abs(back.CoverRebateDepth - 50) < 1e-9 && Math.Abs(back.CoverRebateWidth - 150) < 1e-9);
+        }
+
+        /// <summary>
+        /// Cog chuẩn ở đầu thanh (AS 3600 13.1.2.7) và đường kính uốn (Bảng 17.2.3.2): lưới bản móc hai đầu không vượt lớp đối diện,
+        /// thép đứng tường móc vào bản nắp, chỗ uốn vẽ cung bán kính tim, chiều dài cắt trừ phần uốn.
+        /// </summary>
+        private static void CogsAndBends()
+        {
+            // cog chuẩn: N12 5d → bán kính tim 36, đoạn thẳng = π·36/2 + 70 = 126.5, chân = 162.5 → 170
+            Eq("bend radius N12 5d", 36, RebarCatalog.BendRadius(12, 5));
+            Eq("standard cog N12", 170, RebarCatalog.StandardCog(12, 5));
+            Eq("standard cog N16", 200, RebarCatalog.StandardCog(16, 5));
+            Eq("standard cog N20", 240, RebarCatalog.StandardCog(20, 5));
+            Eq("standard cog N24", 290, RebarCatalog.StandardCog(24, 5));
+            Eq("bend deduction 90°", 2 * 36 - 36 * Math.PI / 2, GeomUtil.BendDeduction(Math.PI / 2, 36), 1e-9);
+            Eq("bend deduction straight", 0, GeomUtil.BendDeduction(0, 36));
+
+            // fillet: góc vuông → 2 điểm tiếp tuyến + bulge tan(π/8); đoạn ngắn → bán kính giảm
+            var pts = new List<Vec2> { new Vec2(0, 0), new Vec2(100, 0), new Vec2(100, 100) };
+            var fp = new List<Vec2>(); var fb = new List<double>();
+            GeomUtil.Fillet(pts, 36, fp, fb);
+            Eq("fillet points", 4, fp.Count);
+            Eq("fillet tangent 1 x", 64, fp[1].X); Eq("fillet tangent 2 y", 36, fp[2].Y);
+            Eq("fillet bulge", Math.Tan(Math.PI / 8), fb[1], 1e-12);
+            True("fillet bulge sign CCW", fb[1] > 0 && fb[0] == 0 && fb[2] == 0);
+            var cw = new List<Vec2> { new Vec2(0, 0), new Vec2(100, 0), new Vec2(100, -100) };
+            GeomUtil.Fillet(cw, 36, fp, fb);
+            True("fillet bulge sign CW", fb[1] < 0);
+            GeomUtil.Fillet(new List<Vec2> { new Vec2(0, 0), new Vec2(20, 0), new Vec2(20, 100) }, 36, fp, fb);
+            Eq("fillet clamps radius to half the short leg", 10, fp[1].X);
+            GeomUtil.Fillet(new List<Vec2> { new Vec2(0, 0), new Vec2(100, 0) }, 36, fp, fb);
+            Eq("fillet of a line is the line", 2, fp.Count);
+            var pf = PPolyline.Fillet(pts, 36, Layers.Rebar);
+            True("PPolyline.Fillet carries bulges", pf.Points.Count == 4 && pf.Bulges.Count == 4 && Math.Abs(pf.Bulges[1]) > 0);
+
+            // BarItem: chiều dài = tổng đỉnh + cog − phần uốn
+            var u = new BarItem { Group = 'W', Dia = 12, Shape = BarShape.U, A = 300, B = 2000, C = 170, BendDia = 60, Count = 1 };
+            Eq("U vertex length", 2470, u.VertexLength);
+            Eq("U cut length", 2470 - 2 * GeomUtil.BendDeduction(Math.PI / 2, 36), u.Length, 1e-9);
+            var sNoBend = new BarItem { Group = 'B', Dia = 16, Shape = BarShape.Straight, A = 2000, CogStart = 200, CogEnd = 200, Count = 1 };
+            Eq("cogged straight without bend dia = plain sum", 2400, sNoBend.Length);
+            sNoBend.BendDia = 80;
+            Eq("cogged straight cut length", 2400 - 2 * GeomUtil.BendDeduction(Math.PI / 2, 48), sNoBend.Length, 1e-9);
+            True("cog in signature", new BarItem { Group = 'B', Dia = 16, Shape = BarShape.Straight, A = 2000 }.Signature != sNoBend.Signature);
+            True("cog count", sNoBend.CogCount == 2 && new BarItem { CogStart = 100 }.CogCount == 1);
+
+            // hố chữ nhật mẫu: lưới bản cog hai đầu, lớp dưới móc lên tới lớp trên (giới hạn bởi chiều dày bản)
+            var p = ManholeParams.SampleRectangular();
+            var g = new ManholeGeometry(p);
+            var rd = RebarDesigner.Design(g);
+            var L = rd.Layout;
+            var baseBotX = L.BaseLayers.First(l => l.Key == BarSets.X(BarSets.BaseBot));
+            True("base bottom X cogs up", baseBotX.CogDir == 1 && baseBotX.CogStd == 200);
+            // bản đáy 250, N16: cog tới lớp trên = 250 − 2·50 − 16 = 134 < 200
+            Eq("base bottom cog limited by slab depth", 250 - 2 * 50 - 16, baseBotX.CogAt(baseBotX.Z), 1e-9);
+            var baseTopX = L.BaseLayers.First(l => l.Key == BarSets.X(BarSets.BaseTop));
+            True("base top X cogs down", baseTopX.CogDir == -1 && Math.Abs(baseTopX.CogAt(baseTopX.Z) - (250 - 2 * 50 - 16)) < 1e-9);
+            var roofBotX = L.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofBot));
+            // bản nắp 200, N12: 200 − 100 − 12 = 88
+            Eq("roof bottom cog", 88, roofBotX.CogAt(roofBotX.Z), 1e-9);
+            var dp = roofBotX.DrawProfile(roofBotX.Positions[0], roofBotX.Run);
+            True("draw profile has vertical cogs at both ends", dp.Count == 4 && Math.Abs(dp[0].X - dp[1].X) < 1e-9 && dp[0].Y > dp[1].Y
+                && Math.Abs(dp[3].X - dp[2].X) < 1e-9 && dp[3].Y > dp[2].Y && Math.Abs(dp[0].Y - dp[1].Y - 88) < 1e-9);
+            var b1 = rd.Schedule.Marks.First(mk => mk.Mark == "B1");
+            True("B1 scheduled with 2 equal cogs", b1.CogStart > 0 && Math.Abs(b1.CogStart - b1.CogEnd) < 1e-9 && b1.BendDia == 80);
+            True("schedule bars all carry bend dia", rd.Schedule.Marks.All(mk => mk.BendDia > 0));
+            True("trimmers have no cogs", rd.Schedule.Marks.Where(mk => mk.Mark.StartsWith("T")).All(mk => mk.CogCount == 0));
+            True("rings have no cogs", RebarDesigner.Design(new ManholeGeometry(ManholeParams.SampleCircularCast())).Schedule.Marks
+                .Where(mk => mk.Shape == BarShape.Ring).All(mk => mk.CogCount == 0));
+            Eq("vertical bar cog", 170, L.VertCog);
+            Eq("vertical bend radius", 36, L.VertBendRadius);
+
+            // mặt cắt: thép đứng là polyline có cung (bulge ≠ 0) với đỉnh cog ở cao độ VertZTop quay vào trong
+            var sec = new SectionBuilder(g, rd, new DrawStyle(20)).Build();
+            var verts = sec.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Rebar && l.Key == RebarKeys.WallVertical).ToList();
+            True("vertical bars have bends drawn as arcs", verts.Count > 0 && verts.Any(l => l.Bulges.Any(bb => Math.Abs(bb) > 1e-9)));
+            True("vertical bar top cog into roof", verts.Any(l => l.Points.Count(q => Math.Abs(q.Y - L.VertZTop) < 1e-6) >= 2));
+            var mats = sec.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Rebar && l.Key == "BaseBottom").ToList();
+            True("base bottom bar drawn with cogs and arcs", mats.Count > 0 && mats.All(l => l.Points.Count >= 6 && l.Bulges.Count(bb => Math.Abs(bb) > 1e-9) == 2));
+            // mặt bằng: góc thanh U thép ngang là cung
+            var plan = new PlanBuilder(g, rd, new DrawStyle(20)).Build();
+            True("plan U-bar corners are arcs", plan.Items.OfType<PPolyline>().Count(l => l.Key == RebarKeys.WallHorizontal && l.Bulges.Any(bb => Math.Abs(bb) > 1e-9)) == 8);
+            // bản nắp: vạch cog ở đầu thanh lớp dưới
+            var roof = new RoofPlanBuilder(g, rd, new DrawStyle(20)).Build();
+            True("roof plan cog ticks", roof.Items.OfType<PPolyline>().Count(l => l.Layer == Layers.RebarHidden && l.Points.Count == 2 && (l.Points[1] - l.Points[0]).Length < 60) > 10);
+            var res = DetailComposer.Compose(p);
+            True("cogs compose ok", res.Ok);
+            var tbl = res.Model.Items.OfType<PTable>().First();
+            True("schedule COG column text", tbl.Rows.Any(r => r[0] == "B1" && r[7].StartsWith("2x")) && tbl.Rows.Any(r => r[0].StartsWith("T") && r[7] == "-"));
+            True("notes mention bend diameter and cogs", res.Model.Items.OfType<PText>().Any(tx => tx.Text.Contains("BEND DIAMETER 5d") && tx.Text.Contains("COG = STANDARD")));
+
+            // tắt cog: thép đứng lại là chữ L, lưới bản thẳng, không ghi chú cog
+            var off = p.Clone(); off.Cogs = false;
+            var rdOff = RebarDesigner.Design(new ManholeGeometry(off));
+            True("cogs off: W1 is L", rdOff.Schedule.Marks.First(mk => mk.Mark == "W1").Shape == BarShape.L);
+            True("cogs off: no cogs scheduled", rdOff.Schedule.Marks.All(mk => mk.CogCount == 0));
+            True("cogs off: no cog note", DetailComposer.Compose(off).Model.Items.OfType<PText>().All(tx => !tx.Text.Contains("COG = STANDARD")));
+            // đổi hệ số uốn
+            var k8 = p.Clone(); k8.BendFactor = 8;
+            var rd8 = RebarDesigner.Design(new ManholeGeometry(k8));
+            True("bend factor 8 -> larger cog and bend dia", rd8.Layout.VertCog > L.VertCog && rd8.Schedule.Marks.First(mk => mk.Mark == "W1").BendDia == 96);
+            var bad = p.Clone(); bad.BendFactor = 2;
+            True("bend factor < 3 -> error", !new ManholeGeometry(bad).IsValid);
+            var partial = ParamsJson.Deserialize("{\"id\":\"X\",\"pipes\":[{\"mark\":\"A\",\"il\":10.0,\"role\":\"outlet\"}]}");
+            True("json default cogs on, 5d", partial.Cogs && Math.Abs(partial.BendFactor - 5) < 1e-9);
+            True("KeysForField cogs", RebarLayoutPreview.KeysForField("Cogs").Length >= 5 && RebarLayoutPreview.KeysForField("BendFactor").Length >= 5);
         }
 
         private static void Validation()

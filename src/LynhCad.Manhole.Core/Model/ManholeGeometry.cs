@@ -119,6 +119,7 @@ namespace LynhCad.Manhole.Core.Model
             }
             Require(Tb >= 150 && Ts >= 150, "Bản đáy và bản nắp phải dày ≥ 150 mm.");
             Require(P.Cover >= 20 && P.Cover < Math.Min(Tb, Ts) / 2, "Lớp bê tông bảo vệ không hợp lý.");
+            Require(P.BendFactor >= 3 && P.BendFactor <= 12, "Hệ số đường kính uốn phải trong khoảng 3d–12d (AS 3600: 5d cho thép chủ).");
 
             BaseHalfX = OuterHalfX + Math.Max(0, P.BaseProjection);
             BaseHalfY = OuterHalfY + Math.Max(0, P.BaseProjection);

@@ -63,6 +63,13 @@ namespace LynhCad.Manhole.Core.Drawing
                         var a = BarPoint(layer.AlongX, piece.Min, pos);
                         var b = BarPoint(layer.AlongX, piece.Max, pos);
                         m.Add(PPolyline.Line(a, b, Layers.RebarHidden));
+                        // cog (móc đứng) thể hiện bằng vạch ngắn vuông góc ở đầu thanh
+                        if (layer.CogStd > 0)
+                        {
+                            var tick = BarPoint(layer.AlongX, 0, 1) * (2.5 * st.Scale);
+                            m.Add(PPolyline.Line(a, a + tick, Layers.RebarHidden));
+                            m.Add(PPolyline.Line(b, b + tick, Layers.RebarHidden));
+                        }
                         if (sample == null && pos < 0 && piece.Min < 0) sample = a + (b - a) * 0.15;
                     }
                 if (sample != null) callouts.Add(new Annot.Callout(sample.Value, rd.Schedule.Callout(layer.Key)));

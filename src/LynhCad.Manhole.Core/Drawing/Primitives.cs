@@ -97,6 +97,14 @@ namespace LynhCad.Manhole.Core.Drawing
             return new PPolyline { Layer = layer }.Add(a).Add(b);
         }
 
+        /// <summary>Đường gấp khúc hở với mọi đỉnh giữa bo cung bán kính r (vd thanh thép uốn theo bán kính tim).</summary>
+        public static PPolyline Fillet(IList<Vec2> pts, double r, string layer)
+        {
+            var p = new PPolyline { Layer = layer };
+            GeomUtil.Fillet(pts, r, p.Points, p.Bulges);
+            return p;
+        }
+
         public static PPolyline Rect(Rect2 r, string layer)
         {
             var p = new PPolyline { Layer = layer, Closed = true };

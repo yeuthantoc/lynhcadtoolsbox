@@ -347,9 +347,10 @@ namespace LynhCad.Manhole.Core.Drawing
                 foreach (var piece in layer.Pieces(pos))
                 {
                     // trắc dọc: thẳng, hoặc gãy xuống dưới rãnh khung nắp (lưới trên)
-                    var pl = new PPolyline { Layer = Layers.Rebar, Key = RebarKeys.ForMat(layer.Mat) };
-                    foreach (var v in layer.Profile(pos, piece))
-                        pl.Add(new Vec2(S(BarPoint(layer.AlongX, v.X, pos)), v.Y));
+                    // trắc dọc (kèm cog hai đầu), chỗ uốn / gãy vẽ cung bán kính tim thanh
+                    var pts = layer.DrawProfile(pos, piece).Select(v => new Vec2(S(BarPoint(layer.AlongX, v.X, pos)), v.Y)).ToList();
+                    var pl = PPolyline.Fillet(pts, layer.BendRadius, Layers.Rebar);
+                    pl.Key = RebarKeys.ForMat(layer.Mat);
                     m.Add(pl);
                 }
                 return;
@@ -399,7 +400,7 @@ namespace LynhCad.Manhole.Core.Drawing
                             m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(face, z), Diameter = st.DotSize(L.DH), Key = RebarKeys.WallHorizontal });
                 }
 
-                // thép đứng → đường, chân L quay vào trong hố
+                // thép đứng → đường, chân L quay vào trong hố, cog đầu trên móc vào bản nắp (quay vào trong); chỗ uốn vẽ cung
                 foreach (var off in L.VertFromInner)
                 {
                     double face = sInner + side * off;
@@ -407,10 +408,14 @@ namespace LynhCad.Manhole.Core.Drawing
                     for (int i = 0; i < zSpan.Count; i++)
                     {
                         var seg = zSpan[i];
-                        var pl = new PPolyline { Layer = Layers.Rebar, Key = RebarKeys.WallVertical };
+                        var pts = new List<Vec2>();
                         if (i == 0 && Math.Abs(seg.Min - L.VertZBot) < 1e-6)
-                            pl.Add(new Vec2(face - side * L.VertLeg, L.VertZBot));
-                        pl.Add(new Vec2(face, seg.Min)).Add(new Vec2(face, seg.Max));
+                            pts.Add(new Vec2(face - side * L.VertLeg, L.VertZBot));
+                        pts.Add(new Vec2(face, seg.Min)); pts.Add(new Vec2(face, seg.Max));
+                        if (L.VertCog > 0 && i == zSpan.Count - 1 && Math.Abs(seg.Max - L.VertZTop) < 1e-6)
+                            pts.Add(new Vec2(face - side * L.VertCog, L.VertZTop));
+                        var pl = PPolyline.Fillet(pts, L.VertBendRadius, Layers.Rebar);
+                        pl.Key = RebarKeys.WallVertical;
                         m.Add(pl);
                     }
                 }

@@ -86,6 +86,8 @@ namespace LynhCad.Manhole.Core.Drawing
                 case "TrimmerDiameter": case "TrimmerCount": return new[] { RebarKeys.Trimmers };
                 case "WallSingleLayer": case "WallHorizontalInside": case "VerticalBarLeg":
                     return new[] { RebarKeys.WallVertical, RebarKeys.WallHorizontal };
+                case "Cogs": case "BendFactor":
+                    return new[] { RebarKeys.WallVertical, RebarKeys.WallHorizontal, "BaseBottom", "BaseTop", "RoofBottom", "RoofTop" };
                 default: return new string[0];
             }
         }

@@ -178,6 +178,13 @@ namespace LynhCad.Manhole.Core.Model
         [DataMember(Name = "lapFactor")] public double LapFactor { get; set; }
         /// <summary>Chân L của thép đứng tường neo vào bản đáy (mm).</summary>
         [DataMember(Name = "verticalBarLeg")] public double VerticalBarLeg { get; set; }
+        /// <summary>
+        /// Móc 90° (cog chuẩn AS 3600 13.1.2.7) ở đầu thanh: hai đầu thanh lưới bản đáy / bản nắp (lớp dưới móc lên,
+        /// lớp trên móc xuống, không vượt quá lớp đối diện) và đầu trên thép đứng tường móc vào bản nắp.
+        /// </summary>
+        [DataMember(Name = "cogs")] public bool Cogs { get; set; }
+        /// <summary>Đường kính trong chỗ uốn = BendFactor × d (AS 3600 Bảng 17.2.3.2: 5d cho thép chủ D500N).</summary>
+        [DataMember(Name = "bendFactor")] public double BendFactor { get; set; }
 
         // ---------- Ống ----------
         /// <summary>Khe hở quanh ống khi để lỗ xuyên tường (mỗi phía, mm).</summary>
@@ -242,6 +249,7 @@ namespace LynhCad.Manhole.Core.Model
             RoofTop = new BarSpec(12, 200);
             TrimmerDiameter = 16; TrimmerCount = 2;
             LapFactor = 50; VerticalBarLeg = 300;
+            Cogs = true; BendFactor = 5;
             PipeClearance = 50;
             StepIrons = false; StepSpacing = 300; StepWidth = 350; StepProjection = 150;
             StepTopGap = 300; StepBottomClear = 300; StepAuto = true; StepAngle = 0;

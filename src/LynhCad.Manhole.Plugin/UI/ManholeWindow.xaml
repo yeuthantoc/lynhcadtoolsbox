@@ -281,7 +281,7 @@
                             <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.ColumnSpan="5" Style="{StaticResource Head}" Text="Bars: N (D500N, AS/NZS 4671) — size / spacing (mm)" />
@@ -339,6 +339,13 @@
                         <TextBlock Grid.Row="13" Grid.Column="0" Style="{StaticResource Lbl}" Text="Wall vertical bar leg into base" />
                         <TextBox Grid.Row="13" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding VerticalBarLeg}" />
                         <TextBlock Grid.Row="13" Grid.Column="4" Style="{StaticResource Unit}" Text="mm" />
+
+                        <TextBlock Grid.Row="14" Grid.Column="0" Style="{StaticResource Lbl}" Text="Bend pin diameter (× d)" ToolTip="Minimum internal bend diameter, AS 3600 Table 17.2.3.2 (5d for D500N main bars)" />
+                        <TextBox Grid.Row="14" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BendFactor}" />
+                        <TextBlock Grid.Row="14" Grid.Column="4" Style="{StaticResource Unit}" Text="d" />
+
+                        <CheckBox Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5" Margin="4,4" IsChecked="{Binding Cogs}"
+                                  Content="Standard 90° cogs (AS 3600 13.1.2.7): slab bars both ends, wall vertical bars into roof slab" />
                     </Grid>
                 </ScrollViewer>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" />

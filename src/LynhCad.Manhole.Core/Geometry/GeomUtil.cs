@@ -101,6 +101,60 @@ namespace LynhCad.Manhole.Core.Geometry
         /// <summary>Bulge của cung tròn quét góc sweep (radian, dương = CCW).</summary>
         public static double Bulge(double sweep) { return Math.Tan(sweep / 4.0); }
 
+        /// <summary>Góc ngoặt (radian, 0..π) tại đỉnh giữa hai đoạn có hướng d1, d2.</summary>
+        public static double TurnAngle(Vec2 d1, Vec2 d2)
+        {
+            double c = Math.Max(-1, Math.Min(1, d1.Normalized().Dot(d2.Normalized())));
+            return Math.Acos(c);
+        }
+
+        /// <summary>
+        /// Bo tròn mọi đỉnh giữa của một đường gấp khúc hở bằng cung bán kính r (bán kính tim thanh thép khi uốn):
+        /// đỉnh được thay bằng hai điểm tiếp tuyến cách đỉnh r·tan(θ/2) và một cung (bulge). Nếu đoạn kề quá ngắn,
+        /// bán kính tại đỉnh đó được giảm cho vừa. Trả về danh sách điểm + bulge (cùng độ dài) để đưa vào PPolyline.
+        /// </summary>
+        public static void Fillet(IList<Vec2> pts, double r, List<Vec2> outPts, List<double> outBulges)
+        {
+            outPts.Clear(); outBulges.Clear();
+            if (pts.Count < 3 || r <= 1e-9)
+            {
+                foreach (var q in pts) { outPts.Add(q); outBulges.Add(0); }
+                return;
+            }
+            // khoảng tiếp tuyến tại mỗi đỉnh giữa, giới hạn nửa đoạn kề (hai đỉnh liền nhau chia đôi đoạn chung)
+            int n = pts.Count;
+            var t = new double[n];
+            var theta = new double[n];
+            for (int i = 1; i < n - 1; i++)
+            {
+                var d1 = pts[i] - pts[i - 1]; var d2 = pts[i + 1] - pts[i];
+                if (d1.Length < 1e-9 || d2.Length < 1e-9) continue;
+                theta[i] = TurnAngle(d1, d2);
+                if (theta[i] < 1e-6 || theta[i] > Math.PI - 1e-6) { theta[i] = 0; continue; }
+                t[i] = Math.Min(r * Math.Tan(theta[i] / 2), Math.Min(d1.Length, d2.Length) / 2);
+            }
+            outPts.Add(pts[0]); outBulges.Add(0);
+            for (int i = 1; i < n - 1; i++)
+            {
+                if (theta[i] <= 0) { outPts.Add(pts[i]); outBulges.Add(0); continue; }
+                var d1 = (pts[i] - pts[i - 1]).Normalized(); var d2 = (pts[i + 1] - pts[i]).Normalized();
+                double sign = d1.Cross(d2) >= 0 ? 1 : -1;
+                outPts.Add(pts[i] - d1 * t[i]); outBulges.Add(sign * Bulge(theta[i]));
+                outPts.Add(pts[i] + d2 * t[i]); outBulges.Add(0);
+            }
+            outPts.Add(pts[n - 1]); outBulges.Add(0);
+        }
+
+        /// <summary>
+        /// Chiều dài bớt đi khi thay góc gấp θ (radian) bằng cung bán kính tim r: 2·r·tan(θ/2) − r·θ
+        /// (hiệu giữa hai đoạn tiếp tuyến tới đỉnh và cung thực tế).
+        /// </summary>
+        public static double BendDeduction(double theta, double r)
+        {
+            if (theta <= 1e-9 || r <= 0) return 0;
+            return 2 * r * Math.Tan(theta / 2) - r * theta;
+        }
+
         /// <summary>
         /// Union của các hình chữ nhật song song trục → các cạnh biên (đã gộp cạnh thẳng hàng).
         /// Dùng để vẽ đường bao bê tông liền khối (đáy + tường + nắp) mà không lộ mạch nối giữa các mảng hatch.

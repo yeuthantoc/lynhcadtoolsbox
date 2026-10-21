@@ -44,6 +44,20 @@ namespace LynhCad.Manhole.Core.Rebar
 
         public static readonly int[] Sizes = { 10, 12, 16, 20, 24, 28, 32, 36 };
 
+        /// <summary>Bán kính tim thanh khi uốn với đường kính trong = bendFactor × d: (bendFactor + 1)·d / 2.</summary>
+        public static double BendRadius(int dia, double bendFactor) { return (bendFactor + 1) * dia / 2.0; }
+
+        /// <summary>
+        /// Cog chuẩn AS 3600 13.1.2.7: uốn 90° (đường kính trong bendFactor·d) có tổng chiều dài bằng móc 180° chuẩn
+        /// (nửa vòng + đoạn thẳng max(4d, 70)). Trả về chiều dài chân cog đo từ đỉnh giao hai tim (tim thanh), làm tròn lên 10.
+        /// </summary>
+        public static double StandardCog(int dia, double bendFactor)
+        {
+            double r = BendRadius(dia, bendFactor);
+            double ext = Math.PI * r + Math.Max(4.0 * dia, 70) - Math.PI * r / 2; // đoạn thẳng của cog
+            return GeomUtil.RoundUp(ext + r, 10);
+        }
+
         public static bool IsStandard(int dia) { return MassPerMetre.ContainsKey(dia); }
 
         public static double KgPerMetre(int dia)
@@ -161,29 +175,66 @@ namespace LynhCad.Manhole.Core.Rebar
         public char Group;
         public int Dia;
         public BarShape Shape;
+        /// <summary>Kích thước hình học đo theo tim thanh (đỉnh giao hai tim tới đỉnh / đầu thanh).</summary>
         public double A, B, C, D;
         public int Count;
+        /// <summary>Chân cog 90° ở hai đầu thanh (0 = không có), đo từ đỉnh giao tim tới đầu thanh.</summary>
+        public double CogStart, CogEnd;
+        /// <summary>Đường kính trong chỗ uốn (0 = uốn gãy, không trừ chiều dài).</summary>
+        public double BendDia;
+
+        public int CogCount { get { return (CogStart > 0 ? 1 : 0) + (CogEnd > 0 ? 1 : 0); } }
 
         /// <summary>Chiều dài đoạn xiên của thanh gãy có độ nhấn B (dốc 1:CrankSlope).</summary>
         public static double RampLength(double drop) { return drop * Math.Sqrt(1 + RebarDesigner.CrankSlope * RebarDesigner.CrankSlope); }
 
+        /// <summary>Góc ngoặt tại chỗ gãy của thanh nhấn (dốc 1:CrankSlope).</summary>
+        public static readonly double CrankAngle = Math.Atan(1.0 / RebarDesigner.CrankSlope);
+
+        /// <summary>Tổng chiều dài theo đỉnh (chưa trừ chỗ uốn), gồm cả cog.</summary>
+        public double VertexLength
+        {
+            get
+            {
+                double l;
+                switch (Shape)
+                {
+                    case BarShape.L: l = A + B; break;
+                    case BarShape.U: l = A + B + C; break;
+                    case BarShape.Ring: l = Math.PI * A + B; break;
+                    case BarShape.Cranked: l = A + C + RampLength(B); break;
+                    case BarShape.Dropped: l = A + C + D + 2 * RampLength(B); break;
+                    default: l = A; break;
+                }
+                return l + CogStart + CogEnd;
+            }
+        }
+
+        /// <summary>Chiều dài cắt thanh: chiều dài theo đỉnh trừ phần dư tại mỗi chỗ uốn (cung bán kính tim thay cho góc gãy).</summary>
         public double Length
         {
             get
             {
-                switch (Shape)
+                double r = (BendDia + Dia) / 2.0;
+                double ded = 0;
+                if (BendDia > 0)
                 {
-                    case BarShape.L: return A + B;
-                    case BarShape.U: return A + B + C;
-                    case BarShape.Ring: return Math.PI * A + B;
-                    case BarShape.Cranked: return A + C + RampLength(B);
-                    case BarShape.Dropped: return A + C + D + 2 * RampLength(B);
-                    default: return A;
+                    int right = CogCount;
+                    double crank = 0;
+                    switch (Shape)
+                    {
+                        case BarShape.L: right += 1; break;
+                        case BarShape.U: right += 2; break;
+                        case BarShape.Cranked: crank = 2; break;
+                        case BarShape.Dropped: crank = 4; break;
+                    }
+                    ded = right * GeomUtil.BendDeduction(Math.PI / 2, r) + crank * GeomUtil.BendDeduction(CrankAngle, r);
                 }
+                return VertexLength - ded;
             }
         }
 
-        /// <summary>Bản sao với A, B, C, D làm tròn lên 10 mm như thông lệ bảng thống kê (không sửa bản gốc).</summary>
+        /// <summary>Bản sao với A, B, C, D, cog làm tròn lên 10 mm như thông lệ bảng thống kê (không sửa bản gốc).</summary>
         internal BarItem RoundedTo10()
         {
             var r = (BarItem)MemberwiseClone();
@@ -191,12 +242,14 @@ namespace LynhCad.Manhole.Core.Rebar
             r.B = GeomUtil.RoundUp(B, 10);
             r.C = GeomUtil.RoundUp(C, 10);
             r.D = GeomUtil.RoundUp(D, 10);
+            r.CogStart = GeomUtil.RoundUp(CogStart, 10);
+            r.CogEnd = GeomUtil.RoundUp(CogEnd, 10);
             return r;
         }
 
         internal string Signature
         {
-            get { return string.Format("{0}|{1}|{2}|{3:0}|{4:0}|{5:0}|{6:0}", Group, Dia, Shape, A, B, C, D); }
+            get { return string.Format("{0}|{1}|{2}|{3:0}|{4:0}|{5:0}|{6:0}|{7:0}|{8:0}|{9:0}", Group, Dia, Shape, A, B, C, D, CogStart, CogEnd, BendDia); }
         }
     }
 
@@ -207,8 +260,10 @@ namespace LynhCad.Manhole.Core.Rebar
         public int Dia;
         public BarShape Shape;
         public double A, B, C, D;
+        public double CogStart, CogEnd, BendDia;
         public int Count;
         public double Length;
+        public int CogCount { get { return (CogStart > 0 ? 1 : 0) + (CogEnd > 0 ? 1 : 0); } }
         public double TotalLength { get { return Count * Length; } }
         public double Mass { get { return Count * Length / 1000.0 * RebarCatalog.KgPerMetre(Dia); } }
         public string Size { get { return "N" + Dia; } }
@@ -301,6 +356,7 @@ namespace LynhCad.Manhole.Core.Rebar
                     {
                         Mark = it.Group.ToString() + n, Dia = it.Dia, Shape = it.Shape,
                         A = it.A, B = it.B, C = it.C, D = it.D, Length = it.Length,
+                        CogStart = it.CogStart, CogEnd = it.CogEnd, BendDia = it.BendDia,
                     };
                     bySig[it.Signature] = m;
                     sch.Marks.Add(m);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LynhCad.Manhole.Core.Geometry;
@@ -13,43 +14,43 @@ namespace LynhCad.Manhole.Core.Drawing
         {
             var m = new DrawingModel();
             double s = st.Scale;
-            // cột D chỉ xuất hiện khi có thanh nhấn xuống (Dropped) để bảng của các hố khác không đổi
-            bool hasD = sch.Marks.Any(x => x.Shape == BarShape.Dropped);
-            var widths = new List<int> { 14, 12, 18, 16, 16, 16 };
-            if (hasD) widths.Add(16);
-            widths.AddRange(new[] { 12, 20, 18 });
             var t = new PTable
             {
                 Layer = Layers.Table,
                 Title = "BAR SCHEDULE - " + (g.P.Id ?? "MH"),
-                ColumnWidths = widths.Select(w => w * s).ToArray(),
+                ColumnWidths = new[] { 14, 12, 18, 16, 16, 16, 16, 18, 12, 20, 18 }.Select(w => w * s).ToArray(),
                 RowHeight = 6 * s,
                 TextHeight = 2.5 * s,
             };
-            var head = new List<string> { "MARK", "SIZE", "SHAPE", "A", "B", "C" };
-            if (hasD) head.Add("D");
-            head.AddRange(new[] { "NO.", "LENGTH", "MASS (kg)" });
-            t.Rows.Add(head.ToArray());
+            t.Rows.Add(new[] { "MARK", "SIZE", "SHAPE", "A", "B", "C", "D", "COG", "NO.", "LENGTH", "MASS (kg)" });
             foreach (var bm in sch.Marks)
             {
                 bool hasC = bm.Shape == BarShape.U || bm.Shape == BarShape.Cranked || bm.Shape == BarShape.Dropped;
-                var row = new List<string>
+                t.Rows.Add(new[]
                 {
                     bm.Mark, bm.Size, ShapeName(bm.Shape),
                     bm.A.ToString("0"),
                     bm.Shape == BarShape.Straight ? "-" : bm.B.ToString("0"),
                     hasC ? bm.C.ToString("0") : "-",
-                };
-                if (hasD) row.Add(bm.Shape == BarShape.Dropped ? bm.D.ToString("0") : "-");
-                row.AddRange(new[] { bm.Count.ToString(), bm.Length.ToString("0"), bm.Mass.ToString("0.0") });
-                t.Rows.Add(row.ToArray());
+                    bm.Shape == BarShape.Dropped ? bm.D.ToString("0") : "-",
+                    CogText(bm),
+                    bm.Count.ToString(), bm.Length.ToString("0"), bm.Mass.ToString("0.0"),
+                });
             }
-            var total = new List<string> { "TOTAL", "", "", "", "", "" };
-            if (hasD) total.Add("");
-            total.AddRange(new[] { sch.Marks.Sum(x => x.Count).ToString(), "", sch.TotalMass.ToString("0.0") });
-            t.Rows.Add(total.ToArray());
+            t.Rows.Add(new[] { "TOTAL", "", "", "", "", "", "", "", sch.Marks.Sum(x => x.Count).ToString(), "", sch.TotalMass.ToString("0.0") });
             m.Add(t);
             return m;
+        }
+
+        /// <summary>Cột COG: "-" không móc, "2x170" hai đầu bằng nhau, "170+120" hai đầu khác nhau, "1x170" một đầu.</summary>
+        private static string CogText(BarMark bm)
+        {
+            if (bm.CogStart <= 0 && bm.CogEnd <= 0) return "-";
+            if (bm.CogStart > 0 && bm.CogEnd > 0)
+                return Math.Abs(bm.CogStart - bm.CogEnd) < 0.5
+                    ? string.Format("2x{0:0}", bm.CogStart)
+                    : string.Format("{0:0}+{1:0}", bm.CogStart, bm.CogEnd);
+            return string.Format("1x{0:0}", Math.Max(bm.CogStart, bm.CogEnd));
         }
 
         private static string ShapeName(BarShape s)
@@ -75,9 +76,14 @@ namespace LynhCad.Manhole.Core.Drawing
                 string.Format("CONCRETE {0}. COVER TO REINFORCEMENT {1:0} UNLESS NOTED OTHERWISE.", P.ConcreteGrade, P.Cover),
                 "REINFORCEMENT TO AS/NZS 4671 GRADE D500N.",
                 string.Format("LAP LENGTHS {0:0}d MINIMUM UNLESS NOTED OTHERWISE.", P.LapFactor),
+                string.Format("BAR DIMENSIONS ARE TO BAR CENTRELINE. MINIMUM INTERNAL BEND DIAMETER {0:0}d (AS 3600 TABLE 17.2.3.2); "
+                    + "SCHEDULED LENGTHS ALLOW FOR BENDS.", P.BendFactor),
                 "REINFORCEMENT INTERRUPTED BY OPENINGS SHALL BE CUT AND TRIMMER BARS PROVIDED AS SHOWN.",
                 "PIPE PENETRATIONS SHALL BE SEALED WITH NON-SHRINK GROUT AND FLEXIBLE JOINT TO PIPE SUPPLIER'S DETAILS.",
             };
+            if (P.Cogs)
+                notes.Add("COG = STANDARD 90° COG TO AS 3600 CL 13.1.2.7, LENGTH AS SCHEDULED (SHORTENED WHERE LIMITED BY SLAB DEPTH). "
+                    + "SLAB BARS COGGED AT BOTH ENDS (BOTTOM BARS UP, TOP BARS DOWN); WALL VERTICAL BARS COGGED INTO ROOF SLAB.");
             if (g.HasRebate)
                 notes.Add(string.Format("ROOF SLAB REBATED {0:0} DEEP AROUND THE ACCESS OPENING FOR THE COVER FRAME. "
                     + "TOP REINFORCEMENT UNDER THE REBATE IS CRANKED DOWN {0:0} AT 1:{1:0} (CRANKED / DROPPED BARS: B = CRANK DEPTH).",
