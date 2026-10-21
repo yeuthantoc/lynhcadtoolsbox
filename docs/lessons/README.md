@@ -22,3 +22,4 @@ Mỗi lỗi runtime từng xảy ra là **một file markdown** trong thư mục
 | 2026-10-20 | [Không thay được DLL khi AutoCAD đang mở](2026-10-20-dll-locked-while-autocad-open.md) | Loader / cài đặt |
 | 2026-10-20 | [Ghi chú đè lên kích thước và nhãn cao độ](2026-10-20-callout-overlaps-dimensions.md) | Core / bản vẽ |
 | 2026-10-20 | [Lớp Core trùng tên lớp toàn cục trong AcMgd.dll](2026-10-20-global-type-name-clash-acmgd.md) | Core / Plugin |
+| 2026-10-21 | [Leader ghi chú bị xiên nhẹ thay vì nằm ngang](2026-10-21-mleader-landing-slanted.md) | Plugin / AutoCAD |

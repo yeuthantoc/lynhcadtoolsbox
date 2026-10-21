@@ -317,8 +317,24 @@ namespace LynhCad.Manhole.Plugin
             ml.AddFirstVertex(ln, P3(src.Points[0]));
             for (int i = 1; i < src.Points.Count; i++) ml.AddLastVertex(ln, P3(src.Points[i]));
             ml.SetDogleg(ld, side > 0 ? Vector3d.XAxis : -Vector3d.XAxis);
-            ml.TextLocation = P3(src.TextPosition);
+            // MLeader bỏ qua Attachment của MText: TextLocation luôn là góc TRÊN-trái (chữ bên phải leader) / TRÊN-phải.
+            // Khuỷu leader (Points cuối) nằm ở TextPosition.Y = tâm chữ, nên phải đặt TextLocation cao hơn nửa khối chữ;
+            // nếu không AutoCAD kéo đỉnh cuối xuống theo tâm chữ và đoạn landing bị xiên thay vì ngang 0°.
+            ml.TextLocation = P3(new Vec2(src.TextPosition.X, src.TextPosition.Y + TextBlockHeight(mt, src) / 2));
             Append(ml, src.Layer);
+        }
+
+        /// <summary>Chiều cao khối chữ của ghi chú theo AutoCAD (ActualHeight); không lấy được thì ước lượng theo số dòng.</summary>
+        private static double TextBlockHeight(MText mt, PLeader src)
+        {
+            try
+            {
+                double a = mt.ActualHeight;
+                if (a > 0) return a;
+            }
+            catch (Exception) { }   // MText chưa trong bản vẽ có thể không tính được → ước lượng
+            int lines = (src.Text ?? "").Split('\n').Length;
+            return src.TextHeight + (lines - 1) * src.TextHeight * PText.LineSpacing;
         }
 
         private void AddLeaderAndText(PLeader src)
