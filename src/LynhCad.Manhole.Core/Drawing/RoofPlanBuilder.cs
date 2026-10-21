@@ -72,7 +72,7 @@ namespace LynhCad.Manhole.Core.Drawing
                         }
                         if (sample == null && pos < 0 && piece.Min < 0) sample = a + (b - a) * 0.15;
                     }
-                if (sample != null) callouts.Add(new Annot.Callout(sample.Value, rd.Schedule.Callout(layer.Key)));
+                if (sample != null) callouts.Add(new Annot.Callout(sample.Value, rd.Schedule.Callout(layer.Key)) { Horizontal = layer.AlongX });
             }
 
             // thanh gia cường (mỗi vị trí chỉ vẽ 1 lần dù có cả lưới trên)
@@ -87,7 +87,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 m.Add(PPolyline.Line(a, b, Layers.Rebar));
                 if (trimSample == null && t.AlongX && t.Pos > o.Y) trimSample = new Vec2(t.Run.Max - 50, t.Pos);
             }
-            if (trimSample != null) callouts.Add(new Annot.Callout(trimSample.Value, rd.Schedule.Callout(BarSets.RoofTrim)));
+            if (trimSample != null) callouts.Add(new Annot.Callout(trimSample.Value, rd.Schedule.Callout(BarSets.RoofTrim)) { Horizontal = true });
 
             if (g.P.RoofTopMat)
             {

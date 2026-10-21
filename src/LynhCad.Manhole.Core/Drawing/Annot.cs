@@ -65,6 +65,11 @@ namespace LynhCad.Manhole.Core.Drawing
             public string Text;
             /// <summary>Đầu leader theo thứ chỉ vào: mũi tên (mặc định), vòng rỗng = chấm thép, vòng đặc = vùng hatch.</summary>
             public LeaderEnd End = LeaderEnd.Arrow;
+            /// <summary>
+            /// Điểm đặt nằm trên một nét ngang (thanh thép, đường ống, mặt rãnh...): leader không được tới ngang (trùng hướng nét),
+            /// chữ đặt lệch cao độ ≥ DiagFactor × chiều cao chữ để leader vào xiên 45° (hoặc đứng) rồi landing ngang.
+            /// </summary>
+            public bool Horizontal;
             /// <summary>Điểm đặt thay thế (theo thứ tự ưu tiên) khi leader từ Target không tránh được chữ kích thước — vd điểm khác dọc theo thanh thép.</summary>
             public List<Vec2> AltTargets = new List<Vec2>();
             public Callout(Vec2 target, string text, LeaderEnd end = LeaderEnd.Arrow) { Target = target; Text = text; End = end; }
@@ -107,6 +112,8 @@ namespace LynhCad.Manhole.Core.Drawing
 
         /// <summary>Khoảng hở giữa hai ghi chú liền nhau trong một cột = 1.2 × chiều cao chữ (sát hơn thì khó đọc).</summary>
         public const double CalloutGapFactor = 1.2;
+        /// <summary>Ghi chú chỉ vào nét ngang: chữ thấp hơn điểm đặt ít nhất 2 chiều cao chữ để đoạn leader đầu tiên xiên 45°.</summary>
+        public const double DiagFactor = 2.0;
 
         /// <summary>
         /// Xếp một cột ghi chú tại hoành độ xText, tự giãn cách để chữ không đè nhau, kẻ leader tới từng điểm.
@@ -149,6 +156,9 @@ namespace LynhCad.Manhole.Core.Drawing
                 int lines = c.Text.Split('\n').Length;
                 double blockH = lines * h * PText.LineSpacing;
                 double y = c.Target.Y;
+                // nét ngang: chữ đặt thấp hơn điểm đặt để leader vào xiên, không trùng hướng với nét
+                double diagMin = c.Horizontal ? DiagFactor * h : 0;
+                if (diagMin > 0) y = c.Target.Y - diagMin;
                 if (prevBottom != null && y + blockH / 2 > prevBottom.Value - gap)
                     y = prevBottom.Value - gap - blockH / 2;
                 double xElbow = xText - side * 1.5 * st.Scale;
@@ -167,6 +177,7 @@ namespace LynhCad.Manhole.Core.Drawing
                         for (int i = 0; i <= 24 && !clear; i++)
                         {
                             double yi = y0 - i * h * 0.5;
+                            if (diagMin > 0 && yi > tg.Y - diagMin + 1e-6) continue; // vẫn phải vào xiên
                             foreach (bool diag in new[] { true, false })
                             {
                                 var cand = LeaderPoints(tg, xElbow, yi, h, diag);

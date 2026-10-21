@@ -156,12 +156,14 @@ namespace LynhCad.Manhole.Core.Drawing
                 var b = f.OuterPoint + f.Dir * st.PipeStub;
                 foreach (var half in new[] { f.OD / 2, -f.OD / 2, f.DN / 2, -f.DN / 2 })
                     m.Add(PPolyline.Line(a + n * half, b + n * half, Layers.Pipe));
+                // nét đóng đầu ống tại mặt trong tường (tường bị lỗ xuyên cắt nên không có nét tường ở đó)
+                m.Add(PPolyline.Line(a - n * (f.OD / 2), a + n * (f.OD / 2), Layers.Pipe));
                 m.Add(PPolyline.Line(a - f.Dir * 100, b + f.Dir * 150, Layers.Centre));
                 Annot.BreakLine(m, b - n * (f.OD / 2), b + n * (f.OD / 2), Math.Min(f.OD * 0.5, 4 * st.Scale), Layers.Pipe);
 
                 string role = f.IsOutlet ? "OUTLET" : "INLET";
                 string txt = string.Format("{0} DN{1:0} {2} {3}\nIL {4:0.000}", f.Spec.Mark, f.DN, f.Spec.Material ?? "", role, f.Spec.InvertLevel).Replace("  ", " ");
-                callouts.Add(new Annot.Callout(f.OuterPoint + f.Dir * (st.PipeStub * 0.6) + n * (f.OD / 2), txt));
+                callouts.Add(new Annot.Callout(f.OuterPoint + f.Dir * (st.PipeStub * 0.6) + n * (f.OD / 2), txt) { Horizontal = Math.Abs(f.Dir.Y) < 0.5 });
             }
         }
 

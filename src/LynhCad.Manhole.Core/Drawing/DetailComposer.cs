@@ -19,7 +19,7 @@ namespace LynhCad.Manhole.Core.Drawing
     /// <summary>
     /// Ghép các hình chiếu thành một chi tiết hoàn chỉnh:
     ///   hàng 1: MẶT BẰNG | MẶT CẮT A-A
-    ///   hàng 2: MẶT BẰNG THÉP BẢN NẮP | BẢNG THỐNG KÊ THÉP + GHI CHÚ
+    ///   hàng 2: MẶT BẰNG THÉP BẢN NẮP | BẢNG THỐNG KÊ THÉP + BẢNG HÌNH DẠNG THÉP, GHI CHÚ bên dưới
     /// Gốc (0,0) của kết quả = tâm hố trên mặt bằng. Renderer dời tới điểm người dùng chọn.
     /// </summary>
     public static class DetailComposer
@@ -74,9 +74,16 @@ namespace LynhCad.Manhole.Core.Drawing
                 bt = table.GetBounds();
                 all.AddRange(table);
 
+                // bảng hình dạng thép bên phải bảng thống kê, cùng mép trên
+                var shapes = ShapeScheduleBuilder.Build(g, rd.Schedule, st);
+                var bsh = shapes.GetBounds();
+                shapes.Translate(new Vec2(bt.MaxX + gap / 2 - bsh.MinX, row2Top - bsh.MaxY));
+                bsh = shapes.GetBounds();
+                all.AddRange(shapes);
+
                 var notes = ScheduleBuilder.BuildNotes(g, st);
                 var bn = notes.GetBounds();
-                notes.Translate(new Vec2(bt.MinX - bn.MinX, bt.MinY - 10 * st.Scale - bn.MaxY));
+                notes.Translate(new Vec2(bt.MinX - bn.MinX, System.Math.Min(bt.MinY, bsh.MinY) - 10 * st.Scale - bn.MaxY));
                 all.AddRange(notes);
             }
 

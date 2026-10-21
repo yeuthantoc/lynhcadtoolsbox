@@ -23,6 +23,8 @@ namespace LynhCad.Manhole.Core.Drawing
         private double zTopRoof, zCL;
         /// <summary>Mép phải khung nắp (nếu có vẽ) để kéo đường dẫn cao độ CL ra ngoài.</summary>
         private double? frameRight;
+        /// <summary>Các đoạn thẳng (nằm ngang, toạ độ mặt cắt) của thanh lưới đã vẽ dạng đường, theo tiền tố bộ thép — để ghi chú chỉ vào giữa đoạn thẳng, tránh cog / chỗ gãy.</summary>
+        private readonly Dictionary<string, List<Tuple<Vec2, Vec2>>> matFlats = new Dictionary<string, List<Tuple<Vec2, Vec2>>>();
 
         public SectionBuilder(ManholeGeometry geometry, RebarDesign rebar, DrawStyle style) : base(geometry, rebar, style) { }
 
@@ -180,18 +182,18 @@ namespace LynhCad.Manhole.Core.Drawing
             double zIn = cutLeft.Count > 0 ? cutLeft.Min(f => f.ZInvert) : zOut + innerS.Length * 0.01;
             double sL = innerS.Min, sR = innerS.Max;
 
-            // phần benching bị cắt dưới đáy máng
-            var poly = new PPolyline { Layer = Layers.Hatch, Closed = true };
+            // phần benching bị cắt dưới đáy máng: bê tông khối → đường bao kín + hatch bê tông
+            var poly = new PPolyline { Layer = Layers.Concrete, Closed = true };
             poly.Add(new Vec2(sL, 0)).Add(new Vec2(sR, 0)).Add(new Vec2(sR, zOut)).Add(new Vec2(sL, zIn));
             if (zIn > 1 || zOut > 1)
             {
-                m.Add(new PHatch { Layer = Layers.Hatch, Pattern = "AR-SAND", PatternScale = st.ConcreteHatchScale, Loops = { poly } });
-                m.Add(PPolyline.Line(new Vec2(sL, zIn), new Vec2(sR, zOut), Layers.Concrete));
+                m.Add(ConcreteHatch(poly));
+                m.Add(poly);
             }
             // mặt benching phía sau (thấy được): ngang đỉnh ống ra
             double zBench = zOut + o.DN;
             m.Add(PPolyline.Line(new Vec2(sL, zBench), new Vec2(sR, zBench), Layers.ConcreteBeyond));
-            callouts.Add(new Annot.Callout(new Vec2(sL + innerS.Length * 0.3, zBench), "BENCHING BEYOND, FALL 1:12\nTO CHANNEL, STEEL TROWEL"));
+            callouts.Add(new Annot.Callout(new Vec2(sL + innerS.Length * 0.3, zBench), "BENCHING BEYOND, FALL 1:12\nTO CHANNEL, STEEL TROWEL") { Horizontal = true });
             callouts.Add(new Annot.Callout(new Vec2(sL + innerS.Length * 0.35, (zIn + zOut) / 2 * 0.5),
                 string.Format("MASS CONCRETE BENCHING\nCHANNEL INVERT {0:0.000} → {1:0.000}", g.FloorRL + zIn / 1000, g.FloorRL + zOut / 1000), LeaderEnd.FilledCircle));
         }
@@ -219,8 +221,10 @@ namespace LynhCad.Manhole.Core.Drawing
                     double s1 = (side > 0 ? outerS.Max : outerS.Min) + side * st.PipeStub;
                     foreach (var z in new[] { f.ZInvert, f.ZInvert + f.DN, f.ZOuterBottom, f.ZOuterTop })
                         m.Add(PPolyline.Line(new Vec2(s0, z), new Vec2(s1, z), Layers.Pipe));
+                    // nét đóng đầu ống tại mặt trong tường (tường bị lỗ xuyên cắt nên không có nét tường ở đó)
+                    m.Add(PPolyline.Line(new Vec2(s0, f.ZOuterBottom), new Vec2(s0, f.ZOuterTop), Layers.Pipe));
                     Annot.BreakLine(m, new Vec2(s1, f.ZOuterBottom), new Vec2(s1, f.ZOuterTop), Math.Min(f.OD * 0.5, 4 * st.Scale), Layers.Pipe);
-                    callouts.Add(new Annot.Callout(new Vec2(s1 - side * st.PipeStub * 0.4, f.ZOuterTop), label));
+                    callouts.Add(new Annot.Callout(new Vec2(s1 - side * st.PipeStub * 0.4, f.ZOuterTop), label) { Horizontal = true });
                     return;
                 }
 
@@ -236,7 +240,7 @@ namespace LynhCad.Manhole.Core.Drawing
                     double sIn = f.Dir.Dot(u) > 0 ? innerS.Max : innerS.Min;
                     double sOut = f.Dir.Dot(u) > 0 ? outerS.Max : outerS.Min;
                     m.Add(PPolyline.Rect(new Rect2(sIn, f.ZOuterBottom, sOut, f.ZOuterTop), Layers.PipeHidden));
-                    callouts.Add(new Annot.Callout(new Vec2(sOut, f.ZOuterTop), label + " (BEYOND)"));
+                    callouts.Add(new Annot.Callout(new Vec2(sOut, f.ZOuterTop), label + " (BEYOND)") { Horizontal = true });
                     return;
                 }
                 if (k < 0.05) return;
@@ -276,7 +280,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 target = new Vec2(Math.Max(sa, sb), st8.Levels[0]);
             }
             else return;
-            callouts.Add(new Annot.Callout(target, StepsDraw.Callout(st8)));
+            callouts.Add(new Annot.Callout(target, StepsDraw.Callout(st8)) { Horizontal = true });
         }
 
         // ---------------------------------------------------------------- thép
@@ -356,6 +360,10 @@ namespace LynhCad.Manhole.Core.Drawing
                     var pl = PPolyline.Fillet(pts, layer.BendRadius, Layers.Rebar);
                     pl.Key = RebarKeys.ForMat(layer.Mat);
                     m.Add(pl);
+                    List<Tuple<Vec2, Vec2>> flats;
+                    if (!matFlats.TryGetValue(layer.Mat, out flats)) matFlats[layer.Mat] = flats = new List<Tuple<Vec2, Vec2>>();
+                    for (int i = 0; i + 1 < pts.Count; i++)
+                        if (Math.Abs(pts[i].Y - pts[i + 1].Y) < 1e-9) flats.Add(Tuple.Create(pts[i], pts[i + 1]));
                 }
                 return;
             }
@@ -380,6 +388,21 @@ namespace LynhCad.Manhole.Core.Drawing
             double sTarget = range.Min + Math.Min(250, range.Length * 0.15);
             // lớp song song mặt cắt vẽ dạng đường → mũi tên; lớp cắt ngang là chấm → vòng rỗng, chỉ đúng vào một chấm
             var c = new Annot.Callout(new Vec2(sTarget, layer.Z), text);
+            List<Tuple<Vec2, Vec2>> flats;
+            if (ParallelToCut(layer.AlongX) && matFlats.TryGetValue(mat, out flats) && flats.Count > 0)
+            {
+                // chỉ vào giữa đoạn thẳng dài nhất bên trái (tránh cog ở mép, chỗ gãy dưới rãnh); nét ngang → leader vào xiên
+                var seg = flats.OrderBy(f => Math.Min(f.Item1.X, f.Item2.X)).First();
+                foreach (var f in flats.Where(f => Math.Min(f.Item1.X, f.Item2.X) < range.Mid))
+                    if (Math.Abs(f.Item2.X - f.Item1.X) > Math.Abs(seg.Item2.X - seg.Item1.X)) seg = f;
+                double x1 = Math.Min(seg.Item1.X, seg.Item2.X), len = Math.Abs(seg.Item2.X - seg.Item1.X);
+                // điểm đặt ở 30 % đoạn (phía trái) để ghi chú vào cột trái, leader không phải xuyên qua bản
+                c.Target = new Vec2(x1 + len * 0.3, seg.Item1.Y);
+                c.Horizontal = true;
+                foreach (var fr in new[] { 0.45, 0.2, 0.6 }) c.AltTargets.Add(new Vec2(x1 + len * fr, seg.Item1.Y));
+                callouts.Add(c);
+                return;
+            }
             if (!ParallelToCut(layer.AlongX))
             {
                 c.End = LeaderEnd.OpenCircle;
@@ -488,7 +511,7 @@ namespace LynhCad.Manhole.Core.Drawing
                     ? string.Format("Ø{0:0}", 2 * g.RebateHalfX)
                     : string.Format("{0:0}x{1:0}", 2 * g.RebateHalfX, 2 * g.RebateHalfY);
                 callouts.Add(new Annot.Callout(new Vec2(r.Min, zBase),
-                    string.Format("{0:0} DEEP x {1} REBATE\nFOR COVER FRAME", g.RebateDepth, size)));
+                    string.Format("{0:0} DEEP x {1} REBATE\nFOR COVER FRAME", g.RebateDepth, size)) { Horizontal = true });
                 return;
             }
             if (!openingS.HasValue) return;

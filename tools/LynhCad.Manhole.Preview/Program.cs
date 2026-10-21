@@ -120,6 +120,8 @@ namespace LynhCad.Manhole.Preview
             Rebate();
             CogsAndBends();
             LeaderEnds();
+            ShapeSchedule();
+            LeaderRules();
             Validation();
             Json();
             Naming();
@@ -890,6 +892,93 @@ namespace LynhCad.Manhole.Preview
             // SVG: vòng rỗng có fill trắng, vòng đặc có fill màu
             string svg = SvgExporter.Export(res.Model, 20);
             True("svg open circle", svg.Contains("<circle") && svg.Contains("fill=\"white\""));
+        }
+
+        /// <summary>Bảng hình dạng thép: một ô mỗi số hiệu, hình có chỗ uốn bo cung, kích thước ghi trên từng đoạn, cog, vòng, nối chồng.</summary>
+        private static void ShapeSchedule()
+        {
+            var p = ParamsJson.LoadMany(Path.Combine(Snapshots.FindSamplesDir(), "rect-mh05-rebate.json"))[0];
+            var g = new ManholeGeometry(p);
+            var rd = RebarDesigner.Design(g);
+            var st = new DrawStyle(20);
+            var m = ShapeScheduleBuilder.Build(g, rd.Schedule, st);
+            var texts = m.Items.OfType<PText>().Select(t => t.Text).ToList();
+            True("shape schedule title", texts.Contains("BAR SHAPES - MH05"));
+            foreach (var bm in rd.Schedule.Marks)
+            {
+                string label = string.Format("{0}  {1}\n{2} No.\nL = {3:0}", bm.Mark, bm.Size, bm.Count, bm.Length);
+                True("shape cell label " + bm.Mark, texts.Contains(label));
+            }
+            // mỗi mác một hình (polyline thép hoặc vòng tròn); thanh uốn có cung
+            int shapes = m.Items.Count(i => i.Layer == Layers.Rebar);
+            Eq("one shape per mark", rd.Schedule.Marks.Count, shapes);
+            True("bent shapes drawn with arcs", m.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Rebar && l.Points.Count > 2).All(l => l.Bulges.Any(b => Math.Abs(b) > 1e-9)));
+            // kích thước ghi trên hình: W1 (U: 300 / 2610 / 170), thanh DROPPED có 4 số A/B/C/D, cog ghi riêng
+            var w1 = rd.Schedule.Marks.First(mk => mk.Mark == "W1");
+            foreach (var v in new[] { w1.A, w1.B, w1.C })
+                True("W1 dimension " + v.ToString("0") + " on shape", texts.Contains(v.ToString("0")));
+            var dropped = rd.Schedule.Marks.First(mk => mk.Shape == BarShape.Dropped);
+            foreach (var v in new[] { dropped.A, dropped.B, dropped.C, dropped.D, dropped.CogStart })
+                True("dropped dimension " + v.ToString("0") + " on shape", texts.Contains(v.ToString("0")));
+            var ring = RebarDesigner.Design(new ManholeGeometry(ManholeParams.SampleCircularCast())).Schedule;
+            var mr = ShapeScheduleBuilder.Build(new ManholeGeometry(ManholeParams.SampleCircularCast()), ring, st);
+            True("ring shape: circle + Ø + LAP", mr.Items.OfType<PCircle>().Any(c => c.Layer == Layers.Rebar)
+                && mr.Items.OfType<PText>().Any(t => t.Text.StartsWith("Ø")) && mr.Items.OfType<PText>().Any(t => t.Text.StartsWith("LAP ")));
+            // ghép vào chi tiết: nằm bên phải bảng thống kê, ghi chú bên dưới
+            var res = DetailComposer.Compose(p);
+            var tbl = res.Model.Items.OfType<PTable>().First();
+            var title = res.Model.Items.OfType<PText>().First(t => t.Text == "BAR SHAPES - MH05");
+            True("shape schedule right of the bar schedule", title.Position.X > tbl.Origin.X + tbl.Width);
+            var notes = res.Model.Items.OfType<PText>().First(t => t.Text.StartsWith("NOTES:"));
+            True("notes below both tables", notes.Position.Y < tbl.Origin.Y - tbl.Height && notes.Position.Y < res.Model.Items.Where(i => i.Layer == Layers.Rebar && i is PCircle == false).Min(i => { var b = new Bounds(); i.AddBounds(b); return b.MinY; }) + 1e6);
+            True("no shape schedule without DrawSchedule", !DetailComposer.Compose(new ManholeParams { Id = "N", DrawSchedule = false, Pipes = ManholeParams.SampleRectangular().Pipes }).Model.Items.OfType<PText>().Any(t => t.Text.StartsWith("BAR SHAPES")));
+        }
+
+        /// <summary>
+        /// Leader: chỉ vào nét ngang (thanh lưới, ống, mặt rãnh, benching) thì chữ thấp hơn điểm đặt ≥ 2h để đoạn đầu xiên;
+        /// ghi chú lưới chỉ vào giữa đoạn thẳng của thanh (không vào cog / chỗ gãy); đầu ống có nét đóng; benching hatch bê tông.
+        /// </summary>
+        private static void LeaderRules()
+        {
+            var p = ParamsJson.LoadMany(Path.Combine(Snapshots.FindSamplesDir(), "rect-mh05-rebate.json"))[0];
+            var res = DetailComposer.Compose(p);
+            var st = new DrawStyle(20);
+            double h = st.TextSmall;
+            var leaders = res.Model.Items.OfType<PLeader>().ToList();
+            foreach (var txt in new[] { "R1/", "R5/", "P3 DN375", "P1 DN300", "BENCHING BEYOND", "50 DEEP x" })
+            {
+                var l = leaders.First(x => x.Text.StartsWith(txt));
+                // đoạn đầu xiên 45° hoặc đứng 90° (khi 45° vướng), không bao giờ ngang trùng hướng nét
+                True("leader '" + txt + "' arrives diagonally (text below target)", l.Points[0].Y - l.TextPosition.Y >= Annot.DiagFactor * h - 1e-6
+                    && l.Points.Count == 3 && (Math.Abs(Math.Abs(l.Points[1].X - l.Points[0].X) - Math.Abs(l.Points[1].Y - l.Points[0].Y)) < 1e-6 || Math.Abs(l.Points[1].X - l.Points[0].X) < 1e-6));
+            }
+            // ghi chú lưới chỉ vào đoạn thẳng của thanh: điểm đặt nằm trên một polyline thép đúng cao độ Z lớp, cách mép cog / chỗ gãy
+            var g = res.Geometry; var L = res.Rebar.Layout;
+            var sec = new SectionBuilder(g, res.Rebar, st).Build();
+            foreach (var mat in new[] { BarSets.RoofBot, BarSets.RoofTop })
+            {
+                var layer = L.RoofLayers.First(x => x.Key == BarSets.X(mat));
+                var l = sec.Items.OfType<PLeader>().First(x => x.Text.EndsWith(layer.IsTop ? "TOP EW" : "BOT EW"));
+                var bars = sec.Items.OfType<PPolyline>().Where(x => x.Layer == Layers.Rebar && x.Key == RebarKeys.ForMat(mat)).ToList();
+                True(mat + " callout on a flat segment of the bar", bars.Any(b => Enumerable.Range(0, b.Points.Count - 1).Any(i =>
+                    Math.Abs(b.Points[i].Y - b.Points[i + 1].Y) < 1e-9 && Math.Abs(b.Points[i].Y - l.Points[0].Y) < 1e-9
+                    && l.Points[0].X > Math.Min(b.Points[i].X, b.Points[i + 1].X) + 10 && l.Points[0].X < Math.Max(b.Points[i].X, b.Points[i + 1].X) - 10)));
+            }
+            // nét đóng đầu ống: mặt cắt (tại mặt trong tường, cao bằng OD) và mặt bằng
+            var sr = ManholeParams.SampleRectangular();
+            var gr = new ManholeGeometry(sr); var rdr = RebarDesigner.Design(gr);
+            var secR = new SectionBuilder(gr, rdr, st).Build();
+            var p3 = gr.Outlet;
+            True("section pipe end line", secR.Items.OfType<PPolyline>().Any(l => l.Layer == Layers.Pipe && l.Key == "P3" && l.Points.Count == 2
+                && Math.Abs(l.Points[0].X - l.Points[1].X) < 1e-9 && Math.Abs(Math.Abs(l.Points[1].Y - l.Points[0].Y) - p3.OD) < 1e-6));
+            var planR = new PlanBuilder(gr, rdr, st).Build();
+            True("plan pipe end line", planR.Items.OfType<PPolyline>().Any(l => l.Layer == Layers.Pipe && l.Points.Count == 2
+                && Math.Abs((l.Points[1] - l.Points[0]).Length - p3.OD) < 1e-6 && Math.Abs((l.Points[0] + l.Points[1]).X / 2 - p3.InnerPoint.X) < 1e-6));
+            // benching: hatch bê tông AR-CONC với đường bao kín trên layer bê tông
+            True("benching concrete hatch", secR.Items.OfType<PHatch>().Any(hh => hh.Pattern == "AR-CONC" && hh.Loops[0].Points.Count == 4 && hh.Loops[0].Points.Any(q => Math.Abs(q.Y) < 1e-9)
+                && hh.Loops[0].Points.Any(q => Math.Abs(q.Y - gr.Outlet.ZInvert) < 1e-6)));
+            True("benching closed outline", secR.Items.OfType<PPolyline>().Any(l => l.Layer == Layers.Concrete && l.Closed && l.Points.Count == 4 && l.Points.Any(q => Math.Abs(q.Y - gr.Outlet.ZInvert) < 1e-6)));
+            True("no sand hatch left", !secR.Items.OfType<PHatch>().Any(hh => hh.Pattern == "AR-SAND"));
         }
 
         private static void Validation()
