@@ -19,6 +19,8 @@ namespace LynhCad.Manhole.Core.Drawing
         private Interval? openingS;
         private readonly List<PipeFrame> cutLeft = new List<PipeFrame>(), cutRight = new List<PipeFrame>();
         private double zTopRoof, zCL;
+        /// <summary>Mép phải khung nắp (nếu có vẽ) để kéo đường dẫn cao độ CL ra ngoài.</summary>
+        private double? frameRight;
 
         public SectionBuilder(ManholeGeometry geometry, RebarDesign rebar, DrawStyle style) : base(geometry, rebar, style) { }
 
@@ -257,7 +259,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 var run = t.Run;
                 double? sCross = CrossingOnBar(t.AlongX, t.Pos, along => run.Contains(along));
                 if (sCross == null) continue;
-                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sCross.Value, t.Z), Diameter = st.DotSize(t.Dia) });
+                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sCross.Value, TrimmerDotZ(t)), Diameter = st.DotSize(t.Dia) });
             }
 
             // Ghi chú lưới (gộp 2 phương)
@@ -267,7 +269,7 @@ namespace LynhCad.Manhole.Core.Drawing
             if (g.P.RoofTopMat) AddMatCallout(BarSets.RoofTop, true);
             if (L.RoofTrimmers.Count > 0 && openingS.HasValue)
             {
-                var tz = L.RoofTrimmers[0].Z;
+                var tz = TrimmerDotZ(L.RoofTrimmers[0]);
                 callouts.Add(new Annot.Callout(new Vec2(openingS.Value.Max + g.P.Cover + 20, tz), sch.Callout(BarSets.RoofTrim)));
             }
 
@@ -309,14 +311,41 @@ namespace LynhCad.Manhole.Core.Drawing
                 }
                 return;
             }
-            // cắt ngang qua mặt cắt → chấm
+            // cắt ngang qua mặt cắt → chấm, đặt trùng lên đường thép của lớp kia cùng lưới (nếu lớp đó vẽ dạng đường)
+            double z = DotZ(layer);
             foreach (var pos in layer.Positions)
             {
                 var pieces = layer.Pieces(pos);
                 double? sc = CrossingOnBar(layer.AlongX, pos, along => pieces.Any(i => i.Contains(along)));
                 if (sc == null) continue;
-                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sc.Value, layer.Z), Diameter = st.DotSize(layer.Dia) });
+                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sc.Value, z), Diameter = st.DotSize(layer.Dia) });
             }
+        }
+
+        /// <summary>
+        /// Cao độ vẽ chấm của một lớp lưới: chấm phải thẳng hàng với đường thép (lớp cùng lưới, phương kia) khi lớp đó
+        /// song song mặt cắt; cắt chéo (cả hai lớp đều thành chấm) thì gộp về một hàng tại lớp ngoài (sát mặt bê tông).
+        /// </summary>
+        private double DotZ(MatLayer layer)
+        {
+            var sib = Sibling(layer);
+            if (sib == null) return layer.Z;
+            if (ParallelToCut(sib.AlongX)) return sib.Z;
+            return layer.IsTop ? Math.Max(layer.Z, sib.Z) : Math.Min(layer.Z, sib.Z);
+        }
+
+        /// <summary>Lớp phương kia của cùng một lưới (cùng bản, cùng trên/dưới).</summary>
+        private MatLayer Sibling(MatLayer layer)
+        {
+            var list = rd.Layout.RoofLayers.Contains(layer) ? rd.Layout.RoofLayers : rd.Layout.BaseLayers;
+            return list.FirstOrDefault(l => l != layer && l.IsTop == layer.IsTop && l.AlongX != layer.AlongX);
+        }
+
+        /// <summary>Cao độ vẽ chấm của thanh trimmer bản nắp = cao độ chấm của lớp lưới nó đi cùng.</summary>
+        private double TrimmerDotZ(TrimmerBar t)
+        {
+            var layer = rd.Layout.RoofLayers.FirstOrDefault(l => l.AlongX == t.AlongX && Math.Abs(l.Z - t.Z) < 1e-6);
+            return layer != null ? DotZ(layer) : t.Z;
         }
 
         private void AddMatCallout(string mat, bool roof)
@@ -345,8 +374,8 @@ namespace LynhCad.Manhole.Core.Drawing
                 var cuts = side < 0 ? cutLeft : cutRight;
                 var gaps = cuts.Select(f => new Interval(f.GapZ.Min - c, f.GapZ.Max + c)).ToList();
 
-                // thép ngang (lớp ngoài) → chấm
-                foreach (var face in new[] { sInner + side * L.HorizOffset, sOuter - side * L.HorizOffset })
+                // thép ngang (lớp ngoài) → chấm, đặt thẳng hàng trên đường thép đứng cùng mặt
+                foreach (var face in new[] { sInner + side * L.VertOffset, sOuter - side * L.VertOffset })
                     foreach (var z in L.HorizLevels)
                         if (!gaps.Any(gp => gp.Contains(z)))
                             m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(face, z), Diameter = st.DotSize(L.DH) });
@@ -369,7 +398,7 @@ namespace LynhCad.Manhole.Core.Drawing
             double zv = g.H * 0.7;
             callouts.Add(new Annot.Callout(new Vec2(innerS.Min - L.VertOffset, zv), rd.Schedule.Callout(BarSets.WallVert)));
             double zh = L.HorizLevels.OrderBy(z => Math.Abs(z - g.H * 0.45)).FirstOrDefault();
-            callouts.Add(new Annot.Callout(new Vec2(outerS.Min + L.HorizOffset, zh), rd.Schedule.Callout(BarSets.WallHoriz)));
+            callouts.Add(new Annot.Callout(new Vec2(outerS.Min + L.VertOffset, zh), rd.Schedule.Callout(BarSets.WallHoriz)));
             if (cutRight.Count + cutLeft.Count > 0 && rd.Schedule.Set(BarSets.PipeTrim) != null)
             {
                 var f = cutRight.Count > 0 ? cutRight[0] : cutLeft[0];
@@ -386,6 +415,7 @@ namespace LynhCad.Manhole.Core.Drawing
             double h = zCL - zTopRoof;
             if (h < 10) return;
             var frame = new Rect2(o.Min - 100, zTopRoof, o.Max + 100, zCL);
+            frameRight = frame.X2;
             m.Add(PPolyline.Rect(frame, Layers.ConcreteBeyond));
             m.Add(PPolyline.Line(new Vec2(frame.X1, zCL - 40), new Vec2(frame.X2, zCL - 40), Layers.ConcreteBeyond));
             callouts.Add(new Annot.Callout(new Vec2(frame.X2, (zTopRoof + zCL) / 2),
@@ -397,10 +427,17 @@ namespace LynhCad.Manhole.Core.Drawing
         {
             // đặt ngoài đoạn ống ra thò ra bên phải để nhãn TOB/USB không đè lên ống
             double x = RightExtent + 4 * st.Scale;
-            Annot.Level(m, st, x, zCL, "CL", g.P.CoverLevel, 1);
-            Annot.Level(m, st, x, zTopRoof, "TOS", g.RoofTopRL, 1);
-            Annot.Level(m, st, x, 0, "TOB", g.FloorRL, 1);
-            Annot.Level(m, st, x, -g.Tb, "USB", g.BaseBottomRL, 1);
+            LevelLine(frameRight ?? roofS.Max, x, zCL, "CL", g.P.CoverLevel);
+            LevelLine(roofS.Max, x, zTopRoof, "TOS", g.RoofTopRL);
+            LevelLine(baseS.Max, x, 0, "TOB", g.FloorRL);
+            LevelLine(baseS.Max, x, -g.Tb, "USB", g.BaseBottomRL);
+        }
+
+        /// <summary>Ký hiệu cao độ tại (x, z) + đường dẫn nét chấm gạch từ mép kết cấu (xEdge) ra tới ký hiệu.</summary>
+        private void LevelLine(double xEdge, double x, double z, string label, double rl)
+        {
+            if (x - xEdge > 1) m.Add(PPolyline.Line(new Vec2(xEdge, z), new Vec2(x, z), Layers.Level));
+            Annot.Level(m, st, x, z, label, rl, 1);
         }
 
         // ---------------------------------------------------------------- kích thước
