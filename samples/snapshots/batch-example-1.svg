@@ -331,22 +331,22 @@
 <path d="M7957,671.23 L7957,-1166.27" stroke="#d62828" stroke-width="10" fill="none"/>
 <path d="M6525,-1216.27 L7625,-1216.27 L7625,-1416.27 L6525,-1416.27 L6525,-1216.27 Z" stroke="#888888" stroke-width="3.6" fill="none"/>
 <path d="M6525,-1376.27 L7625,-1376.27" stroke="#888888" stroke-width="3.6" fill="none"/>
-<path d="M7625,-1416.27 L8705,-1416.27" stroke="#888888" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M7625,-1416.27 L8705,-1416.27" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
 <path d="M8705,-1416.27 L8683.4,-1452.27 L8726.6,-1452.27 L8705,-1416.27 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <path d="M8705,-1416.27 L8683.4,-1452.27 L8726.6,-1452.27 L8705,-1416.27 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8705,-1452.27 L9225,-1452.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8748.2" y="-1466.67" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8748.2" dy="0">CL RL 15.000</tspan></text>
-<path d="M8025,-1216.27 L8705,-1216.27" stroke="#888888" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M8025,-1216.27 L8705,-1216.27" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
 <path d="M8705,-1216.27 L8683.4,-1252.27 L8726.6,-1252.27 L8705,-1216.27 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <path d="M8705,-1216.27 L8683.4,-1252.27 L8726.6,-1252.27 L8705,-1216.27 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8705,-1252.27 L9225,-1252.27" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8748.2" y="-1266.67" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8748.2" dy="0">TOS RL 14.800</tspan></text>
-<path d="M8175,1271.23 L8705,1271.23" stroke="#888888" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M8175,1271.23 L8705,1271.23" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
 <path d="M8705,1271.23 L8683.4,1235.23 L8726.6,1235.23 L8705,1271.23 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <path d="M8705,1271.23 L8683.4,1235.23 L8726.6,1235.23 L8705,1271.23 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8705,1235.23 L9225,1235.23" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <text x="8748.2" y="1220.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="8748.2" dy="0">TOB RL 12.313</tspan></text>
-<path d="M8175,1521.23 L8705,1521.23" stroke="#888888" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
+<path d="M8175,1521.23 L8705,1521.23" stroke="#b0179f" stroke-width="2.6" fill="none" stroke-dasharray="200 40 40 40"/>
 <path d="M8705,1521.23 L8683.4,1485.23 L8726.6,1485.23 L8705,1521.23 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
 <path d="M8705,1521.23 L8683.4,1485.23 L8726.6,1485.23 L8705,1521.23 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
 <path d="M8705,1485.23 L9225,1485.23" stroke="#a07800" stroke-width="3.6" fill="none"/>

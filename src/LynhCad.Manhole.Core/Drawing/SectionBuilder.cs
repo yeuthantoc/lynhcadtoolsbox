@@ -436,7 +436,7 @@ namespace LynhCad.Manhole.Core.Drawing
         /// <summary>Ký hiệu cao độ tại (x, z) + đường dẫn nét chấm gạch từ mép kết cấu (xEdge) ra tới ký hiệu.</summary>
         private void LevelLine(double xEdge, double x, double z, string label, double rl)
         {
-            if (x - xEdge > 1) m.Add(PPolyline.Line(new Vec2(xEdge, z), new Vec2(x, z), Layers.Level));
+            if (x - xEdge > 1) m.Add(PPolyline.Line(new Vec2(xEdge, z), new Vec2(x, z), Layers.Centre));
             Annot.Level(m, st, x, z, label, rl, 1);
         }
 
