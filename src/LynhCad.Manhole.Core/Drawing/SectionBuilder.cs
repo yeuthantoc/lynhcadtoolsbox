@@ -259,7 +259,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 var run = t.Run;
                 double? sCross = CrossingOnBar(t.AlongX, t.Pos, along => run.Contains(along));
                 if (sCross == null) continue;
-                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sCross.Value, TrimmerDotZ(t)), Diameter = st.DotSize(t.Dia) });
+                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sCross.Value, t.Z), Diameter = st.DotSize(t.Dia) });
             }
 
             // Ghi chú lưới (gộp 2 phương)
@@ -269,7 +269,7 @@ namespace LynhCad.Manhole.Core.Drawing
             if (g.P.RoofTopMat) AddMatCallout(BarSets.RoofTop, true);
             if (L.RoofTrimmers.Count > 0 && openingS.HasValue)
             {
-                var tz = TrimmerDotZ(L.RoofTrimmers[0]);
+                var tz = L.RoofTrimmers[0].Z;
                 callouts.Add(new Annot.Callout(new Vec2(openingS.Value.Max + g.P.Cover + 20, tz), sch.Callout(BarSets.RoofTrim)));
             }
 
@@ -311,41 +311,14 @@ namespace LynhCad.Manhole.Core.Drawing
                 }
                 return;
             }
-            // cắt ngang qua mặt cắt → chấm, đặt trùng lên đường thép của lớp kia cùng lưới (nếu lớp đó vẽ dạng đường)
-            double z = DotZ(layer);
+            // cắt ngang qua mặt cắt → chấm, đúng cao độ tim lớp (nằm cạnh đường thép của lớp kia, không đè lên)
             foreach (var pos in layer.Positions)
             {
                 var pieces = layer.Pieces(pos);
                 double? sc = CrossingOnBar(layer.AlongX, pos, along => pieces.Any(i => i.Contains(along)));
                 if (sc == null) continue;
-                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sc.Value, z), Diameter = st.DotSize(layer.Dia) });
+                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sc.Value, layer.Z), Diameter = st.DotSize(layer.Dia) });
             }
-        }
-
-        /// <summary>
-        /// Cao độ vẽ chấm của một lớp lưới: chấm phải thẳng hàng với đường thép (lớp cùng lưới, phương kia) khi lớp đó
-        /// song song mặt cắt; cắt chéo (cả hai lớp đều thành chấm) thì gộp về một hàng tại lớp ngoài (sát mặt bê tông).
-        /// </summary>
-        private double DotZ(MatLayer layer)
-        {
-            var sib = Sibling(layer);
-            if (sib == null) return layer.Z;
-            if (ParallelToCut(sib.AlongX)) return sib.Z;
-            return layer.IsTop ? Math.Max(layer.Z, sib.Z) : Math.Min(layer.Z, sib.Z);
-        }
-
-        /// <summary>Lớp phương kia của cùng một lưới (cùng bản, cùng trên/dưới).</summary>
-        private MatLayer Sibling(MatLayer layer)
-        {
-            var list = rd.Layout.RoofLayers.Contains(layer) ? rd.Layout.RoofLayers : rd.Layout.BaseLayers;
-            return list.FirstOrDefault(l => l != layer && l.IsTop == layer.IsTop && l.AlongX != layer.AlongX);
-        }
-
-        /// <summary>Cao độ vẽ chấm của thanh trimmer bản nắp = cao độ chấm của lớp lưới nó đi cùng.</summary>
-        private double TrimmerDotZ(TrimmerBar t)
-        {
-            var layer = rd.Layout.RoofLayers.FirstOrDefault(l => l.AlongX == t.AlongX && Math.Abs(l.Z - t.Z) < 1e-6);
-            return layer != null ? DotZ(layer) : t.Z;
         }
 
         private void AddMatCallout(string mat, bool roof)
@@ -370,19 +343,22 @@ namespace LynhCad.Manhole.Core.Drawing
             foreach (var side in new[] { -1, 1 })
             {
                 double sInner = side < 0 ? innerS.Min : innerS.Max;
-                double sOuter = side < 0 ? outerS.Min : outerS.Max;
                 var cuts = side < 0 ? cutLeft : cutRight;
                 var gaps = cuts.Select(f => new Interval(f.GapZ.Min - c, f.GapZ.Max + c)).ToList();
 
-                // thép ngang (lớp ngoài) → chấm, đặt thẳng hàng trên đường thép đứng cùng mặt
-                foreach (var face in new[] { sInner + side * L.VertOffset, sOuter - side * L.VertOffset })
+                // thép ngang → chấm, mỗi lớp (1 hoặc 2) đo từ mặt trong tường ra
+                foreach (var off in L.HorizFromInner)
+                {
+                    double face = sInner + side * off;
                     foreach (var z in L.HorizLevels)
                         if (!gaps.Any(gp => gp.Contains(z)))
                             m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(face, z), Diameter = st.DotSize(L.DH) });
+                }
 
-                // thép đứng (lớp trong) → đường, chân L quay vào trong hố
-                foreach (var face in new[] { sInner + side * L.VertOffset, sOuter - side * L.VertOffset })
+                // thép đứng → đường, chân L quay vào trong hố
+                foreach (var off in L.VertFromInner)
                 {
+                    double face = sInner + side * off;
                     var zSpan = new Interval(L.VertZBot, L.VertZTop).Subtract(gaps);
                     for (int i = 0; i < zSpan.Count; i++)
                     {
@@ -396,14 +372,14 @@ namespace LynhCad.Manhole.Core.Drawing
                 }
             }
             double zv = g.H * 0.7;
-            callouts.Add(new Annot.Callout(new Vec2(innerS.Min - L.VertOffset, zv), rd.Schedule.Callout(BarSets.WallVert)));
+            callouts.Add(new Annot.Callout(new Vec2(innerS.Min - L.VertFromInner[0], zv), rd.Schedule.Callout(BarSets.WallVert)));
             double zh = L.HorizLevels.OrderBy(z => Math.Abs(z - g.H * 0.45)).FirstOrDefault();
-            callouts.Add(new Annot.Callout(new Vec2(outerS.Min + L.VertOffset, zh), rd.Schedule.Callout(BarSets.WallHoriz)));
+            callouts.Add(new Annot.Callout(new Vec2(innerS.Min - L.HorizFromInner[L.HorizFromInner.Count - 1], zh), rd.Schedule.Callout(BarSets.WallHoriz)));
             if (cutRight.Count + cutLeft.Count > 0 && rd.Schedule.Set(BarSets.PipeTrim) != null)
             {
                 var f = cutRight.Count > 0 ? cutRight[0] : cutLeft[0];
                 double s = f.Dir.Dot(u) > 0 ? innerS.Max + g.Tw / 2 : innerS.Min - g.Tw / 2;
-                callouts.Add(new Annot.Callout(new Vec2(s, f.GapZ.Min - c), rd.Schedule.Set(BarSets.PipeTrim).CalloutWith(" TRIMMERS\nEACH SIDE OF PENETRATIONS EF")));
+                callouts.Add(new Annot.Callout(new Vec2(s, f.GapZ.Min - c), rd.Schedule.Set(BarSets.PipeTrim).CalloutWith(" TRIMMERS\nEACH SIDE OF PENETRATIONS" + (L.WallLayers == 2 ? " EF" : ""))));
             }
         }
 

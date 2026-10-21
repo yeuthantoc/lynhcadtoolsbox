@@ -50,8 +50,12 @@ namespace LynhCad.Manhole.Core.Rebar
         // Tường (chỉ hố chữ nhật)
         public int DV, DH;
         public double SV, SH;
-        /// <summary>Khoảng từ mặt tường tới tim thép ngang (lớp ngoài) / thép đứng (lớp trong).</summary>
+        /// <summary>Khoảng từ mặt tường tới tim thép ngang (lớp ngoài) / thép đứng (lớp trong) khi đặt 2 lớp.</summary>
         public double HorizOffset, VertOffset;
+        /// <summary>Số lớp thép tường: 2 = hai mặt (EF), 1 = một lớp giữa tường (CENTRAL).</summary>
+        public int WallLayers = 2;
+        /// <summary>Khoảng từ MẶT TRONG tường tới tim từng lớp thép đứng / thép ngang (mặt trong trước, mặt ngoài sau).</summary>
+        public readonly List<double> VertFromInner = new List<double>(), HorizFromInner = new List<double>();
         public List<double> HorizLevels = new List<double>();
         public double VertZBot, VertZTop, VertLeg;
         public double Lap;
@@ -202,6 +206,20 @@ namespace LynhCad.Manhole.Core.Rebar
             L.HorizOffset = c + L.DH / 2.0;
             L.VertOffset = c + L.DH + L.DV / 2.0;
             L.Lap = g.LapLength(L.DH);
+            L.WallLayers = P.WallSingleLayer ? 1 : 2;
+            L.VertFromInner.Clear(); L.HorizFromInner.Clear();
+            if (L.WallLayers == 1)
+            {
+                // một lớp giữa tường: thép đứng đúng tim tường, thép ngang buộc phía ngoài thép đứng
+                L.VertFromInner.Add(g.Tw / 2);
+                L.HorizFromInner.Add(g.Tw / 2 + (L.DV + L.DH) / 2.0);
+            }
+            else
+            {
+                L.VertFromInner.Add(L.VertOffset); L.VertFromInner.Add(g.Tw - L.VertOffset);
+                L.HorizFromInner.Add(L.HorizOffset); L.HorizFromInner.Add(g.Tw - L.HorizOffset);
+            }
+            string faces = L.WallLayers == 1 ? "CENTRAL" : "EF";
 
             // ---- Thép đứng: chân L neo vào đáy, đặt lên lưới dưới ----
             double baseBotDepth = 0, roofTopDepth = 0;
@@ -212,20 +230,14 @@ namespace LynhCad.Manhole.Core.Rebar
             L.VertLeg = P.VerticalBarLeg;
             double vertA = L.VertZTop - L.VertZBot;
 
-            int vertCount = 0;
-            if (g.IsRect)
-                foreach (var loop in VerticalLoops(g, L))
-                    vertCount += LoopPositions(loop.X, loop.Y, L.SV).Count;
-            else
-                foreach (var r in VerticalRingRadii(g, L))
-                    vertCount += RingPositions(r, L.SV).Count;
-            sets.Add(new BarSetInfo { Key = BarSets.WallVert, Dia = L.DV, Spacing = L.SV, Suffix = "EF VERT" });
+            int vertCount = VerticalPositions(g, L).Count;
+            sets.Add(new BarSetInfo { Key = BarSets.WallVert, Dia = L.DV, Spacing = L.SV, Suffix = faces + " VERT" });
             items.Add(new BarItem { SetKey = BarSets.WallVert, Group = 'W', Dia = L.DV, Shape = BarShape.L, A = vertA, B = L.VertLeg, Count = vertCount });
 
             // ---- Thép ngang ----
             L.HorizLevels = GeomUtil.Distribute(50, g.H - 50, L.SH);
             int nLevels = L.HorizLevels.Count;
-            sets.Add(new BarSetInfo { Key = BarSets.WallHoriz, Dia = L.DH, Spacing = L.SH, Suffix = "EF HORIZ" });
+            sets.Add(new BarSetInfo { Key = BarSets.WallHoriz, Dia = L.DH, Spacing = L.SH, Suffix = faces + " HORIZ" });
             if (g.IsRect)
             {
                 // mỗi cao độ, mỗi mặt = 2 thanh U nối chồng ở giữa cạnh ngắn
@@ -254,69 +266,80 @@ namespace LynhCad.Manhole.Core.Rebar
                 {
                     double vLen = Math.Min(maxVert, f.GapZ.Length + 2 * lap);
                     double hLen = 2 * f.HalfGap + 2 * lap;
-                    // 2 mặt × (n mỗi bên × 2 bên)
-                    items.Add(new BarItem { SetKey = BarSets.PipeTrim, Group = 'T', Dia = dt, Shape = BarShape.Straight, A = vLen, Count = 2 * 2 * n });
-                    items.Add(new BarItem { SetKey = BarSets.PipeTrim, Group = 'T', Dia = dt, Shape = BarShape.Straight, A = hLen, Count = 2 * 2 * n });
+                    // số lớp × (n mỗi bên × 2 bên)
+                    items.Add(new BarItem { SetKey = BarSets.PipeTrim, Group = 'T', Dia = dt, Shape = BarShape.Straight, A = vLen, Count = L.WallLayers * 2 * n });
+                    items.Add(new BarItem { SetKey = BarSets.PipeTrim, Group = 'T', Dia = dt, Shape = BarShape.Straight, A = hLen, Count = L.WallLayers * 2 * n });
                 }
-                sets.Add(new BarSetInfo { Key = BarSets.PipeTrim, Dia = dt, FixedCount = n, Suffix = "TRIMMERS EACH SIDE OF PENETRATION EF" });
+                sets.Add(new BarSetInfo { Key = BarSets.PipeTrim, Dia = dt, FixedCount = n, Suffix = "TRIMMERS EACH SIDE OF PENETRATION" + (L.WallLayers == 2 ? " EF" : "") });
             }
         }
 
-        /// <summary>Hai vòng thép đứng (mặt trong, mặt ngoài) dạng nửa kích thước (ax, ay).</summary>
+        /// <summary>Các vòng thép đứng (mặt trong trước, mặt ngoài sau; 1 vòng nếu thép 1 lớp) dạng nửa kích thước (ax, ay).</summary>
         public static List<HalfSize> VerticalLoops(ManholeGeometry g, RebarLayout L)
         {
-            return new List<HalfSize>
-            {
-                new HalfSize(g.Li / 2 + L.VertOffset, g.Wi / 2 + L.VertOffset),
-                new HalfSize(g.Lo / 2 - L.VertOffset, g.Wo / 2 - L.VertOffset),
-            };
+            return L.VertFromInner.Select(v => new HalfSize(g.Li / 2 + v, g.Wi / 2 + v)).ToList();
         }
 
-        /// <summary>Hai vòng thép ngang (mặt trong, mặt ngoài) dạng nửa kích thước (bx, by).</summary>
+        /// <summary>Các vòng thép ngang (mặt trong trước, mặt ngoài sau; 1 vòng nếu thép 1 lớp) dạng nửa kích thước (bx, by).</summary>
         public static List<HalfSize> HorizontalLoops(ManholeGeometry g, RebarLayout L)
         {
-            return new List<HalfSize>
-            {
-                new HalfSize(g.Li / 2 + L.HorizOffset, g.Wi / 2 + L.HorizOffset),
-                new HalfSize(g.Lo / 2 - L.HorizOffset, g.Wo / 2 - L.HorizOffset),
-            };
+            return L.HorizFromInner.Select(v => new HalfSize(g.Li / 2 + v, g.Wi / 2 + v)).ToList();
         }
 
-        /// <summary>Hố tròn: bán kính tim hai vòng thép đứng (mặt trong, mặt ngoài).</summary>
+        /// <summary>Hố tròn: bán kính tim các vòng thép đứng (mặt trong trước, mặt ngoài sau).</summary>
         public static List<double> VerticalRingRadii(ManholeGeometry g, RebarLayout L)
         {
-            return new List<double> { g.Ri + L.VertOffset, g.Ro - L.VertOffset };
+            return L.VertFromInner.Select(v => g.Ri + v).ToList();
         }
 
-        /// <summary>Hố tròn: bán kính tim hai vòng thép ngang (mặt trong, mặt ngoài).</summary>
+        /// <summary>Hố tròn: bán kính tim các vòng thép ngang (mặt trong trước, mặt ngoài sau).</summary>
         public static List<double> HorizontalRingRadii(ManholeGeometry g, RebarLayout L)
         {
-            return new List<double> { g.Ri + L.HorizOffset, g.Ro - L.HorizOffset };
+            return L.HorizFromInner.Select(v => g.Ro - (g.Tw - v)).ToList();
         }
 
-        /// <summary>Vị trí thanh đứng rải đều trên vòng tròn bán kính r, khoảng cách theo cung ≤ s, bắt đầu tại góc 0.</summary>
-        public static List<Vec2> RingPositions(double r, double s)
+        /// <summary>Số thanh đứng trên vòng tròn bán kính r để khoảng cách theo cung ≤ s (tối thiểu 4).</summary>
+        public static int RingCount(double r, double s)
         {
-            int n = Math.Max(4, (int)Math.Ceiling(2 * Math.PI * r / s - 1e-9));
-            var pts = new List<Vec2>();
-            for (int k = 0; k < n; k++) pts.Add(Vec2.FromAngle(2 * Math.PI * k / n) * r);
-            return pts;
+            return Math.Max(4, (int)Math.Ceiling(2 * Math.PI * r / s - 1e-9));
         }
 
-        /// <summary>Vị trí thanh đứng rải quanh vòng chữ nhật (ax, ay), mỗi góc một thanh, không trùng.</summary>
-        public static List<Vec2> LoopPositions(double ax, double ay, double s)
+        /// <summary>
+        /// Vị trí mọi thanh đứng của tường (mặt bằng), các mặt THẲNG HÀNG với nhau: thanh ở mặt ngoài nằm đúng
+        /// vị trí dọc tường (hoặc đúng góc, hố tròn) của thanh mặt trong. Hố chữ nhật: vị trí rải theo vòng trong,
+        /// vòng ngoài thêm 4 thanh góc; hố tròn: cùng số thanh, cùng góc trên mọi vòng (số thanh tính theo vòng lớn nhất).
+        /// </summary>
+        public static List<Vec2> VerticalPositions(ManholeGeometry g, RebarLayout L)
         {
-            var corners = new[] { new Vec2(-ax, -ay), new Vec2(ax, -ay), new Vec2(ax, ay), new Vec2(-ax, ay) };
             var pts = new List<Vec2>();
-            for (int i = 0; i < 4; i++)
+            if (g.IsRect)
             {
-                var a = corners[i]; var b = corners[(i + 1) % 4];
-                double len = (b - a).Length;
-                var ts = GeomUtil.Distribute(0, len, s);
-                for (int k = 0; k < ts.Count - 1; k++) // bỏ điểm cuối (là góc kế tiếp)
-                    pts.Add(a + (b - a) * (ts[k] / len));
+                var loops = VerticalLoops(g, L);
+                if (loops.Count == 0) return pts;
+                var xs = GeomUtil.Distribute(-loops[0].X, loops[0].X, L.SV);
+                var ys = GeomUtil.Distribute(-loops[0].Y, loops[0].Y, L.SV);
+                foreach (var loop in loops)
+                {
+                    foreach (var x in xs) foreach (int sy in new[] { -1, 1 }) AddUnique(pts, new Vec2(x, sy * loop.Y));
+                    foreach (var y in ys) foreach (int sx in new[] { -1, 1 }) AddUnique(pts, new Vec2(sx * loop.X, y));
+                    foreach (int sx in new[] { -1, 1 }) foreach (int sy in new[] { -1, 1 }) AddUnique(pts, new Vec2(sx * loop.X, sy * loop.Y));
+                }
+            }
+            else
+            {
+                var radii = VerticalRingRadii(g, L);
+                if (radii.Count == 0) return pts;
+                int n = RingCount(radii.Max(), L.SV);
+                foreach (var r in radii)
+                    for (int k = 0; k < n; k++) pts.Add(Vec2.FromAngle(2 * Math.PI * k / n) * r);
             }
             return pts;
+        }
+
+        private static void AddUnique(List<Vec2> pts, Vec2 p)
+        {
+            foreach (var q in pts) if ((q - p).Length < 1e-6) return;
+            pts.Add(p);
         }
     }
 }

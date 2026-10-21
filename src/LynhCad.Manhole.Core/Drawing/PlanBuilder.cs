@@ -175,17 +175,17 @@ namespace LynhCad.Manhole.Core.Drawing
                 DrawLoopSide(new Vec2(-bx, -by), new Vec2(-bx, by), WallSide.West, false, c);
             }
 
-            // Thép đứng: chấm
+            // Thép đứng: chấm, các mặt thẳng hàng với nhau (cùng vị trí dọc tường)
             Vec2? sampleDot = null;
-            foreach (var loop in RebarDesigner.VerticalLoops(g, L))
-                foreach (var p in RebarDesigner.LoopPositions(loop.X, loop.Y, L.SV))
-                {
-                    if (InPipeGap(p, c)) continue;
-                    m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV) });
-                    if (sampleDot == null && p.Y < 0 && p.X < 0 && Math.Abs(p.X + loop.X) < 1e-6) sampleDot = p;
-                }
+            double xInner = RebarDesigner.VerticalLoops(g, L)[0].X;
+            foreach (var p in RebarDesigner.VerticalPositions(g, L))
+            {
+                if (InPipeGap(p, c)) continue;
+                m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV) });
+                if (sampleDot == null && p.Y < 0 && Math.Abs(p.X + xInner) < 1e-6) sampleDot = p;
+            }
 
-            var outer = horizLoops[1];
+            var outer = horizLoops[horizLoops.Count - 1];
             callouts.Add(new Annot.Callout(new Vec2(-outer.X, -g.Wi / 4), rd.Schedule.Callout(BarSets.WallHoriz)));
             if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
         }
@@ -220,16 +220,15 @@ namespace LynhCad.Manhole.Core.Drawing
             }
 
             Vec2? sampleDot = null;
-            var vert = RebarDesigner.VerticalRingRadii(g, L);
-            foreach (var r in vert)
-                foreach (var p in RebarDesigner.RingPositions(r, L.SV))
-                {
-                    if (InPipeGap(p, c)) continue;
-                    m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV) });
-                    if (sampleDot == null && r == vert[0] && p.X < 0 && p.Y < 0) sampleDot = p;
-                }
+            double rInner = RebarDesigner.VerticalRingRadii(g, L)[0];
+            foreach (var p in RebarDesigner.VerticalPositions(g, L))
+            {
+                if (InPipeGap(p, c)) continue;
+                m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV) });
+                if (sampleDot == null && Math.Abs(p.Length - rInner) < 1e-6 && p.X < 0 && p.Y < 0) sampleDot = p;
+            }
 
-            callouts.Add(new Annot.Callout(Vec2.FromAngle(0.8 * Math.PI) * horiz[1], rd.Schedule.Callout(BarSets.WallHoriz)));
+            callouts.Add(new Annot.Callout(Vec2.FromAngle(0.8 * Math.PI) * horiz[horiz.Count - 1], rd.Schedule.Callout(BarSets.WallHoriz)));
             if (sampleDot != null) callouts.Add(new Annot.Callout(sampleDot.Value, rd.Schedule.Callout(BarSets.WallVert)));
         }
 

@@ -131,7 +131,7 @@ Ví dụ đầy đủ trong [`samples/`](samples). Trường bị thiếu sẽ l
   "coverLevel": 15.000, "coverAllowance": 200, "sumpDepth": 50,
   "cover": 50,
   "wallVertical": { "dia": 12, "spacing": 200 },
-  "wallHorizontal": { "dia": 12, "spacing": 200 },
+  "wallHorizontal": { "dia": 12, "spacing": 200 }, "wallSingleLayer": false,
   "baseBottom": { "dia": 16, "spacing": 200 }, "baseTopMat": true,
   "roofBottom": { "dia": 12, "spacing": 200 }, "roofTopMat": false,
   "trimmerDia": 16, "trimmerCount": 2, "lapFactor": 50,
@@ -143,6 +143,8 @@ Ví dụ đầy đủ trong [`samples/`](samples). Trường bị thiếu sẽ l
 ```
 
 Hố tròn đúc sẵn: `"type": "CircularPrecast"`, dùng `internalDiameter`, `precastWallThickness`, `ringHeight`, `openingDiameter`, `roofProjection`, và ống dùng `"angle"` thay cho `wall/offset`.
+
+Thép tường: mặc định 2 lớp hai mặt (EF); `"wallSingleLayer": true` đặt 1 lớp giữa tường (ký hiệu CENTRAL). Thanh đứng ở các mặt luôn thẳng hàng với nhau (cùng vị trí dọc tường / cùng góc).
 
 Bậc thang: `"stepIrons": true`, tuỳ chọn `stepSpacing` (300), `stepWidth` (350), `stepProjection` (150), `stepTopGap` (300, từ đáy bản nắp tới bậc trên cùng), `stepBottomClear` (300, bậc dưới cùng trên mặt benching), `stepAuto` (true) hoặc `"stepAuto": false` + `stepAngle` (độ, hướng từ tâm hố tới tường đặt bậc, 0° = +X).
 

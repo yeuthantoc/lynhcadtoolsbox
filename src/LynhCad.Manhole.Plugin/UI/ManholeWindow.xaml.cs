@@ -100,14 +100,24 @@ namespace LynhCad.Manhole.Plugin.UI
             Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(RenderPreview));
         }
 
+        /// <summary>Vẽ cả hai khung xem trước (ống trên mặt bằng, thép trên mặt cắt); khung ở tab đang ẩn chưa có kích thước thì bỏ qua.</summary>
         private void RenderPreview()
         {
             previewQueued = false;
-            if (cvPreview == null || Params == null || pipes == null) return;
+            if (cvPreview == null || cvRebarPreview == null || Params == null || pipes == null) return;
+            ManholeParams p;
             try
             {
-                var p = Params.Clone();
+                p = Params.Clone();
                 p.Pipes = pipes.Select(x => x.Spec.Clone()).ToList();
+            }
+            catch (Exception ex)
+            {
+                txtPreviewInfo.Text = txtRebarPreviewInfo.Text = "Không xem trước được: " + ex.Message;
+                return;
+            }
+            try
+            {
                 var pv = PipeLayoutPreview.Build(p);
                 PreviewRenderer.Render(cvPreview, pv.Model);
                 txtPreviewInfo.Text = pv.Geometry.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", pv.Geometry.Errors);
@@ -118,7 +128,23 @@ namespace LynhCad.Manhole.Plugin.UI
                 cvPreview.Children.Clear();
                 txtPreviewInfo.Text = "Không xem trước được: " + ex.Message;
             }
+            try
+            {
+                var rp = RebarLayoutPreview.Build(p);
+                PreviewRenderer.Render(cvRebarPreview, rp.Model);
+                txtRebarPreviewInfo.Text = rp.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", rp.Errors);
+            }
+            catch (Exception ex)
+            {
+                cvRebarPreview.Children.Clear();
+                txtRebarPreviewInfo.Text = "Không xem trước được: " + ex.Message;
+            }
         }
+
+        /// <summary>Ô thép mất focus / checkbox đổi: binding đã cập nhật → vẽ lại preview thép.</summary>
+        private void OnRebarChanged(object sender, RoutedEventArgs e) { QueuePreview(); }
+
+        private void OnRebarSelectionChanged(object sender, SelectionChangedEventArgs e) { QueuePreview(); }
 
         private void OnPipeCellEditEnding(object sender, DataGridCellEditEndingEventArgs e) { QueuePreview(); }
 

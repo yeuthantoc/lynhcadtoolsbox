@@ -162,9 +162,56 @@ namespace LynhCad.Manhole.Preview
             var rd = RebarDesigner.Design(g);
             var sch = rd.Schedule;
             var w1 = sch.Marks.First(m => m.Mark == "W1");
-            Eq("W1 count (66 EF)", 66, w1.Count);
+            // vòng trong 1616×1316 → 10 + 8 vị trí mỗi phương = 32 thanh; vòng ngoài cùng vị trí + 4 góc = 40
+            Eq("W1 count (72 EF)", 72, w1.Count);
             True("W1 is L", w1.Shape == BarShape.L);
             Eq("W1 leg", 300, w1.B);
+            // hai mặt thẳng hàng: mỗi thanh mặt ngoài (trừ 4 góc) có thanh mặt trong cùng X (tường N/S) hoặc cùng Y (tường E/W)
+            var loops = RebarDesigner.VerticalLoops(g, rd.Layout);
+            var pts = RebarDesigner.VerticalPositions(g, rd.Layout);
+            Eq("vertical positions = W1 count", w1.Count, pts.Count);
+            var inner = pts.Where(q => Math.Abs(q.X) <= loops[0].X + 1e-6 && Math.Abs(q.Y) <= loops[0].Y + 1e-6).ToList();
+            Eq("inner face bars", 32, inner.Count);
+            var outerPts = pts.Where(q => !inner.Contains(q)).ToList();
+            Eq("outer face bars", 40, outerPts.Count);
+            True("outer face bars line up with inner face", outerPts.All(q =>
+                (Math.Abs(Math.Abs(q.X) - loops[1].X) < 1e-6 && Math.Abs(Math.Abs(q.Y) - loops[1].Y) < 1e-6) ||
+                inner.Any(r => Math.Abs(r.X - q.X) < 1e-6 || Math.Abs(r.Y - q.Y) < 1e-6)));
+            True("rect EF suffix", sch.Callout(BarSets.WallVert).EndsWith(" EF VERT"));
+            True("pipe trimmers EF", sch.Set(BarSets.PipeTrim).Suffix.EndsWith(" EF"));
+
+            // thép tường 1 lớp giữa tường
+            var p1 = p.Clone();
+            p1.WallSingleLayer = true;
+            var g1 = new ManholeGeometry(p1);
+            var rd1 = RebarDesigner.Design(g1);
+            Eq("single layer: 1 vertical loop", 1, RebarDesigner.VerticalLoops(g1, rd1.Layout).Count);
+            Eq("single layer: vertical at wall centre", g1.Tw / 2, rd1.Layout.VertFromInner[0]);
+            Eq("single layer: W1 count (one loop 1700x1400)", 32, rd1.Schedule.Marks.First(m => m.Mark == "W1").Count);
+            True("single layer: CENTRAL suffix", rd1.Schedule.Callout(BarSets.WallVert).EndsWith(" CENTRAL VERT")
+                && rd1.Schedule.Callout(BarSets.WallHoriz).EndsWith(" CENTRAL HORIZ"));
+            True("single layer: pipe trimmers not EF", !rd1.Schedule.Set(BarSets.PipeTrim).Suffix.EndsWith(" EF"));
+            Eq("single layer: half the U-bars", sch.Marks.Where(m => m.Shape == BarShape.U).Sum(m => m.Count) / 2,
+                rd1.Schedule.Marks.Where(m => m.Shape == BarShape.U).Sum(m => m.Count));
+            True("single layer: compose ok", DetailComposer.Compose(p1).Ok);
+            var secOne = new SectionBuilder(g1, rd1, new DrawStyle(20)).Build();
+            // mỗi tường một đường thép đứng (đoạn đứng ≥ 300 trên S-REIN, gộp theo X) thay vì hai
+            var vertX = secOne.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Rebar)
+                .SelectMany(l => l.Points.Zip(l.Points.Skip(1), (pa, pb) => new { pa, pb }))
+                .Where(sg => Math.Abs(sg.pa.X - sg.pb.X) < 1e-6 && Math.Abs(sg.pa.Y - sg.pb.Y) >= 300)
+                .Select(sg => Math.Round(sg.pa.X, 3)).Distinct().ToList();
+            Eq("single layer: one vertical bar line per wall", 2, vertX.Count);
+
+            // preview bố trí thép (tab Reinforcement)
+            var rp = RebarLayoutPreview.Build(p);
+            True("rebar preview builds", rp.Errors.Count == 0 && rp.Model.Items.Count > 0);
+            True("rebar preview has rebar", rp.Model.Items.Any(i => i.Layer == Layers.Rebar));
+            True("rebar preview has no dims/leaders", !rp.Model.Items.Any(i => i is PDim || i is PLeader || i is PBlock));
+            var legend = RebarLayoutPreview.Legend(g, rd);
+            True("rebar preview legend", legend.Count >= 4 && legend[0].StartsWith("W1 ") && legend.Any(s => s.EndsWith(" BOT EW")));
+            var bad = p.Clone(); bad.WallThickness = 50;
+            var rpBad = RebarLayoutPreview.Build(bad);
+            True("rebar preview invalid params -> errors, no model", rpBad.Errors.Count > 0 && rpBad.Model.Items.Count == 0);
             True("has W2/W3 U-bars", sch.Marks.Count(m => m.Shape == BarShape.U) == 2);
             True("WallHoriz callout", sch.Callout(BarSets.WallHoriz).StartsWith("W2/W3 N12-200 EF HORIZ"));
             True("base mat callout", sch.MatCallout(BarSets.BaseBot, false).EndsWith(" N16-200 BOT EW"));
@@ -229,8 +276,12 @@ namespace LynhCad.Manhole.Preview
             var sch = rd.Schedule;
             var vert = sch.Marks.First(m => m.Mark == "W1");
             True("circ cast W1 is L", vert.Shape == BarShape.L);
-            // vòng trong r = 750+50+12+6 = 818, vòng ngoài r = 950-68 = 882 → ceil(2πr/200) = 26 + 28
-            Eq("circ cast vertical count", 26 + 28, vert.Count);
+            // vòng ngoài r = 950-68 = 882 → ceil(2πr/200) = 28; vòng trong cùng số thanh, cùng góc (thẳng hàng)
+            Eq("circ cast vertical count", 28 + 28, vert.Count);
+            var ringPts = RebarDesigner.VerticalPositions(g, rd.Layout);
+            True("circ cast faces share angles", ringPts.Take(28).Zip(ringPts.Skip(28), (a, b) => Math.Abs(a.Angle() - b.Angle()) < 1e-9).All(x => x));
+            True("circ precast rebar preview", RebarLayoutPreview.Build(ManholeParams.SampleCircular()).Errors.Count == 0);
+            True("circ cast rebar preview", RebarLayoutPreview.Build(p).Errors.Count == 0);
             var rings = sch.Marks.Where(m => m.Shape == BarShape.Ring).ToList();
             Eq("circ cast 2 ring marks (inner/outer face)", 2, rings.Count);
             // vòng trong: A = 2·(750+56) = 1612, nối chồng 50·12 = 600 → dài π·1620 (A làm tròn lên 10) + 600
@@ -579,6 +630,9 @@ namespace LynhCad.Manhole.Preview
             Eq("json IL", 11.35, back.Pipes[2].InvertLevel);
             True("json role", back.Pipes[2].Role == PipeRole.Outlet);
             Eq("json bar", 16, back.BaseBottom.Diameter);
+            True("json wallSingleLayer default false", !back.WallSingleLayer && !json.Contains("\"wallSingleLayer\":true"));
+            p.WallSingleLayer = true;
+            True("json wallSingleLayer roundtrip", ParamsJson.Deserialize(ParamsJson.Serialize(p)).WallSingleLayer);
 
             // file nhiều hố ga (vẽ hàng loạt)
             string tmp = Path.Combine(Path.GetTempPath(), "lct-batch-" + Guid.NewGuid().ToString("N") + ".json");

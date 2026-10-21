@@ -153,6 +153,8 @@ namespace LynhCad.Manhole.Core.Model
         [DataMember(Name = "cover")] public double Cover { get; set; }
         [DataMember(Name = "wallVertical")] public BarSpec WallVertical { get; set; }
         [DataMember(Name = "wallHorizontal")] public BarSpec WallHorizontal { get; set; }
+        /// <summary>Thép tường 1 lớp đặt giữa tường (CENTRAL) thay vì 2 lớp hai mặt (EF).</summary>
+        [DataMember(Name = "wallSingleLayer")] public bool WallSingleLayer { get; set; }
         [DataMember(Name = "baseBottom")] public BarSpec BaseBottom { get; set; }
         [DataMember(Name = "baseTopMat")] public bool BaseTopMat { get; set; }
         [DataMember(Name = "baseTop")] public BarSpec BaseTop { get; set; }
@@ -219,6 +221,7 @@ namespace LynhCad.Manhole.Core.Model
             Cover = 50;
             WallVertical = new BarSpec(12, 200);
             WallHorizontal = new BarSpec(12, 200);
+            WallSingleLayer = false;
             BaseBottom = new BarSpec(16, 200);
             BaseTopMat = true;
             BaseTop = new BarSpec(16, 200);
