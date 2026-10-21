@@ -202,6 +202,20 @@ namespace LynhCad.Manhole.Preview
                 .Select(sg => Math.Round(sg.pa.X, 3)).Distinct().ToList();
             Eq("single layer: one vertical bar line per wall", 2, vertX.Count);
 
+            // thép ngang phía trong thép đứng
+            var pIn = p.Clone(); pIn.WallHorizontalInside = true;
+            var gIn = new ManholeGeometry(pIn);
+            var LIn = RebarDesigner.Design(gIn).Layout;
+            Eq("horiz inside: vertical is outer layer", 50 + 6, LIn.VertFromInner[0]);
+            Eq("horiz inside: horizontal inside vertical", 50 + 12 + 6, LIn.HorizFromInner[0]);
+            True("horiz inside: symmetric outer face", Math.Abs(gIn.Tw - LIn.HorizFromInner[1] - LIn.HorizFromInner[0]) < 1e-9);
+            True("horiz outside (default): horizontal is outer layer", rd.Layout.HorizFromInner[0] < rd.Layout.VertFromInner[0]);
+            pIn.WallSingleLayer = true;
+            var LIn1 = RebarDesigner.Design(new ManholeGeometry(pIn)).Layout;
+            True("single layer + horiz inside: horizontal towards inner face", LIn1.HorizFromInner[0] < LIn1.VertFromInner[0]);
+            True("single layer default: horizontal towards outer face", rd1.Layout.HorizFromInner[0] > rd1.Layout.VertFromInner[0]);
+            True("horiz inside compose ok", DetailComposer.Compose(pIn).Ok);
+
             // preview bố trí thép (tab Reinforcement)
             var rp = RebarLayoutPreview.Build(p);
             True("rebar preview builds", rp.Errors.Count == 0 && rp.Model.Items.Count > 0);

@@ -17,15 +17,17 @@
             <Setter Property="Foreground" Value="Gray" />
         </Style>
         <Style x:Key="Num" TargetType="TextBox">
-            <Setter Property="Margin" Value="2,3" />
-            <Setter Property="Width" Value="90" />
+            <Setter Property="Margin" Value="2,2" />
+            <Setter Property="Width" Value="80" />
             <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="TextAlignment" Value="Right" />
         </Style>
         <Style x:Key="Dia" TargetType="ComboBox">
-            <Setter Property="Margin" Value="2,3" />
-            <Setter Property="Width" Value="70" />
+            <Setter Property="Margin" Value="2,2" />
+            <Setter Property="Width" Value="60" />
             <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style x:Key="Head" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold" />
@@ -247,9 +249,10 @@
                             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
-                            <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
-                            <RowDefinition />
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.ColumnSpan="5" Style="{StaticResource Head}" Text="Bars: N (D500N, AS/NZS 4671) — size / spacing (mm)" />
@@ -264,47 +267,49 @@
                         <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
                         <TextBox Grid.Row="2" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding WallHorizontal.Spacing}" />
 
-                        <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Margin="4,6" IsChecked="{Binding WallSingleLayer}"
+                        <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Margin="4,4" IsChecked="{Binding WallSingleLayer}"
                                   Content="Walls: single central layer (CENTRAL) instead of two layers each face (EF)" />
+                        <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5" Margin="4,4" IsChecked="{Binding WallHorizontalInside}"
+                                  Content="Wall horizontal bars inside the vertical bars (default: horizontal bars are the outer layer)" />
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource Lbl}" Text="Base bottom (EW)" />
-                        <ComboBox x:Name="cbBaseB" Grid.Row="4" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding BaseBottom.Diameter}" />
-                        <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
-                        <TextBox Grid.Row="4" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseBottom.Spacing}" />
-
-                        <CheckBox Grid.Row="5" Grid.Column="0" Margin="4,6" Content="Base top mat (EW)" IsChecked="{Binding BaseTopMat}" />
-                        <ComboBox x:Name="cbBaseT" Grid.Row="5" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding BaseTop.Diameter}" />
+                        <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource Lbl}" Text="Base bottom (EW)" />
+                        <ComboBox x:Name="cbBaseB" Grid.Row="5" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding BaseBottom.Diameter}" />
                         <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
-                        <TextBox Grid.Row="5" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseTop.Spacing}" />
+                        <TextBox Grid.Row="5" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseBottom.Spacing}" />
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource Lbl}" Text="Roof bottom (EW)" />
-                        <ComboBox x:Name="cbRoofB" Grid.Row="6" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding RoofBottom.Diameter}" />
+                        <CheckBox Grid.Row="6" Grid.Column="0" Margin="4,6" Content="Base top mat (EW)" IsChecked="{Binding BaseTopMat}" />
+                        <ComboBox x:Name="cbBaseT" Grid.Row="6" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding BaseTop.Diameter}" />
                         <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
-                        <TextBox Grid.Row="6" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofBottom.Spacing}" />
+                        <TextBox Grid.Row="6" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding BaseTop.Spacing}" />
 
-                        <CheckBox Grid.Row="7" Grid.Column="0" Margin="4,6" Content="Roof top mat (EW)" IsChecked="{Binding RoofTopMat}" />
-                        <ComboBox x:Name="cbRoofT" Grid.Row="7" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding RoofTop.Diameter}" />
+                        <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource Lbl}" Text="Roof bottom (EW)" />
+                        <ComboBox x:Name="cbRoofB" Grid.Row="7" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding RoofBottom.Diameter}" />
                         <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
-                        <TextBox Grid.Row="7" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofTop.Spacing}" />
+                        <TextBox Grid.Row="7" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofBottom.Spacing}" />
 
-                        <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource Lbl}" Text="Trimmers (size / no. each side)" />
-                        <ComboBox x:Name="cbTrim" Grid.Row="8" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding TrimmerDiameter}" />
-                        <TextBlock Grid.Row="8" Grid.Column="2" Style="{StaticResource Unit}" Text="x" />
-                        <TextBox Grid.Row="8" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding TrimmerCount}" />
+                        <CheckBox Grid.Row="8" Grid.Column="0" Margin="4,6" Content="Roof top mat (EW)" IsChecked="{Binding RoofTopMat}" />
+                        <ComboBox x:Name="cbRoofT" Grid.Row="8" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding RoofTop.Diameter}" />
+                        <TextBlock Grid.Row="8" Grid.Column="2" Style="{StaticResource Unit}" Text="@" />
+                        <TextBox Grid.Row="8" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding RoofTop.Spacing}" />
 
-                        <TextBlock Grid.Row="9" Grid.ColumnSpan="5" Style="{StaticResource Head}" Text="Detailing" />
+                        <TextBlock Grid.Row="9" Grid.Column="0" Style="{StaticResource Lbl}" Text="Trimmers (size / no. each side)" />
+                        <ComboBox x:Name="cbTrim" Grid.Row="9" Grid.Column="1" Style="{StaticResource Dia}" SelectedItem="{Binding TrimmerDiameter}" />
+                        <TextBlock Grid.Row="9" Grid.Column="2" Style="{StaticResource Unit}" Text="x" />
+                        <TextBox Grid.Row="9" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding TrimmerCount}" />
 
-                        <TextBlock Grid.Row="10" Grid.Column="0" Style="{StaticResource Lbl}" Text="Cover" />
-                        <TextBox Grid.Row="10" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding Cover}" />
-                        <TextBlock Grid.Row="10" Grid.Column="4" Style="{StaticResource Unit}" Text="mm" />
+                        <TextBlock Grid.Row="10" Grid.ColumnSpan="5" Style="{StaticResource Head}" Text="Detailing" />
 
-                        <TextBlock Grid.Row="11" Grid.Column="0" Style="{StaticResource Lbl}" Text="Lap length factor (× d)" />
-                        <TextBox Grid.Row="11" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding LapFactor}" />
-                        <TextBlock Grid.Row="11" Grid.Column="4" Style="{StaticResource Unit}" Text="d" />
+                        <TextBlock Grid.Row="11" Grid.Column="0" Style="{StaticResource Lbl}" Text="Cover" />
+                        <TextBox Grid.Row="11" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding Cover}" />
+                        <TextBlock Grid.Row="11" Grid.Column="4" Style="{StaticResource Unit}" Text="mm" />
 
-                        <TextBlock Grid.Row="12" Grid.Column="0" Style="{StaticResource Lbl}" Text="Wall vertical bar leg into base" />
-                        <TextBox Grid.Row="12" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding VerticalBarLeg}" />
-                        <TextBlock Grid.Row="12" Grid.Column="4" Style="{StaticResource Unit}" Text="mm" />
+                        <TextBlock Grid.Row="12" Grid.Column="0" Style="{StaticResource Lbl}" Text="Lap length factor (× d)" />
+                        <TextBox Grid.Row="12" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding LapFactor}" />
+                        <TextBlock Grid.Row="12" Grid.Column="4" Style="{StaticResource Unit}" Text="d" />
+
+                        <TextBlock Grid.Row="13" Grid.Column="0" Style="{StaticResource Lbl}" Text="Wall vertical bar leg into base" />
+                        <TextBox Grid.Row="13" Grid.Column="3" Style="{StaticResource Num}" Text="{Binding VerticalBarLeg}" />
+                        <TextBlock Grid.Row="13" Grid.Column="4" Style="{StaticResource Unit}" Text="mm" />
                     </Grid>
                 </ScrollViewer>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" />

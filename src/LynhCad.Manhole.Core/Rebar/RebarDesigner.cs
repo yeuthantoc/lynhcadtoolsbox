@@ -50,8 +50,10 @@ namespace LynhCad.Manhole.Core.Rebar
         // Tường (chỉ hố chữ nhật)
         public int DV, DH;
         public double SV, SH;
-        /// <summary>Khoảng từ mặt tường tới tim thép ngang (lớp ngoài) / thép đứng (lớp trong) khi đặt 2 lớp.</summary>
+        /// <summary>Khoảng từ mặt tường tới tim thép ngang / thép đứng khi đặt 2 lớp (lớp nào ngoài tuỳ HorizInside).</summary>
         public double HorizOffset, VertOffset;
+        /// <summary>Thép ngang nằm phía trong thép đứng (true) hay là lớp ngoài sát mặt bê tông (false).</summary>
+        public bool HorizInside;
         /// <summary>Số lớp thép tường: 2 = hai mặt (EF), 1 = một lớp giữa tường (CENTRAL).</summary>
         public int WallLayers = 2;
         /// <summary>Khoảng từ MẶT TRONG tường tới tim từng lớp thép đứng / thép ngang (mặt trong trước, mặt ngoài sau).</summary>
@@ -203,16 +205,26 @@ namespace LynhCad.Manhole.Core.Rebar
             double c = P.Cover;
             L.DV = P.WallVertical.Diameter; L.SV = P.WallVertical.Spacing;
             L.DH = P.WallHorizontal.Diameter; L.SH = P.WallHorizontal.Spacing;
-            L.HorizOffset = c + L.DH / 2.0;
-            L.VertOffset = c + L.DH + L.DV / 2.0;
+            L.HorizInside = P.WallHorizontalInside;
+            if (L.HorizInside)
+            {
+                // thép đứng là lớp ngoài sát mặt bê tông, thép ngang buộc phía trong
+                L.VertOffset = c + L.DV / 2.0;
+                L.HorizOffset = c + L.DV + L.DH / 2.0;
+            }
+            else
+            {
+                L.HorizOffset = c + L.DH / 2.0;
+                L.VertOffset = c + L.DH + L.DV / 2.0;
+            }
             L.Lap = g.LapLength(L.DH);
             L.WallLayers = P.WallSingleLayer ? 1 : 2;
             L.VertFromInner.Clear(); L.HorizFromInner.Clear();
             if (L.WallLayers == 1)
             {
-                // một lớp giữa tường: thép đứng đúng tim tường, thép ngang buộc phía ngoài thép đứng
+                // một lớp giữa tường: thép đứng đúng tim tường, thép ngang buộc phía trong (về lòng hố) hoặc phía ngoài thép đứng
                 L.VertFromInner.Add(g.Tw / 2);
-                L.HorizFromInner.Add(g.Tw / 2 + (L.DV + L.DH) / 2.0);
+                L.HorizFromInner.Add(g.Tw / 2 + (L.HorizInside ? -1 : 1) * (L.DV + L.DH) / 2.0);
             }
             else
             {
