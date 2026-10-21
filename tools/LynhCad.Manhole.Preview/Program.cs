@@ -46,12 +46,18 @@ namespace LynhCad.Manhole.Preview
                         foreach (var e in dv.Errors) Console.WriteLine("ERROR: " + e);
                         File.WriteAllText(args[2], SvgExporter.Export(dv.Model, 20));
                         return 0;
+                    case "rebar":
+                        if (args.Length < 3) { Console.WriteLine("usage: rebar <params.json> <out.svg>"); return 2; }
+                        var rv = RebarLayoutPreview.Build(ParamsJson.Load(args[1]));
+                        foreach (var e in rv.Errors) Console.WriteLine("ERROR: " + e);
+                        File.WriteAllText(args[2], SvgExporter.Export(rv.Model, 20));
+                        return 0;
                     case "snapshot":
                         string samples = Snapshots.FindSamplesDir();
                         if (samples == null) { Console.WriteLine("samples/ not found"); return 2; }
                         return Snapshots.Write(samples);
                     default:
-                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | dims <json> <svg> | sample <folder> | snapshot");
+                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | dims <json> <svg> | rebar <json> <svg> | sample <folder> | snapshot");
                         return 2;
                 }
             }
@@ -252,6 +258,17 @@ namespace LynhCad.Manhole.Preview
             True("rebar preview builds", rp.Errors.Count == 0 && rp.Model.Items.Count > 0);
             True("rebar preview has rebar", rp.Model.Items.Any(i => i.Layer == Layers.Rebar));
             True("rebar preview has no dims/leaders", !rp.Model.Items.Any(i => i is PDim || i is PLeader || i is PBlock));
+            True("rebar preview has plan and section", rp.Model.Items.OfType<PText>().Any(t => t.Text == "PLAN") && rp.Model.Items.OfType<PText>().Any(t => t.Text == "SECTION A-A"));
+            // mặt bằng (thép tường = chấm + đường) nằm phía trên mặt cắt
+            double planTitleY = rp.Model.Items.OfType<PText>().First(t => t.Text == "PLAN").Position.Y;
+            double secTitleY = rp.Model.Items.OfType<PText>().First(t => t.Text == "SECTION A-A").Position.Y;
+            True("rebar preview plan above section", planTitleY > secTitleY && rp.Model.Items.OfType<PDot>().Any(d => d.Center.Y > secTitleY));
+            // thép ngang phía trong → đường thép ngang trên mặt bằng dịch vào trong (vòng ngoài hẹp hơn)
+            var pHin = p.Clone(); pHin.WallHorizontalInside = true;
+            double outerLineX(ManholeParams q) => RebarLayoutPreview.Build(q).Model.Items.OfType<PPolyline>()
+                .Where(l => l.Layer == Layers.Rebar && l.Points.Count == 2 && Math.Abs(l.Points[0].X - l.Points[1].X) < 1e-6 && l.Points[0].Y > secTitleY)
+                .Min(l => l.Points[0].X);
+            True("rebar preview plan follows horizontal-inside option", outerLineX(pHin) > outerLineX(p) + 5);
             var legend = RebarLayoutPreview.Legend(g, rd);
             True("rebar preview legend", legend.Count >= 4 && legend[0].StartsWith("W1 ") && legend.Any(s => s.EndsWith(" BOT EW")));
             var bad = p.Clone(); bad.WallThickness = 50;

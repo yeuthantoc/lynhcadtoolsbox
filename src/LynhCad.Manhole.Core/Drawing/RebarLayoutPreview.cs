@@ -7,8 +7,8 @@ using LynhCad.Manhole.Core.Rebar;
 namespace LynhCad.Manhole.Core.Drawing
 {
     /// <summary>
-    /// Sơ đồ bố trí thép để xem trong hộp thoại (tab Reinforcement) trước khi vẽ: mặt cắt A-A rút gọn
-    /// (bê tông, ống, thép) + chú giải các bộ thép bên dưới. Không có kích thước / leader / cao độ cho đỡ rối.
+    /// Sơ đồ bố trí thép để xem trong hộp thoại (tab Reinforcement) trước khi vẽ: mặt bằng (trên) và mặt cắt A-A (dưới)
+    /// rút gọn (bê tông, ống, thép) + chú giải các bộ thép bên dưới. Không có kích thước / leader / cao độ cho đỡ rối.
     /// Thông số lỗi → model rỗng + danh sách lỗi (mặt cắt cần hình học hợp lệ).
     /// </summary>
     public static class RebarLayoutPreview
@@ -40,15 +40,24 @@ namespace LynhCad.Manhole.Core.Drawing
             var st = new DrawStyle(p.Scale);
             var rd = RebarDesigner.Design(g);
             res.Rebar = rd;
-            var sec = new SectionBuilder(g, rd, st).Build();
+            var plan = Filter(new PlanBuilder(g, rd, st).Build());
+            var sec = Filter(new SectionBuilder(g, rd, st).Build());
+            var bp = plan.GetBounds();
+            var bs = sec.GetBounds();
+            if (!bp.IsValid || !bs.IsValid) return res;
+            double h = Math.Max(bp.Width, bs.Width) * 0.035;
+            res.TextHeight = h;
+
+            // mặt cắt đặt dưới mặt bằng, cùng tim; nhãn hình chiếu phía trên mỗi hình
+            sec.Translate(new Vec2(bp.CenterX - bs.CenterX, bp.MinY - 4 * h - bs.MaxY));
+            bs = sec.GetBounds();
             var m = res.Model;
-            foreach (var it in sec.Items)
-                if (Array.IndexOf(Keep, it.Layer) >= 0) m.Add(it);
+            m.AddRange(plan);
+            m.AddRange(sec);
+            Title(m, bp, "PLAN", h);
+            Title(m, bs, "SECTION A-A", h);
 
             var b = m.GetBounds();
-            if (!b.IsValid) return res;
-            double h = Math.Max(b.Width, b.Height) * 0.035;
-            res.TextHeight = h;
             double y = b.MinY - 1.5 * h;
             foreach (var line in Legend(g, rd))
             {
@@ -56,6 +65,20 @@ namespace LynhCad.Manhole.Core.Drawing
                 y -= 1.6 * h;
             }
             return res;
+        }
+
+        /// <summary>Giữ lại bê tông, ống, thép của một hình chiếu; bỏ kích thước, ghi chú, cao độ, ký hiệu cắt, bậc thang.</summary>
+        private static DrawingModel Filter(DrawingModel src)
+        {
+            var m = new DrawingModel();
+            foreach (var it in src.Items)
+                if (Array.IndexOf(Keep, it.Layer) >= 0) m.Add(it);
+            return m;
+        }
+
+        private static void Title(DrawingModel m, Bounds b, string text, double h)
+        {
+            m.Add(new PText { Layer = PipeLayoutPreview.HintLayer, Position = new Vec2(b.MinX, b.MaxY + 0.6 * h), Text = text, Height = h, Align = TextAlign.Left, VAlign = TextVAlign.Bottom });
         }
 
         /// <summary>Các dòng chú giải: ký hiệu từng bộ thép như trên bản vẽ (thép tường chỉ khi tường đổ tại chỗ).</summary>
