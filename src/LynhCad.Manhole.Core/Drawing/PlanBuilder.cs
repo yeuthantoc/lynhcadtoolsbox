@@ -173,16 +173,13 @@ namespace LynhCad.Manhole.Core.Drawing
 
             // Thép ngang: vòng trong & vòng ngoài, đứt tại lỗ ống
             var horizLoops = RebarDesigner.HorizontalLoops(g, L);
-            double rb = L.HorizBendRadius;
             for (int k = 0; k < horizLoops.Count; k++)
             {
-                var loop = horizLoops[k];
-                double bx = loop.X, by = loop.Y;
-                double leg = Math.Min(2 * by, by + L.Lap / 2);
-                // mỗi vòng = 2 thanh U (Bắc / Nam) nối chồng ở giữa cạnh Đông / Tây; chân thanh Nam đặt tại HorizLapFromInner
-                // (lệch về tim tường, cách thanh Bắc và thép đứng ≥ 10) để thấy rõ nối chồng
-                DrawU(bx, by, leg, +1, rb, c);
-                DrawU(g.Li / 2 + L.HorizLapFromInner[k], by, leg, -1, rb, c);
+                // mỗi vòng = 2 thanh U (Bắc / Nam) nối chồng ở giữa cạnh Đông / Tây; nơi hai chân còn chồng nhau,
+                // chân thanh Nam đặt tại HorizLapFromInner (lệch về tim tường, cách thanh Bắc và thép đứng ≥ 10);
+                // lỗ ống cắt đứt vùng nối chồng thì không còn lap: chân dừng tại lỗ, nằm đúng vị trí vòng
+                DrawU(k, +1, c);
+                DrawU(k, -1, c);
             }
 
             // Thép đứng: chấm, các mặt thẳng hàng với nhau (cùng vị trí dọc tường)
@@ -243,18 +240,30 @@ namespace LynhCad.Manhole.Core.Drawing
         }
 
         /// <summary>
-        /// Một thanh U thép ngang: cạnh dài tại y = sy·by (từ −bx tới bx), hai chân dọc cạnh Đông / Tây dài leg tính từ góc,
-        /// góc bo cung bán kính rb; đứt tại lỗ ống.
+        /// Một thanh U thép ngang (sy = +1 Bắc, −1 Nam) của vòng k: cạnh dài tại y = sy·by, hai chân dọc cạnh Đông / Tây
+        /// (các đoạn còn lại sau lỗ ống), góc bo cung bán kính rb. Chân thanh Nam lệch về tim tường ở tường còn nối chồng.
         /// </summary>
-        private void DrawU(double bx, double by, double leg, int sy, double rb, double c)
+        private void DrawU(int k, int sy, double c)
         {
-            DrawLoopSide(new Vec2(-bx + rb, sy * by), new Vec2(bx - rb, sy * by), sy > 0 ? WallSide.North : WallSide.South, true, c);
+            var L = rd.Layout;
+            var loop = RebarDesigner.HorizontalLoops(g, L)[k];
+            double bx = loop.X, by = loop.Y, rb = L.HorizBendRadius;
+            var xs = new Dictionary<int, double>();
             foreach (int sx in new[] { -1, 1 })
             {
-                DrawLoopSide(new Vec2(sx * bx, sy * (by - leg)), new Vec2(sx * bx, sy * (by - rb)), sx > 0 ? WallSide.East : WallSide.West, false, c, sy * (by - leg));
+                var side = sx > 0 ? WallSide.East : WallSide.West;
+                bool lap = sy < 0 && RebarDesigner.LegsLap(g, L, k, side, c);
+                xs[sx] = sx * (lap ? g.Li / 2 + L.HorizLapFromInner[k] : bx);
+            }
+            DrawLoopSide(new Vec2(xs[-1] + rb, sy * by), new Vec2(xs[1] - rb, sy * by), sy > 0 ? WallSide.North : WallSide.South, true, c);
+            foreach (int sx in new[] { -1, 1 })
+            {
+                var side = sx > 0 ? WallSide.East : WallSide.West;
+                foreach (var seg in RebarDesigner.WallLegPieces(g, L, k, side, sy, c))
+                    m.Add(PPolyline.Line(new Vec2(xs[sx], seg.Min), new Vec2(xs[sx], seg.Max), Layers.Rebar)).Key = RebarKeys.WallHorizontal;
                 if (rb > 1e-9)
                 {
-                    var centre = new Vec2(sx * (bx - rb), sy * (by - rb));
+                    var centre = new Vec2(xs[sx] - sx * rb, sy * (by - rb));
                     double a0 = sx > 0 ? (sy > 0 ? 0 : -Math.PI / 2) : (sy > 0 ? Math.PI / 2 : Math.PI);
                     var arc = new PPolyline { Layer = Layers.Rebar, Key = RebarKeys.WallHorizontal };
                     arc.AddArc(centre, rb, a0, a0 + Math.PI / 2);
@@ -263,20 +272,14 @@ namespace LynhCad.Manhole.Core.Drawing
             }
         }
 
-        /// <summary>
-        /// Một cạnh / chân thanh ngang từ a tới b, đứt tại lỗ ống. freeEnd = toạ độ (dọc cạnh) của đầu tự do (đầu nối chồng
-        /// của chân thanh U): mẩu còn lại ở đầu đó ngắn hơn MinPiece (vd 20 mm kẹt giữa lỗ ống và điểm kết thúc nối chồng) không vẽ,
-        /// thanh coi như kết thúc tại lỗ ống. Null = hai đầu đều là góc uốn.
-        /// </summary>
-        private void DrawLoopSide(Vec2 a, Vec2 b, WallSide side, bool alongX, double c, double? freeEnd = null)
+        /// <summary>Cạnh dài thanh ngang từ a tới b (hai đầu là góc uốn), đứt tại lỗ ống.</summary>
+        private void DrawLoopSide(Vec2 a, Vec2 b, WallSide side, bool alongX, double c)
         {
             var span = alongX ? new Interval(a.X, b.X) : new Interval(a.Y, b.Y);
             var gaps = g.Pipes.Where(f => f.Spec.Wall == side)
                               .Select(f => new Interval(f.Spec.Offset - f.HalfGap - c, f.Spec.Offset + f.HalfGap + c));
             foreach (var seg in span.Subtract(gaps))
             {
-                if (freeEnd != null && seg.Length < RebarDesigner.MinPiece
-                    && (Math.Abs(seg.Min - freeEnd.Value) < 1e-6 || Math.Abs(seg.Max - freeEnd.Value) < 1e-6)) continue;
                 var p1 = alongX ? new Vec2(seg.Min, a.Y) : new Vec2(a.X, seg.Min);
                 var p2 = alongX ? new Vec2(seg.Max, a.Y) : new Vec2(a.X, seg.Max);
                 m.Add(PPolyline.Line(p1, p2, Layers.Rebar)).Key = RebarKeys.WallHorizontal;

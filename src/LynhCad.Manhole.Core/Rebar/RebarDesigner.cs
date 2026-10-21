@@ -528,6 +528,31 @@ namespace LynhCad.Manhole.Core.Rebar
             return pts;
         }
 
+        /// <summary>
+        /// Hố chữ nhật: các đoạn (toạ độ Y) còn lại của chân thanh U thép ngang vòng k trên tường Đông / Tây
+        /// (sy = +1 thanh U Bắc, −1 thanh U Nam) sau khi trừ lỗ ống (+ lớp bảo vệ) và bỏ mẩu ngắn hơn MinPiece ở đầu tự do (đầu nối chồng).
+        /// </summary>
+        public static List<Interval> WallLegPieces(ManholeGeometry g, RebarLayout L, int k, WallSide side, int sy, double c)
+        {
+            var loop = HorizontalLoops(g, L)[k];
+            double by = loop.Y, leg = Math.Min(2 * by, by + L.Lap / 2), rb = L.HorizBendRadius;
+            var span = sy > 0 ? new Interval(by - leg, by - rb) : new Interval(-by + rb, -by + leg);
+            double freeEnd = sy * (by - leg);
+            var gaps = g.Pipes.Where(f => f.Spec.Wall == side).Select(f => new Interval(f.Spec.Offset - f.HalfGap - c, f.Spec.Offset + f.HalfGap + c));
+            return span.Subtract(gaps)
+                .Where(seg => !(seg.Length < MinPiece && (Math.Abs(seg.Min - freeEnd) < 1e-6 || Math.Abs(seg.Max - freeEnd) < 1e-6)))
+                .ToList();
+        }
+
+        /// <summary>Trên tường side, hai chân thanh U (Bắc / Nam) của vòng k còn chồng lên nhau (có nối chồng) tại y, hoặc ở bất kỳ đâu (y = null).</summary>
+        public static bool LegsLap(ManholeGeometry g, RebarLayout L, int k, WallSide side, double c, double? y = null)
+        {
+            var north = WallLegPieces(g, L, k, side, +1, c);
+            var south = WallLegPieces(g, L, k, side, -1, c);
+            if (y != null) return north.Any(n => n.Contains(y.Value)) && south.Any(s => s.Contains(y.Value));
+            return north.Any(n => south.Any(s => n.Overlaps(s)));
+        }
+
         /// <summary>Số thanh đứng của từng mặt (mặt trong trước), cùng cách rải như VerticalPositions.</summary>
         public static List<int> VerticalCountsPerFace(ManholeGeometry g, RebarLayout L)
         {

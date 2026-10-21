@@ -779,16 +779,35 @@ namespace LynhCad.Manhole.Preview
             True("plan U-bar corners are arcs", plan.Items.OfType<PPolyline>().Count(l => l.Key == RebarKeys.WallHorizontal && l.Bulges.Any(bb => Math.Abs(bb) > 1e-9)) == 8);
             var hl = RebarDesigner.HorizontalLoops(g, L);
             var legLines = plan.Items.OfType<PPolyline>().Where(l => l.Key == RebarKeys.WallHorizontal && l.Points.Count == 2 && Math.Abs(l.Points[0].X - l.Points[1].X) < 1e-9).ToList();
-            True("plan lap: inner south U legs at lap position", legLines.Any(l => Math.Abs(l.Points[0].X - (g.Li / 2 + L.HorizLapFromInner[0])) < 1e-9 && l.Points[0].Y < 0));
-            True("plan lap: outer south U legs at lap position", legLines.Any(l => Math.Abs(l.Points[0].X - (g.Li / 2 + L.HorizLapFromInner[1])) < 1e-9 && l.Points[0].Y < 0));
-            True("plan lap: north U legs at loop position", legLines.Any(l => Math.Abs(l.Points[0].X - hl[0].X) < 1e-9 && l.Points[0].Y > 0));
-            // lỗ ống P1 (tường Tây, lỗ ± 280) cắt gần hết vùng lap (± 300): mẩu 20 mm ở đầu tự do của chân U không vẽ
-            True("plan lap: no stub between pipe gap and lap end", !legLines.Any(l => (l.Points[1] - l.Points[0]).Length < RebarDesigner.MinPiece - 1e-9
-                && l.Points.Min(q => Math.Abs(q.Y)) >= 280 - 1e-6 && l.Points.Max(q => Math.Abs(q.Y)) <= 300 + 1e-6));
-            True("plan lap: legs still drawn beyond the pipe", legLines.Any(l => l.Points[0].X < 0 && l.Points.Min(q => q.Y) >= 280 - 1e-6 && (l.Points[1] - l.Points[0]).Length > 300));
-            // mặt cắt (dọc X, cắt giữa cạnh Đông / Tây = vùng nối chồng): mỗi cao độ, mỗi mặt có 2 chấm cách nhau 10
-            var hDots = sec.Items.OfType<PDot>().Where(dd => dd.Key == RebarKeys.WallHorizontal && Math.Abs(dd.Center.Y - L.HorizLevels.First(z => z > 800)) < 1e-6).Select(dd => dd.Center.X).OrderBy(v => v).ToList();
-            Eq("section lap: 2 dots per face per side at a level", 8, hDots.Count);
+            // mẫu: P1 (Tây) và P3 (Đông) ở offset 0 cắt đứt vùng nối chồng (± 300) trên cả hai tường → không còn lap:
+            // chân thanh U dừng tại lỗ ống, nằm đúng vị trí vòng, không có mẩu thừa, mặt cắt chỉ một chấm mỗi mặt
+            True("no lap when the pipe cuts the lap zone", !RebarDesigner.LegsLap(g, L, 0, WallSide.West, 50) && !RebarDesigner.LegsLap(g, L, 0, WallSide.East, 50));
+            True("plan: all legs at loop positions", legLines.All(l => hl.Any(h => Math.Abs(Math.Abs(l.Points[0].X) - h.X) < 1e-9)));
+            // mẩu ngắn hơn 300 chỉ được phép ở phía góc uốn (giữa góc và lỗ ống P3), không ở đầu nối chồng (|y| = 300)
+            True("plan: no stub between pipe gap and lap end", legLines.Where(l => (l.Points[1] - l.Points[0]).Length < RebarDesigner.MinPiece - 1e-9)
+                .All(l => hl.Any(h => Math.Abs(l.Points.Max(q => Math.Abs(q.Y)) - (h.Y - L.HorizBendRadius)) < 1e-6)));
+            True("plan: legs stop at the pipe", legLines.All(l => l.Points.Min(q => Math.Abs(q.Y)) >= 280 - 1e-6));
+            var hDots0 = sec.Items.OfType<PDot>().Where(dd => dd.Key == RebarKeys.WallHorizontal && Math.Abs(dd.Center.Y - L.HorizLevels.First(z => z > 800)) < 1e-6).ToList();
+            Eq("section: one dot per face per side when no lap", 4, hDots0.Count);
+
+            // P1 chuyển sang tường Nam → tường Tây không có ống: nối chồng tồn tại, chân thanh Nam lệch tại HorizLapFromInner;
+            // tường Đông vẫn bị P3 cắt → không lệch
+            var pLap = p.Clone(); pLap.Pipes[0].Wall = WallSide.South; pLap.Pipes[0].Offset = -300;
+            var gLap = new ManholeGeometry(pLap);
+            True("lap sample valid: " + string.Join("; ", gLap.Errors), gLap.IsValid);
+            var rdLap = RebarDesigner.Design(gLap);
+            var LL = rdLap.Layout;
+            True("west wall laps, east wall does not", RebarDesigner.LegsLap(gLap, LL, 0, WallSide.West, 50) && !RebarDesigner.LegsLap(gLap, LL, 0, WallSide.East, 50));
+            var planLap = new PlanBuilder(gLap, rdLap, new DrawStyle(20)).Build();
+            var legLap = planLap.Items.OfType<PPolyline>().Where(l => l.Key == RebarKeys.WallHorizontal && l.Points.Count == 2 && Math.Abs(l.Points[0].X - l.Points[1].X) < 1e-9).ToList();
+            True("plan lap: west south U legs at lap position", legLap.Any(l => Math.Abs(l.Points[0].X + (gLap.Li / 2 + LL.HorizLapFromInner[0])) < 1e-9 && l.Points.Max(q => q.Y) > 0)
+                && legLap.Any(l => Math.Abs(l.Points[0].X + (gLap.Li / 2 + LL.HorizLapFromInner[1])) < 1e-9));
+            True("plan lap: west north U legs at loop position", legLap.Any(l => Math.Abs(l.Points[0].X + hl[0].X) < 1e-9 && l.Points.Min(q => q.Y) < 0));
+            True("plan lap: east legs not offset", legLap.Where(l => l.Points[0].X > 0).All(l => hl.Any(h => Math.Abs(l.Points[0].X - h.X) < 1e-9)));
+            // mặt cắt dọc X qua y = 0: tường trái (Tây) có lap → 2 chấm mỗi mặt; tường phải (Đông) 1 chấm mỗi mặt
+            var secLap = new SectionBuilder(gLap, rdLap, new DrawStyle(20)).Build();
+            var hDots = secLap.Items.OfType<PDot>().Where(dd => dd.Key == RebarKeys.WallHorizontal && Math.Abs(dd.Center.Y - LL.HorizLevels.First(z => z > 800)) < 1e-6).Select(dd => dd.Center.X).OrderBy(v => v).ToList();
+            Eq("section lap: 2 dots per face on the lapped wall, 1 on the other", 6, hDots.Count);
             // lap mặt trong: thanh ngang 56, thép đứng 68 → thanh lap phải sang bên kia thép đứng: 68 + 12 + 10 = 90 (mặt ngoài đối xứng: 110)
             Eq("inner lap bar clear of the vertical bar", L.VertFromInner[0] + (12 + 12) / 2.0 + RebarDesigner.CogClear, L.HorizLapFromInner[0]);
             Eq("outer lap bar clear of the vertical bar", g.Tw - L.HorizLapFromInner[0], L.HorizLapFromInner[1]);
@@ -797,8 +816,8 @@ namespace LynhCad.Manhole.Preview
                 True("lap bar " + k + " >= d+10 from the first bar", Math.Abs(L.HorizLapFromInner[k] - L.HorizFromInner[k]) >= 12 + RebarDesigner.CogClear - 1e-9);
                 True("lap bar " + k + " >= 10 clear of the vertical bar", Math.Abs(L.HorizLapFromInner[k] - L.VertFromInner[k]) >= 12 + RebarDesigner.CogClear - 1e-9);
             }
-            True("section lap: dot pairs at first bar and lap bar", Math.Abs(hDots[1] - hDots[0] - (L.HorizLapFromInner[0] - L.HorizFromInner[0])) < 1e-9
-                && Math.Abs(hDots[3] - hDots[2] - (L.HorizFromInner[1] - L.HorizLapFromInner[1])) < 1e-9);
+            True("section lap: dot pairs at first bar and lap bar", Math.Abs(hDots[1] - hDots[0] - (LL.HorizLapFromInner[0] - LL.HorizFromInner[0])) < 1e-9
+                && Math.Abs(hDots[3] - hDots[2] - (LL.HorizFromInner[1] - LL.HorizLapFromInner[1])) < 1e-9);
             True("schedule unchanged by lap offset: 2 horizontal marks", rd.Schedule.Set(BarSets.WallHoriz).Marks.Count == 2);
             // thép ngang phía trong thép đứng: lệch về tim tường là rời xa thép đứng → chỉ cần d + 10
             var pHi = p.Clone(); pHi.WallHorizontalInside = true;

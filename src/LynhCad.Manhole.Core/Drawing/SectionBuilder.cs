@@ -416,12 +416,9 @@ namespace LynhCad.Manhole.Core.Drawing
                 for (int k = 0; k < L.HorizFromInner.Count; k++)
                 {
                     double face = sInner + side * L.HorizFromInner[k];
-                    bool lapHere = false;
-                    if (loops != null && Math.Abs(u.X) > 0.5)
-                    {
-                        double by = loops[k].Y, leg = Math.Min(2 * by, by + L.Lap / 2);
-                        lapHere = Math.Abs(origin.Y) < leg - by - 1e-6;
-                    }
+                    // chỉ khi hai chân thanh U còn thực sự chồng nhau tại y của đường cắt trên tường này (không bị lỗ ống cắt đứt)
+                    bool lapHere = loops != null && Math.Abs(u.X) > 0.5
+                        && RebarDesigner.LegsLap(g, L, k, side < 0 ? WallSide.West : WallSide.East, c, origin.Y);
                     double face2 = sInner + side * L.HorizLapFromInner[k];
                     foreach (var z in L.HorizLevels)
                         if (!gaps.Any(gp => gp.Contains(z)))
