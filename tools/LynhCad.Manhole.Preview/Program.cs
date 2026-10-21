@@ -182,8 +182,16 @@ namespace LynhCad.Manhole.Preview
             var rd = RebarDesigner.Design(g);
             var sch = rd.Schedule;
             var w1 = sch.Marks.First(m => m.Mark == "W1");
-            // vòng trong 1616×1316 → 10 + 8 vị trí mỗi phương = 32 thanh; vòng ngoài cùng vị trí + 4 góc = 40
-            Eq("W1 count (72 EF)", 72, w1.Count);
+            var w2 = sch.Marks.First(m => m.Mark == "W2");
+            // vòng trong 1616×1316 → 10 + 8 vị trí mỗi phương = 32 thanh (W1); vòng ngoài cùng vị trí + 4 góc = 40 (W2),
+            // mặt ngoài lùi 10 ở chân và cog nên ngắn hơn 20
+            Eq("W1 count (inner face)", 32, w1.Count);
+            Eq("W2 count (outer face)", 40, w2.Count);
+            Eq("W2 shorter by 2 x inset", w1.B - 2 * RebarDesigner.WallBarInset, w2.B);
+            True("WallVert callout W1/W2", sch.Callout(BarSets.WallVert).StartsWith("W1/W2 N12-200 EF VERT"));
+            Eq("outer face leg raised", rd.Layout.VertZBot + RebarDesigner.WallBarInset, rd.Layout.VertZBotFaces[1]);
+            Eq("outer face cog lowered", rd.Layout.VertZTop - RebarDesigner.WallBarInset, rd.Layout.VertZTopFaces[1]);
+            Eq("inner face unchanged", rd.Layout.VertZBot, rd.Layout.VertZBotFaces[0]);
             // chân L vào đáy + cog vào bản nắp → chữ U: A = chân 300, B = đoạn đứng, C = cog chuẩn N12 (5d)
             True("W1 is U (leg + cog)", w1.Shape == BarShape.U);
             Eq("W1 leg", 300, w1.A);
@@ -193,7 +201,7 @@ namespace LynhCad.Manhole.Preview
             // hai mặt thẳng hàng: mỗi thanh mặt ngoài (trừ 4 góc) có thanh mặt trong cùng X (tường N/S) hoặc cùng Y (tường E/W)
             var loops = RebarDesigner.VerticalLoops(g, rd.Layout);
             var pts = RebarDesigner.VerticalPositions(g, rd.Layout);
-            Eq("vertical positions = W1 count", w1.Count, pts.Count);
+            Eq("vertical positions = W1 + W2 count", w1.Count + w2.Count, pts.Count);
             var inner = pts.Where(q => Math.Abs(q.X) <= loops[0].X + 1e-6 && Math.Abs(q.Y) <= loops[0].Y + 1e-6).ToList();
             Eq("inner face bars", 32, inner.Count);
             var outerPts = pts.Where(q => !inner.Contains(q)).ToList();
@@ -212,11 +220,13 @@ namespace LynhCad.Manhole.Preview
             Eq("single layer: 1 vertical loop", 1, RebarDesigner.VerticalLoops(g1, rd1.Layout).Count);
             Eq("single layer: vertical at wall centre", g1.Tw / 2, rd1.Layout.VertFromInner[0]);
             Eq("single layer: W1 count (one loop 1700x1400)", 32, rd1.Schedule.Marks.First(m => m.Mark == "W1").Count);
+            True("single layer: one vertical mark, no inset", !rd1.Schedule.Marks.Any(m => m.Mark == "W2" && m.Shape != BarShape.U || m.Mark == "W4")
+                && rd1.Layout.VertZBotFaces.Count == 1 && Math.Abs(rd1.Layout.VertZBotFaces[0] - rd1.Layout.VertZBot) < 1e-9);
             True("single layer: CENTRAL suffix", rd1.Schedule.Callout(BarSets.WallVert).EndsWith(" CENTRAL VERT")
                 && rd1.Schedule.Callout(BarSets.WallHoriz).EndsWith(" CENTRAL HORIZ"));
             True("single layer: pipe trimmers not EF", !rd1.Schedule.Set(BarSets.PipeTrim).Suffix.EndsWith(" EF"));
-            Eq("single layer: half the U-bars", sch.Marks.Where(m => m.Shape == BarShape.U && m.Mark != "W1").Sum(m => m.Count) / 2,
-                rd1.Schedule.Marks.Where(m => m.Shape == BarShape.U && m.Mark != "W1").Sum(m => m.Count));
+            Eq("single layer: half the U-bars", sch.Marks.Where(m => sch.Set(BarSets.WallHoriz).Marks.Contains(m.Mark)).Sum(m => m.Count) / 2,
+                rd1.Schedule.Marks.Where(m => rd1.Schedule.Set(BarSets.WallHoriz).Marks.Contains(m.Mark)).Sum(m => m.Count));
             True("single layer: compose ok", DetailComposer.Compose(p1).Ok);
             var secOne = new SectionBuilder(g1, rd1, new DrawStyle(20)).Build();
             // mỗi tường một đường thép đứng (đoạn đứng ≥ 300 trên S-REIN, gộp theo X) thay vì hai
@@ -309,12 +319,12 @@ namespace LynhCad.Manhole.Preview
             True("KeysForField rebate -> roof top + trimmers", RebarLayoutPreview.KeysForField("CoverRebateDepth").SequenceEqual(new[] { "RoofTop", RebarKeys.Trimmers }));
             True("KeysForField unrelated -> empty", RebarLayoutPreview.KeysForField("Cover").Length == 0 && RebarLayoutPreview.KeysForField(null).Length == 0);
             var legend = RebarLayoutPreview.Legend(g, rd);
-            True("rebar preview legend", legend.Count >= 4 && legend[0].StartsWith("W1 ") && legend.Any(s => s.EndsWith(" BOT EW")));
+            True("rebar preview legend", legend.Count >= 4 && legend[0].StartsWith("W1/W2 ") && legend.Any(s => s.EndsWith(" BOT EW")));
             var bad = p.Clone(); bad.WallThickness = 50;
             var rpBad = RebarLayoutPreview.Build(bad);
             True("rebar preview invalid params -> errors, no model", rpBad.Errors.Count > 0 && rpBad.Model.Items.Count == 0);
-            True("has W2/W3 U-bars", sch.Marks.Count(m => m.Shape == BarShape.U && m.Mark != "W1") == 2);
-            True("WallHoriz callout", sch.Callout(BarSets.WallHoriz).StartsWith("W2/W3 N12-200 EF HORIZ"));
+            True("has W3/W4 U-bars", sch.Marks.Count(m => m.Shape == BarShape.U && sch.Set(BarSets.WallHoriz).Marks.Contains(m.Mark)) == 2);
+            True("WallHoriz callout", sch.Callout(BarSets.WallHoriz).StartsWith("W3/W4 N12-200 EF HORIZ"));
             True("base mat callout", sch.MatCallout(BarSets.BaseBot, false).EndsWith(" N16-200 BOT EW"));
             True("missing roof top mat -> null", sch.MatCallout(BarSets.RoofTop, true) == null);
             bool threw = false;
@@ -322,10 +332,10 @@ namespace LynhCad.Manhole.Preview
             True("unknown bar set throws", threw);
 
             // bản đáy: 1500+400+300 = 2200 x 1900 → thanh theo X dài 2100
-            // lưới dưới dài 2100; lưới trên (có cog, lùi 50 mỗi đầu) dài 2000 → hai mác riêng, cùng số thanh
+            // lưới dưới dài 2100; lưới trên (có cog, lùi TopMatInset mỗi đầu) ngắn hơn → hai mác riêng, cùng số thanh
             var bx = sch.Marks.First(m => m.Mark.StartsWith("B") && Math.Abs(m.A - 2100) < 1e-6);
             Eq("base X count", GeomUtil.CountBars(1900 - 100 - 16, 200), bx.Count);
-            Eq("base top X count", bx.Count, sch.Marks.First(m => m.Mark.StartsWith("B") && Math.Abs(m.A - 2000) < 1e-6).Count);
+            Eq("base top X count", bx.Count, sch.Marks.First(m => m.Mark.StartsWith("B") && Math.Abs(m.A - (2100 - 2 * RebarDesigner.TopMatInset)) < 1e-6).Count);
 
             // bản nắp: thanh bị lỗ cắt phải ngắn hơn thanh nguyên
             var roofX = rd.Layout.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofBot));
@@ -379,8 +389,9 @@ namespace LynhCad.Manhole.Preview
             var sch = rd.Schedule;
             var vert = sch.Marks.First(m => m.Mark == "W1");
             True("circ cast W1 is U (leg + cog)", vert.Shape == BarShape.U);
-            // vòng ngoài r = 950-68 = 882 → ceil(2πr/200) = 28; vòng trong cùng số thanh, cùng góc (thẳng hàng)
-            Eq("circ cast vertical count", 28 + 28, vert.Count);
+            // vòng ngoài r = 950-68 = 882 → ceil(2πr/200) = 28; vòng trong cùng số thanh, cùng góc (thẳng hàng); mặt ngoài là W2
+            Eq("circ cast vertical count", 28, vert.Count);
+            Eq("circ cast outer vertical count", 28, sch.Marks.First(m => m.Mark == "W2").Count);
             var ringPts = RebarDesigner.VerticalPositions(g, rd.Layout);
             True("circ cast faces share angles", ringPts.Take(28).Zip(ringPts.Skip(28), (a, b) => Math.Abs(a.Angle() - b.Angle()) < 1e-9).All(x => x));
             True("circ precast rebar preview", RebarLayoutPreview.Build(ManholeParams.SampleCircular()).Errors.Count == 0);
@@ -401,7 +412,7 @@ namespace LynhCad.Manhole.Preview
             Eq("circ cast inner ring lap", 600, rings[0].B);
             Eq("circ cast inner ring length", Math.PI * 1620 + 600, rings[0].Length, 1e-6);
             Eq("circ cast rings per face = levels", rd.Layout.HorizLevels.Count, rings[0].Count);
-            True("circ cast WallHoriz callout", sch.Callout(BarSets.WallHoriz).StartsWith("W2/W3 N12-200 EF HORIZ"));
+            True("circ cast WallHoriz callout", sch.Callout(BarSets.WallHoriz).StartsWith("W3/W4 N12-200 EF HORIZ"));
             True("circ cast pipe trimmers", sch.Set(BarSets.PipeTrim) != null);
 
             var res = DetailComposer.Compose(p);
@@ -521,21 +532,28 @@ namespace LynhCad.Manhole.Preview
 
             // trắc dọc thanh qua vùng nhấn
             var dz = new DropZone { Along = new Interval(-600, 600), Perp = new Interval(-450, 450), Depth = 50, Run = 100 };
-            Eq("drop z outside", 100, dz.ZAt(-800, 100));
-            Eq("drop z inside", 50, dz.ZAt(0, 100));
-            Eq("drop z mid ramp", 75, dz.ZAt(-650, 100));
-            var full = dz.Profile(new Interval(-1000, 1000), 100);
+            Eq("drop z outside", 100, dz.ZAt(0, -800, 100));
+            Eq("drop z inside", 50, dz.ZAt(0, 0, 100));
+            Eq("drop z mid ramp", 75, dz.ZAt(0, -650, 100));
+            // thanh nằm trong dải đoạn xiên của lớp kia: hạ dần (pos = 500 → nửa độ nhấn, đoạn xiên ngắn một nửa)
+            Eq("depth at full band", 50, dz.DepthAt(450));
+            Eq("depth half-way in ramp band", 25, dz.DepthAt(500));
+            Eq("depth outside ramp band", 0, dz.DepthAt(550));
+            True("applies only where dropped", dz.Applies(549) && !dz.Applies(550) && dz.Applies(0));
+            Eq("half-dropped bar z", 75, dz.ZAt(500, 0, 100));
+            Eq("half-dropped bar ramp starts 50 before the zone", -650, dz.Profile(500, new Interval(-1000, 1000), 100)[1].X, 1e-9);
+            var full = dz.Profile(0, new Interval(-1000, 1000), 100);
             Eq("double crank profile: 6 vertices", 6, full.Count);
             var itFull = DropZone.Item(full, "S", 'R', 12);
             True("double crank -> DROPPED", itFull.Shape == BarShape.Dropped);
             Eq("dropped A", 300, itFull.A); Eq("dropped B", 50, itFull.B); Eq("dropped C", 1200, itFull.C); Eq("dropped D", 300, itFull.D);
             Eq("dropped length", 300 + 1200 + 300 + 2 * 50 * Math.Sqrt(5), itFull.Length, 1e-6);
-            var half = dz.Profile(new Interval(-1000, -500), 100);
+            var half = dz.Profile(0, new Interval(-1000, -500), 100);
             Eq("single crank profile: 4 vertices", 4, half.Count);
             var itHalf = DropZone.Item(half, "S", 'R', 12);
             True("single crank -> CRANKED", itHalf.Shape == BarShape.Cranked);
             Eq("cranked A (longer leg first)", 300, itHalf.A); Eq("cranked C", 100, itHalf.C); Eq("cranked B", 50, itHalf.B);
-            var flat = dz.Profile(new Interval(-1000, -800), 100);
+            var flat = dz.Profile(0, new Interval(-1000, -800), 100);
             True("piece clear of rebate stays straight", flat.Count == 2 && DropZone.Item(flat, "S", 'R', 12).Shape == BarShape.Straight);
             True("DROPPED signature differs from STRAIGHT", itFull.Signature != new BarItem { Group = 'R', Dia = 12, Shape = BarShape.Straight, A = itFull.A }.Signature);
 
@@ -550,7 +568,7 @@ namespace LynhCad.Manhole.Preview
             var L = rd.Layout;
             True("bottom mat not dropped", L.RoofLayers.Where(l => !l.IsTop).All(l => l.Drop == null));
             var topX = L.RoofLayers.First(l => l.Key == BarSets.X(BarSets.RoofTop));
-            True("top mat X has drop zone", topX.Drop != null && Math.Abs(topX.Drop.Along.Min + 600) < 1e-6 && Math.Abs(topX.Drop.Perp.Max - (450 + 100)) < 1e-6);
+            True("top mat X has drop zone", topX.Drop != null && Math.Abs(topX.Drop.Along.Min + 600) < 1e-6 && Math.Abs(topX.Drop.Perp.Max - 450) < 1e-6);
             Eq("crank run = 2 x depth", 100, topX.Drop.Run);
             // thanh ngoài dải rãnh: thẳng; thanh trong dải nhưng không bị lỗ cắt: nhấn 2 chỗ; thanh bị lỗ cắt: mỗi đoạn gãy 1 chỗ
             double posOut = topX.Positions.First(y => Math.Abs(y) > 550 + 1e-6);
@@ -599,10 +617,12 @@ namespace LynhCad.Manhole.Preview
             // chấm thép lớp trên theo Y (cắt ngang) nằm trong rãnh phải ở cao độ hạ
             var topY = L.RoofLayers.First(l => l.Key == BarSets.Y(BarSets.RoofTop));
             var topDots = sec.Items.OfType<PDot>().Where(dd => dd.Key == "RoofTop" && Math.Abs(dd.Diameter - new DrawStyle(20).DotSize(topY.Dia)) < 1e-9).ToList();
-            // dải hạ của thanh vuông góc = rãnh + đoạn xiên (100): chấm dưới đoạn xiên cũng nằm thấp, ngay dưới đoạn nhấn
-            True("section top Y dots follow the drop zone", topDots.Count > 0 && topDots.All(dd =>
-                Math.Abs(dd.Center.Y - (Math.Abs(dd.Center.X) <= 700 + 1e-6 ? topY.Z - 50 : topY.Z)) < 1e-6));
-            True("section has a dropped dot under the ramp band", topDots.Any(dd => Math.Abs(dd.Center.X) > 600 && Math.Abs(dd.Center.X) <= 700));
+            // chấm chỉ hạ từ vị trí bắt đầu crank (|x| = 700): trong rãnh hạ hết, dưới đoạn xiên hạ dần đúng độ cao thanh X ở đó, ngoài giữ nguyên
+            True("section top Y dots follow the crank", topDots.Count > 0 && topDots.All(dd =>
+                Math.Abs(dd.Center.Y - (topY.Z - topY.Drop.DepthAt(dd.Center.X))) < 1e-6));
+            var rampDot = topDots.First(dd => Math.Abs(dd.Center.X) > 600 && Math.Abs(dd.Center.X) < 700);
+            True("dot under the ramp sits between high and low", rampDot.Center.Y < topY.Z - 1 && rampDot.Center.Y > topY.Z - 50 + 1);
+            True("dots beyond the crank stay high", topDots.Where(dd => Math.Abs(dd.Center.X) >= 700).All(dd => Math.Abs(dd.Center.Y - topY.Z) < 1e-6));
             // lỗ thăm lệch để có thanh Y nằm trong dải rãnh mà không bị lỗ cắt → chấm ở cao độ hạ
             // (lỗ lệch 400: đường cắt y = 0 ngoài vùng lỗ cắt thép 50..750 nhưng trong rãnh −50..850)
             var shifted = p.Clone(); shifted.InternalWidth = 1600; shifted.OpeningOffsetY = 400;
@@ -612,7 +632,7 @@ namespace LynhCad.Manhole.Preview
             var secS = new SectionBuilder(gS, rdS, new DrawStyle(20)).Build();
             var topYS = rdS.Layout.RoofLayers.First(l => l.Key == BarSets.Y(BarSets.RoofTop));
             var lowDots = secS.Items.OfType<PDot>().Where(dd => dd.Key == "RoofTop" && Math.Abs(dd.Center.Y - (topYS.Z - 50)) < 1e-6).ToList();
-            True("section shows dropped top Y dots under rebate", lowDots.Count > 0 && lowDots.All(dd => Math.Abs(dd.Center.X) <= 700 + 1e-6));
+            True("section shows dropped top Y dots under rebate", lowDots.Count > 0 && lowDots.All(dd => Math.Abs(dd.Center.X) <= 600 + 1e-6));
 
             // preview tab General: kích thước rãnh có Tip và Key
             var dp = DimensionPreview.Build(p);
@@ -741,6 +761,7 @@ namespace LynhCad.Manhole.Preview
             var verts = sec.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Rebar && l.Key == RebarKeys.WallVertical).ToList();
             True("vertical bars have bends drawn as arcs", verts.Count > 0 && verts.Any(l => l.Bulges.Any(bb => Math.Abs(bb) > 1e-9)));
             True("vertical bar top cog into roof", verts.Any(l => l.Points.Count(q => Math.Abs(q.Y - L.VertZTop) < 1e-6) >= 2));
+            True("outer face cog drawn 10 lower", verts.Any(l => l.Points.Count(q => Math.Abs(q.Y - (L.VertZTop - RebarDesigner.WallBarInset)) < 1e-6) >= 2));
             var mats = sec.Items.OfType<PPolyline>().Where(l => l.Layer == Layers.Rebar && l.Key == "BaseBottom").ToList();
             True("base bottom bar drawn with cogs and arcs", mats.Count > 0 && mats.All(l => l.Points.Count >= 6 && l.Bulges.Count(bb => Math.Abs(bb) > 1e-9) == 2));
             // mặt bằng: góc thanh U thép ngang là cung
@@ -759,6 +780,8 @@ namespace LynhCad.Manhole.Preview
             var off = p.Clone(); off.Cogs = false;
             var rdOff = RebarDesigner.Design(new ManholeGeometry(off));
             True("cogs off: W1 is L", rdOff.Schedule.Marks.First(mk => mk.Mark == "W1").Shape == BarShape.L);
+            // không cog: đỉnh thanh không lùi (chỉ chân lùi 10)
+            Eq("cogs off: outer top not inset", rdOff.Layout.VertZTop, rdOff.Layout.VertZTopFaces[1]);
             True("cogs off: no cogs scheduled", rdOff.Schedule.Marks.All(mk => mk.CogCount == 0));
             True("cogs off: no cog note", DetailComposer.Compose(off).Model.Items.OfType<PText>().All(tx => !tx.Text.Contains("COG = STANDARD")));
             // đổi hệ số uốn

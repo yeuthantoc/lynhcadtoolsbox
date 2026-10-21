@@ -401,19 +401,20 @@ namespace LynhCad.Manhole.Core.Drawing
                 }
 
                 // thép đứng → đường, chân L quay vào trong hố, cog đầu trên móc vào bản nắp (quay vào trong); chỗ uốn vẽ cung
-                foreach (var off in L.VertFromInner)
+                for (int k = 0; k < L.VertFromInner.Count; k++)
                 {
-                    double face = sInner + side * off;
-                    var zSpan = new Interval(L.VertZBot, L.VertZTop).Subtract(gaps);
+                    double face = sInner + side * L.VertFromInner[k];
+                    double zBot = L.VertZBotFaces[k], zTop = L.VertZTopFaces[k];
+                    var zSpan = new Interval(zBot, zTop).Subtract(gaps);
                     for (int i = 0; i < zSpan.Count; i++)
                     {
                         var seg = zSpan[i];
                         var pts = new List<Vec2>();
-                        if (i == 0 && Math.Abs(seg.Min - L.VertZBot) < 1e-6)
-                            pts.Add(new Vec2(face - side * L.VertLeg, L.VertZBot));
+                        if (i == 0 && Math.Abs(seg.Min - zBot) < 1e-6)
+                            pts.Add(new Vec2(face - side * L.VertLeg, zBot));
                         pts.Add(new Vec2(face, seg.Min)); pts.Add(new Vec2(face, seg.Max));
-                        if (L.VertCog > 0 && i == zSpan.Count - 1 && Math.Abs(seg.Max - L.VertZTop) < 1e-6)
-                            pts.Add(new Vec2(face - side * L.VertCog, L.VertZTop));
+                        if (L.VertCog > 0 && i == zSpan.Count - 1 && Math.Abs(seg.Max - zTop) < 1e-6)
+                            pts.Add(new Vec2(face - side * L.VertCog, zTop));
                         var pl = PPolyline.Fillet(pts, L.VertBendRadius, Layers.Rebar);
                         pl.Key = RebarKeys.WallVertical;
                         m.Add(pl);

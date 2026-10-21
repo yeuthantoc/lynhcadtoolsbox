@@ -74,34 +74,52 @@ namespace LynhCad.Manhole.Core.Rebar
     /// </summary>
     public class DropZone
     {
+        /// <summary>Along: khoảng dọc thanh bị hạ hết Depth (hai mép có đoạn xiên dài Run). Perp: dải thanh nằm trong rãnh (hạ hết).</summary>
         public Interval Along, Perp;
         public double Depth, Run;
 
-        public bool Applies(double pos) { return Perp.Contains(pos); }
-
-        /// <summary>Cao độ thanh (so với cao độ bình thường zHigh) tại toạ độ dọc thanh.</summary>
-        public double ZAt(double along, double zHigh)
+        /// <summary>
+        /// Độ nhấn của thanh ở vị trí vuông góc pos: hết Depth trong dải Perp, giảm dần về 0 trong dải đoạn xiên
+        /// (Perp ± Run) để thanh nằm dưới đoạn xiên của lớp kia cũng hạ theo đúng độ cao chỗ đó, ngoài ra = 0.
+        /// </summary>
+        public double DepthAt(double pos)
         {
-            if (along <= Along.Min - Run || along >= Along.Max + Run) return zHigh;
-            if (along >= Along.Min && along <= Along.Max) return zHigh - Depth;
-            double t = along < Along.Min ? (Along.Min - along) / Run : (along - Along.Max) / Run;
-            return zHigh - Depth * (1 - t);
+            if (Perp.Contains(pos)) return Depth;
+            double dist = pos < Perp.Min ? Perp.Min - pos : pos - Perp.Max;
+            return dist >= Run ? 0 : Depth * (1 - dist / Run);
+        }
+
+        public bool Applies(double pos) { return DepthAt(pos) > 1e-9; }
+
+        /// <summary>Cao độ thanh ở vị trí pos (so với cao độ bình thường zHigh) tại toạ độ dọc thanh.</summary>
+        public double ZAt(double pos, double along, double zHigh)
+        {
+            double depth = DepthAt(pos);
+            if (depth <= 1e-9) return zHigh;
+            double run = depth * RebarDesigner.CrankSlope;
+            if (along <= Along.Min - run || along >= Along.Max + run) return zHigh;
+            if (along >= Along.Min && along <= Along.Max) return zHigh - depth;
+            double t = along < Along.Min ? (Along.Min - along) / run : (along - Along.Max) / run;
+            return zHigh - depth * (1 - t);
         }
 
         /// <summary>
-        /// Trắc dọc của một đoạn thanh: các đỉnh (along, z) gồm hai đầu và các điểm gãy nằm trong đoạn.
-        /// Thanh thẳng (không chạm vùng nhấn) → 2 đỉnh.
+        /// Trắc dọc của một đoạn thanh ở vị trí pos: các đỉnh (along, z) gồm hai đầu và các điểm gãy nằm trong đoạn.
+        /// Thanh thẳng (không chạm vùng nhấn) → 2 đỉnh. Đoạn xiên luôn dốc 1:CrankSlope.
         /// </summary>
-        public List<Vec2> Profile(Interval piece, double zHigh)
+        public List<Vec2> Profile(double pos, Interval piece, double zHigh)
         {
+            double depth = DepthAt(pos);
+            if (depth <= 1e-9) return Flat(piece, zHigh);
+            double run = depth * RebarDesigner.CrankSlope;
             var xs = new List<double> { piece.Min };
-            foreach (var x in new[] { Along.Min - Run, Along.Min, Along.Max, Along.Max + Run })
+            foreach (var x in new[] { Along.Min - run, Along.Min, Along.Max, Along.Max + run })
                 if (x > piece.Min + 1e-6 && x < piece.Max - 1e-6) xs.Add(x);
             xs.Add(piece.Max);
             var pts = new List<Vec2>();
             foreach (var x in xs)
             {
-                var v = new Vec2(x, ZAt(x, zHigh));
+                var v = new Vec2(x, ZAt(pos, x, zHigh));
                 // bỏ đỉnh thừa nằm trên cùng một đường thẳng với hai đỉnh trước
                 if (pts.Count >= 2)
                 {

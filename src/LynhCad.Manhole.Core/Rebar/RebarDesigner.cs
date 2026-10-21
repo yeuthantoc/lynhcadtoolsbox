@@ -85,13 +85,13 @@ namespace LynhCad.Manhole.Core.Rebar
         /// <summary>Trắc dọc (along, z) của một đoạn thanh tại vị trí pos: thẳng ở Z, hoặc nhấn xuống trong vùng rãnh.</summary>
         public List<Vec2> Profile(double pos, Interval piece)
         {
-            return Drop != null && Drop.Applies(pos) ? Drop.Profile(piece, Z) : DropZone.Flat(piece, Z);
+            return Drop != null && Drop.Applies(pos) ? Drop.Profile(pos, piece, Z) : DropZone.Flat(piece, Z);
         }
 
         /// <summary>Cao độ tim thanh tại vị trí pos, toạ độ dọc thanh along.</summary>
         public double ZAt(double pos, double along)
         {
-            return Drop != null && Drop.Applies(pos) ? Drop.ZAt(along, Z) : Z;
+            return Drop != null && Drop.Applies(pos) ? Drop.ZAt(pos, along, Z) : Z;
         }
     }
 
@@ -109,12 +109,12 @@ namespace LynhCad.Manhole.Core.Rebar
 
         public List<Vec2> Profile()
         {
-            return Drop != null && Drop.Applies(Pos) ? Drop.Profile(Run, Z) : DropZone.Flat(Run, Z);
+            return Drop != null && Drop.Applies(Pos) ? Drop.Profile(Pos, Run, Z) : DropZone.Flat(Run, Z);
         }
 
         public double ZAt(double along)
         {
-            return Drop != null && Drop.Applies(Pos) ? Drop.ZAt(along, Z) : Z;
+            return Drop != null && Drop.Applies(Pos) ? Drop.ZAt(Pos, along, Z) : Z;
         }
     }
 
@@ -137,6 +137,8 @@ namespace LynhCad.Manhole.Core.Rebar
         public double VertZBot, VertZTop, VertLeg;
         /// <summary>Cog ở đầu trên thép đứng móc vào bản nắp (0 = không), bán kính tim uốn thép đứng / thép ngang.</summary>
         public double VertCog, VertBendRadius, HorizBendRadius;
+        /// <summary>Cao độ chân / đỉnh của thép đứng từng mặt (cùng thứ tự VertFromInner): mặt ngoài lùi WallBarInset ở hai đầu để chân L / cog không trùng mặt trong.</summary>
+        public readonly List<double> VertZBotFaces = new List<double>(), VertZTopFaces = new List<double>();
         public double Lap;
 
         public readonly List<MatLayer> BaseLayers = new List<MatLayer>();
@@ -177,7 +179,9 @@ namespace LynhCad.Manhole.Core.Rebar
         /// <summary>Độ dốc đoạn xiên của thanh nhấn xuống dưới rãnh khung nắp: chiều ngang = CrankSlope × độ nhấn (1:2).</summary>
         public const double CrankSlope = 2;
         /// <summary>Lưới trên có cog lùi đầu thanh vào so với lưới dưới (mm) để cog lớp trên (móc xuống) lồng trong cog lớp dưới (móc lên), không trùng chỗ.</summary>
-        public const double TopMatInset = 50;
+        public const double TopMatInset = 10;
+        /// <summary>Thép đứng mặt ngoài lùi vào (mm) ở chân L và cog so với mặt trong (hai chân / hai cog cùng cao độ sẽ đè lên nhau).</summary>
+        public const double WallBarInset = 10;
 
         public static RebarDesign Design(ManholeGeometry g)
         {
@@ -209,11 +213,9 @@ namespace LynhCad.Manhole.Core.Rebar
                     var rx = new Interval(o.X - g.RebateHalfX, o.X + g.RebateHalfX);
                     var ry = new Interval(o.Y - g.RebateHalfY, o.Y + g.RebateHalfY);
                     double run = g.RebateDepth * CrankSlope;
-                    // dải thanh bị nhấn (Perp) rộng thêm một đoạn xiên để thanh vuông góc nằm dưới đoạn xiên cũng hạ theo
-                    var rxP = new Interval(rx.Min - run, rx.Max + run);
-                    var ryP = new Interval(ry.Min - run, ry.Max + run);
-                    dropX = new DropZone { Along = rx, Perp = ryP, Depth = g.RebateDepth, Run = run };
-                    dropY = new DropZone { Along = ry, Perp = rxP, Depth = g.RebateDepth, Run = run };
+                    // thanh trong rãnh hạ hết; thanh nằm dưới đoạn xiên của lớp kia (Perp ± run) hạ dần theo (DropZone.DepthAt)
+                    dropX = new DropZone { Along = rx, Perp = ry, Depth = g.RebateDepth, Run = run };
+                    dropY = new DropZone { Along = ry, Perp = rx, Depth = g.RebateDepth, Run = run };
                 }
                 AddMat(g, L.RoofLayers, items, sets, BarSets.RoofTop, P.RoofTop, true, 'R', c,
                        g.RoofHalfX, g.RoofHalfY, g.H + g.Ts, g.Ts, cutX, cutY, dropX, dropY);
@@ -365,15 +367,26 @@ namespace LynhCad.Manhole.Core.Rebar
             L.VertCog = P.Cogs ? RebarCatalog.StandardCog(L.DV, P.BendFactor) : 0;
             L.VertBendRadius = RebarCatalog.BendRadius(L.DV, P.BendFactor);
             L.HorizBendRadius = RebarCatalog.BendRadius(L.DH, P.BendFactor);
-            double vertA = L.VertZTop - L.VertZBot;
+            // mặt ngoài (lớp thứ 2) lùi WallBarInset ở chân và ở cog để không đè lên chân / cog mặt trong
+            L.VertZBotFaces.Clear(); L.VertZTopFaces.Clear();
+            for (int k = 0; k < L.VertFromInner.Count; k++)
+            {
+                double ins = k == 1 ? WallBarInset : 0;
+                L.VertZBotFaces.Add(L.VertZBot + ins);
+                L.VertZTopFaces.Add(L.VertZTop - (L.VertCog > 0 ? ins : 0));
+            }
 
-            int vertCount = VerticalPositions(g, L).Count;
+            var counts = VerticalCountsPerFace(g, L);
             sets.Add(new BarSetInfo { Key = BarSets.WallVert, Dia = L.DV, Spacing = L.SV, Suffix = faces + " VERT" });
-            // chân L vào bản đáy + (nếu có cog) móc vào bản nắp → thanh chữ U (A = chân, B = đoạn đứng, C = cog)
-            if (L.VertCog > 0)
-                items.Add(new BarItem { SetKey = BarSets.WallVert, Group = 'W', Dia = L.DV, Shape = BarShape.U, A = L.VertLeg, B = vertA, C = L.VertCog, Count = vertCount, BendDia = P.BendFactor * L.DV });
-            else
-                items.Add(new BarItem { SetKey = BarSets.WallVert, Group = 'W', Dia = L.DV, Shape = BarShape.L, A = vertA, B = L.VertLeg, Count = vertCount, BendDia = P.BendFactor * L.DV });
+            for (int k = 0; k < counts.Count; k++)
+            {
+                double vertA = L.VertZTopFaces[k] - L.VertZBotFaces[k];
+                // chân L vào bản đáy + (nếu có cog) móc vào bản nắp → thanh chữ U (A = chân, B = đoạn đứng, C = cog)
+                if (L.VertCog > 0)
+                    items.Add(new BarItem { SetKey = BarSets.WallVert, Group = 'W', Dia = L.DV, Shape = BarShape.U, A = L.VertLeg, B = vertA, C = L.VertCog, Count = counts[k], BendDia = P.BendFactor * L.DV });
+                else
+                    items.Add(new BarItem { SetKey = BarSets.WallVert, Group = 'W', Dia = L.DV, Shape = BarShape.L, A = vertA, B = L.VertLeg, Count = counts[k], BendDia = P.BendFactor * L.DV });
+            }
 
             // ---- Thép ngang ----
             L.HorizLevels = GeomUtil.Distribute(50, g.H - 50, L.SH);
@@ -475,6 +488,29 @@ namespace LynhCad.Manhole.Core.Rebar
                     for (int k = 0; k < n; k++) pts.Add(Vec2.FromAngle(2 * Math.PI * k / n) * r);
             }
             return pts;
+        }
+
+        /// <summary>Số thanh đứng của từng mặt (mặt trong trước), cùng cách rải như VerticalPositions.</summary>
+        public static List<int> VerticalCountsPerFace(ManholeGeometry g, RebarLayout L)
+        {
+            var counts = new List<int>();
+            var pts = VerticalPositions(g, L);
+            if (g.IsRect)
+            {
+                var loops = VerticalLoops(g, L);
+                if (loops.Count == 0) return counts;
+                int inner = pts.Count(q => Math.Abs(q.X) <= loops[0].X + 1e-6 && Math.Abs(q.Y) <= loops[0].Y + 1e-6);
+                counts.Add(inner);
+                if (loops.Count > 1) counts.Add(pts.Count - inner);
+            }
+            else
+            {
+                var radii = VerticalRingRadii(g, L);
+                if (radii.Count == 0) return counts;
+                int n = pts.Count / radii.Count;
+                foreach (var r in radii) counts.Add(n);
+            }
+            return counts;
         }
 
         private static void AddUnique(List<Vec2> pts, Vec2 p)
