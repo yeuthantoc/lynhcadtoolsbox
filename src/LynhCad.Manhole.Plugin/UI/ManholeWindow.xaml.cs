@@ -17,8 +17,8 @@ namespace LynhCad.Manhole.Plugin.UI
     {
         private ObservableCollection<PipeRow> pipes;
         private bool previewQueued;
-        /// <summary>Tên thuộc tính ManholeParams của ô đang có focus ở tab General (null = không nổi bật gì).</summary>
-        private string generalHighlight;
+        /// <summary>Thuộc tính ManholeParams (phần trước dấu chấm của đường dẫn binding) của ô đang có focus; null = không nổi bật gì.</summary>
+        private string focusField;
 
         /// <summary>Thông số sau khi người dùng bấm Draw (đã kiểm tra hợp lệ).</summary>
         public ManholeParams Params { get; private set; }
@@ -121,7 +121,7 @@ namespace LynhCad.Manhole.Plugin.UI
             try
             {
                 var dp = DimensionPreview.Build(p);
-                PreviewRenderer.Render(cvGeneralPreview, dp.Model, generalHighlight);
+                PreviewRenderer.Render(cvGeneralPreview, dp.Model, focusField == null ? null : new[] { focusField });
                 txtGeneralPreviewInfo.Text = dp.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", dp.Errors);
             }
             catch (Exception ex)
@@ -144,7 +144,7 @@ namespace LynhCad.Manhole.Plugin.UI
             try
             {
                 var rp = RebarLayoutPreview.Build(p);
-                PreviewRenderer.Render(cvRebarPreview, rp.Model);
+                PreviewRenderer.Render(cvRebarPreview, rp.Model, RebarLayoutPreview.KeysForField(focusField));
                 txtRebarPreviewInfo.Text = rp.Errors.Count == 0 ? "" : "• " + string.Join("\n• ", rp.Errors);
             }
             catch (Exception ex)
@@ -160,21 +160,29 @@ namespace LynhCad.Manhole.Plugin.UI
         private void OnFieldSelectionChanged(object sender, SelectionChangedEventArgs e) { QueuePreview(); }
 
         /// <summary>
-        /// Ô nhập tab General nhận focus: lấy tên thuộc tính từ binding của ô (vd "WallThickness") làm khoá nổi bật
-        /// trên sơ đồ kích thước; focus vào thứ không phải ô bind (checkbox, combobox) thì bỏ nổi bật.
+        /// Ô nhập (TextBox / ComboBox / CheckBox) ở tab General hoặc Reinforcement nhận focus: lấy thuộc tính ManholeParams
+        /// từ binding của ô (vd "WallThickness", "WallVertical.Spacing" → "WallVertical") để preview làm nổi bật phần tương ứng.
         /// </summary>
-        private void OnGeneralFieldFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void OnFieldFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            string key = null;
-            var tb = e.NewFocus as TextBox;
-            if (tb != null)
-            {
-                var be = tb.GetBindingExpression(TextBox.TextProperty);
-                if (be != null && be.ParentBinding != null && be.ParentBinding.Path != null) key = be.ParentBinding.Path.Path;
-            }
-            if (key == generalHighlight) return;
-            generalHighlight = key;
+            string field = BindingFieldOf(e.NewFocus as FrameworkElement);
+            if (field == focusField) return;
+            focusField = field;
             QueuePreview();
+        }
+
+        private static string BindingFieldOf(FrameworkElement el)
+        {
+            DependencyProperty dp = null;
+            if (el is TextBox) dp = TextBox.TextProperty;
+            else if (el is ComboBox) dp = ComboBox.SelectedItemProperty;
+            else if (el is CheckBox) dp = CheckBox.IsCheckedProperty;
+            if (dp == null) return null;
+            var be = el.GetBindingExpression(dp);
+            if (be == null || be.ParentBinding == null || be.ParentBinding.Path == null) return null;
+            string path = be.ParentBinding.Path.Path ?? "";
+            int dot = path.IndexOf('.');
+            return dot > 0 ? path.Substring(0, dot) : (path.Length > 0 ? path : null);
         }
 
         private void OnPipeCellEditEnding(object sender, DataGridCellEditEndingEventArgs e) { QueuePreview(); }

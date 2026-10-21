@@ -59,12 +59,33 @@ namespace LynhCad.Manhole.Core.Drawing
 
             var b = m.GetBounds();
             double y = b.MinY - 1.5 * h;
-            foreach (var line in Legend(g, rd))
+            foreach (var line in LegendKeyed(g, rd))
             {
-                m.Add(new PText { Layer = PipeLayoutPreview.HintLayer, Position = new Vec2(b.MinX, y), Text = line, Height = h, Align = TextAlign.Left, VAlign = TextVAlign.Top });
+                m.Add(new PText { Layer = PipeLayoutPreview.HintLayer, Position = new Vec2(b.MinX, y), Text = line.Value, Height = h, Align = TextAlign.Left, VAlign = TextVAlign.Top, Key = line.Key });
                 y -= 1.6 * h;
             }
             return res;
+        }
+
+        /// <summary>
+        /// Các khoá (Prim.Key) cần nổi bật khi ô nhập có đường dẫn binding bắt đầu bằng field (phần trước dấu chấm) đang có focus;
+        /// rỗng nếu ô đó không gắn với bộ thép nào (lớp bảo vệ, hệ số nối...).
+        /// </summary>
+        public static string[] KeysForField(string field)
+        {
+            switch (field ?? "")
+            {
+                case RebarKeys.WallVertical:
+                case RebarKeys.WallHorizontal:
+                case "BaseBottom": case "BaseTop": case "RoofBottom": case "RoofTop":
+                    return new[] { field };
+                case "BaseTopMat": return new[] { "BaseTop" };
+                case "RoofTopMat": return new[] { "RoofTop" };
+                case "TrimmerDiameter": case "TrimmerCount": return new[] { RebarKeys.Trimmers };
+                case "WallSingleLayer": case "WallHorizontalInside": case "VerticalBarLeg":
+                    return new[] { RebarKeys.WallVertical, RebarKeys.WallHorizontal };
+                default: return new string[0];
+            }
         }
 
         /// <summary>Giữ lại bê tông, ống, thép của một hình chiếu; bỏ kích thước, ghi chú, cao độ, ký hiệu cắt, bậc thang.</summary>
@@ -84,27 +105,35 @@ namespace LynhCad.Manhole.Core.Drawing
         /// <summary>Các dòng chú giải: ký hiệu từng bộ thép như trên bản vẽ (thép tường chỉ khi tường đổ tại chỗ).</summary>
         public static List<string> Legend(ManholeGeometry g, RebarDesign rd)
         {
-            var sch = rd.Schedule;
             var list = new List<string>();
-            if (g.HasCastWalls)
-            {
-                list.Add(sch.Callout(BarSets.WallVert));
-                list.Add(sch.Callout(BarSets.WallHoriz));
-            }
-            Add(list, sch.MatCallout(BarSets.BaseBot, false));
-            if (g.P.BaseTopMat) Add(list, sch.MatCallout(BarSets.BaseTop, true));
-            Add(list, sch.MatCallout(BarSets.RoofBot, false));
-            if (g.P.RoofTopMat) Add(list, sch.MatCallout(BarSets.RoofTop, true));
-            var roofTrim = sch.Set(BarSets.RoofTrim);
-            if (roofTrim != null) list.Add(roofTrim.Callout);
-            var pipeTrim = sch.Set(BarSets.PipeTrim);
-            if (pipeTrim != null) list.Add(pipeTrim.Callout);
+            foreach (var kv in LegendKeyed(g, rd)) list.Add(kv.Value);
             return list;
         }
 
-        private static void Add(List<string> list, string s)
+        /// <summary>Chú giải kèm khoá nổi bật của từng dòng.</summary>
+        public static List<KeyValuePair<string, string>> LegendKeyed(ManholeGeometry g, RebarDesign rd)
         {
-            if (!string.IsNullOrEmpty(s)) list.Add(s);
+            var sch = rd.Schedule;
+            var list = new List<KeyValuePair<string, string>>();
+            if (g.HasCastWalls)
+            {
+                Add(list, RebarKeys.WallVertical, sch.Callout(BarSets.WallVert));
+                Add(list, RebarKeys.WallHorizontal, sch.Callout(BarSets.WallHoriz));
+            }
+            Add(list, RebarKeys.ForMat(BarSets.BaseBot), sch.MatCallout(BarSets.BaseBot, false));
+            if (g.P.BaseTopMat) Add(list, RebarKeys.ForMat(BarSets.BaseTop), sch.MatCallout(BarSets.BaseTop, true));
+            Add(list, RebarKeys.ForMat(BarSets.RoofBot), sch.MatCallout(BarSets.RoofBot, false));
+            if (g.P.RoofTopMat) Add(list, RebarKeys.ForMat(BarSets.RoofTop), sch.MatCallout(BarSets.RoofTop, true));
+            var roofTrim = sch.Set(BarSets.RoofTrim);
+            if (roofTrim != null) Add(list, RebarKeys.Trimmers, roofTrim.Callout);
+            var pipeTrim = sch.Set(BarSets.PipeTrim);
+            if (pipeTrim != null) Add(list, RebarKeys.Trimmers, pipeTrim.Callout);
+            return list;
+        }
+
+        private static void Add(List<KeyValuePair<string, string>> list, string key, string s)
+        {
+            if (!string.IsNullOrEmpty(s)) list.Add(new KeyValuePair<string, string>(key, s));
         }
     }
 }

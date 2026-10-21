@@ -181,7 +181,7 @@ namespace LynhCad.Manhole.Core.Drawing
             foreach (var p in RebarDesigner.VerticalPositions(g, L))
             {
                 if (InPipeGap(p, c)) continue;
-                m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV) });
+                m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV), Key = RebarKeys.WallVertical });
                 if (sampleDot == null && p.Y < 0 && Math.Abs(p.X + xInner) < 1e-6) sampleDot = p;
             }
 
@@ -215,7 +215,7 @@ namespace LynhCad.Manhole.Core.Drawing
                     double a0 = gaps[k].Max, a1 = gaps[k2].Min;
                     if (k2 <= k) a1 += 2 * Math.PI;
                     if (a1 - a0 < 1e-6) continue;
-                    m.Add(new PArc { Layer = Layers.Rebar, Center = Vec2.Zero, Radius = r, StartAngle = a0, EndAngle = a1 });
+                    m.Add(new PArc { Layer = Layers.Rebar, Center = Vec2.Zero, Radius = r, StartAngle = a0, EndAngle = a1, Key = RebarKeys.WallHorizontal });
                 }
             }
 
@@ -224,7 +224,7 @@ namespace LynhCad.Manhole.Core.Drawing
             foreach (var p in RebarDesigner.VerticalPositions(g, L))
             {
                 if (InPipeGap(p, c)) continue;
-                m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV) });
+                m.Add(new PDot { Layer = Layers.Rebar, Center = p, Diameter = st.DotSize(L.DV), Key = RebarKeys.WallVertical });
                 if (sampleDot == null && Math.Abs(p.Length - rInner) < 1e-6 && p.X < 0 && p.Y < 0) sampleDot = p;
             }
 
@@ -241,7 +241,7 @@ namespace LynhCad.Manhole.Core.Drawing
             {
                 var p1 = alongX ? new Vec2(seg.Min, a.Y) : new Vec2(a.X, seg.Min);
                 var p2 = alongX ? new Vec2(seg.Max, a.Y) : new Vec2(a.X, seg.Max);
-                m.Add(PPolyline.Line(p1, p2, Layers.Rebar));
+                m.Add(PPolyline.Line(p1, p2, Layers.Rebar)).Key = RebarKeys.WallHorizontal;
             }
         }
 

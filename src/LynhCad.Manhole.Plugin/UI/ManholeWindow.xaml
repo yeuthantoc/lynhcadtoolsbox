@@ -69,7 +69,7 @@
                 <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
                     <StackPanel LostFocus="OnFieldChanged" Selector.SelectionChanged="OnFieldSelectionChanged"
                                 ToggleButton.Checked="OnFieldChanged" ToggleButton.Unchecked="OnFieldChanged"
-                                GotKeyboardFocus="OnGeneralFieldFocus">
+                                GotKeyboardFocus="OnFieldFocus">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -261,7 +261,8 @@
                     </Grid.ColumnDefinitions>
                 <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
                     <Grid LostFocus="OnFieldChanged" Selector.SelectionChanged="OnFieldSelectionChanged"
-                          ToggleButton.Checked="OnFieldChanged" ToggleButton.Unchecked="OnFieldChanged">
+                          ToggleButton.Checked="OnFieldChanged" ToggleButton.Unchecked="OnFieldChanged"
+                          GotKeyboardFocus="OnFieldFocus">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
@@ -332,7 +333,7 @@
                 </ScrollViewer>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" />
                 <DockPanel Grid.Column="2">
-                    <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" FontWeight="SemiBold" Text="Preview (section A-A) - reinforcement" />
+                    <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" FontWeight="SemiBold" Text="Preview (plan + section A-A) - the focused field's bars are highlighted" />
                     <TextBlock x:Name="txtRebarPreviewInfo" DockPanel.Dock="Bottom" Margin="2,4,0,0" TextWrapping="Wrap" Foreground="DarkRed" />
                     <Border BorderBrush="#FFCCCCCC" BorderThickness="1" Background="White" ClipToBounds="True">
                         <Canvas x:Name="cvRebarPreview" SizeChanged="OnPreviewSizeChanged" />

@@ -7,9 +7,35 @@ using LynhCad.Manhole.Core.Model;
 namespace LynhCad.Manhole.Core.Rebar
 {
     /// <summary>Một lớp thép trong bản (đáy hoặc nắp), chạy theo X hoặc Y.</summary>
+    /// <summary>
+    /// Khoá nổi bật (Prim.Key) của các primitive thép trong preview hộp thoại = tên thuộc tính ManholeParams của ô nhập
+    /// tương ứng (trimmer dùng chung một khoá cho cả đường kính và số thanh).
+    /// </summary>
+    public static class RebarKeys
+    {
+        public const string WallVertical = "WallVertical";
+        public const string WallHorizontal = "WallHorizontal";
+        public const string Trimmers = "Trimmers";
+
+        /// <summary>Khoá của một lưới theo tiền tố bộ thép (BarSets.BaseBot...).</summary>
+        public static string ForMat(string matPrefix)
+        {
+            switch (matPrefix)
+            {
+                case BarSets.BaseBot: return "BaseBottom";
+                case BarSets.BaseTop: return "BaseTop";
+                case BarSets.RoofBot: return "RoofBottom";
+                case BarSets.RoofTop: return "RoofTop";
+                default: return null;
+            }
+        }
+    }
+
     public class MatLayer
     {
         public string Key;
+        /// <summary>Tiền tố bộ thép của lưới (BarSets.BaseBot...), chung cho hai lớp X / Y.</summary>
+        public string Mat;
         public int Dia;
         public double Spacing;
         public bool AlongX;
@@ -148,7 +174,7 @@ namespace LynhCad.Manhole.Core.Rebar
                 bool alongX = k == 0;
                 var layer = new MatLayer
                 {
-                    Key = alongX ? BarSets.X(keyPrefix) : BarSets.Y(keyPrefix),
+                    Key = alongX ? BarSets.X(keyPrefix) : BarSets.Y(keyPrefix), Mat = keyPrefix,
                     Dia = d, Spacing = s, AlongX = alongX, IsTop = isTop, Z = alongX ? z1 : z2,
                 };
                 double hRun = alongX ? hx : hy, hPerp = alongX ? hy : hx;

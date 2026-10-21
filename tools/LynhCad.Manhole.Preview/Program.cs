@@ -269,6 +269,19 @@ namespace LynhCad.Manhole.Preview
                 .Where(l => l.Layer == Layers.Rebar && l.Points.Count == 2 && Math.Abs(l.Points[0].X - l.Points[1].X) < 1e-6 && l.Points[0].Y > secTitleY)
                 .Min(l => l.Points[0].X);
             True("rebar preview plan follows horizontal-inside option", outerLineX(pHin) > outerLineX(p) + 5);
+            // mọi primitive thép mang Key = thuộc tính ManholeParams (hoặc "Trimmers"); chú giải cũng có Key
+            var rebarItems = rp.Model.Items.Where(i => i.Layer == Layers.Rebar).ToList();
+            True("rebar preview: all bars keyed", rebarItems.Count > 0 && rebarItems.All(i => !string.IsNullOrEmpty(i.Key)));
+            True("rebar preview: keys valid", rp.Model.Items.Where(i => !string.IsNullOrEmpty(i.Key)).Select(i => i.Key).Distinct()
+                .All(k => k == RebarKeys.Trimmers || typeof(ManholeParams).GetProperty(k) != null));
+            foreach (var k in new[] { RebarKeys.WallVertical, RebarKeys.WallHorizontal, "BaseBottom", "BaseTop", "RoofBottom", RebarKeys.Trimmers })
+                True("rebar preview key present: " + k, rebarItems.Any(i => i.Key == k) && rp.Model.Items.OfType<PText>().Any(t => t.Key == k));
+            True("rebar preview: no RoofTop key when no roof top mat", !rebarItems.Any(i => i.Key == "RoofTop"));
+            True("KeysForField spacing field", RebarLayoutPreview.KeysForField("WallVertical").SequenceEqual(new[] { RebarKeys.WallVertical }));
+            True("KeysForField trimmer count", RebarLayoutPreview.KeysForField("TrimmerCount").SequenceEqual(new[] { RebarKeys.Trimmers }));
+            True("KeysForField wall option -> both wall sets", RebarLayoutPreview.KeysForField("WallHorizontalInside").Length == 2);
+            True("KeysForField top mat checkbox", RebarLayoutPreview.KeysForField("BaseTopMat").SequenceEqual(new[] { "BaseTop" }));
+            True("KeysForField unrelated -> empty", RebarLayoutPreview.KeysForField("Cover").Length == 0 && RebarLayoutPreview.KeysForField(null).Length == 0);
             var legend = RebarLayoutPreview.Legend(g, rd);
             True("rebar preview legend", legend.Count >= 4 && legend[0].StartsWith("W1 ") && legend.Any(s => s.EndsWith(" BOT EW")));
             var bad = p.Clone(); bad.WallThickness = 50;

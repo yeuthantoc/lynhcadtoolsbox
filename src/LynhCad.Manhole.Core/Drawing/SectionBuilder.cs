@@ -259,7 +259,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 var run = t.Run;
                 double? sCross = CrossingOnBar(t.AlongX, t.Pos, along => run.Contains(along));
                 if (sCross == null) continue;
-                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sCross.Value, t.Z), Diameter = st.DotSize(t.Dia) });
+                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sCross.Value, t.Z), Diameter = st.DotSize(t.Dia), Key = RebarKeys.Trimmers });
             }
 
             // Ghi chú lưới (gộp 2 phương)
@@ -307,7 +307,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 {
                     var a = BarPoint(layer.AlongX, piece.Min, pos);
                     var b = BarPoint(layer.AlongX, piece.Max, pos);
-                    m.Add(PPolyline.Line(new Vec2(S(a), layer.Z), new Vec2(S(b), layer.Z), Layers.Rebar));
+                    m.Add(PPolyline.Line(new Vec2(S(a), layer.Z), new Vec2(S(b), layer.Z), Layers.Rebar)).Key = RebarKeys.ForMat(layer.Mat);
                 }
                 return;
             }
@@ -317,7 +317,7 @@ namespace LynhCad.Manhole.Core.Drawing
                 var pieces = layer.Pieces(pos);
                 double? sc = CrossingOnBar(layer.AlongX, pos, along => pieces.Any(i => i.Contains(along)));
                 if (sc == null) continue;
-                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sc.Value, layer.Z), Diameter = st.DotSize(layer.Dia) });
+                m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(sc.Value, layer.Z), Diameter = st.DotSize(layer.Dia), Key = RebarKeys.ForMat(layer.Mat) });
             }
         }
 
@@ -352,7 +352,7 @@ namespace LynhCad.Manhole.Core.Drawing
                     double face = sInner + side * off;
                     foreach (var z in L.HorizLevels)
                         if (!gaps.Any(gp => gp.Contains(z)))
-                            m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(face, z), Diameter = st.DotSize(L.DH) });
+                            m.Add(new PDot { Layer = Layers.Rebar, Center = new Vec2(face, z), Diameter = st.DotSize(L.DH), Key = RebarKeys.WallHorizontal });
                 }
 
                 // thép đứng → đường, chân L quay vào trong hố
@@ -363,7 +363,7 @@ namespace LynhCad.Manhole.Core.Drawing
                     for (int i = 0; i < zSpan.Count; i++)
                     {
                         var seg = zSpan[i];
-                        var pl = new PPolyline { Layer = Layers.Rebar };
+                        var pl = new PPolyline { Layer = Layers.Rebar, Key = RebarKeys.WallVertical };
                         if (i == 0 && Math.Abs(seg.Min - L.VertZBot) < 1e-6)
                             pl.Add(new Vec2(face - side * L.VertLeg, L.VertZBot));
                         pl.Add(new Vec2(face, seg.Min)).Add(new Vec2(face, seg.Max));

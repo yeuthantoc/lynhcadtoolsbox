@@ -19,17 +19,17 @@ namespace LynhCad.Manhole.Plugin.UI
         private readonly Canvas canvas;
         private readonly double k, ox, oy, minX, maxY;
         private readonly Dictionary<string, Brush> brushes = new Dictionary<string, Brush>();
-        /// <summary>Key của ô nhập đang có focus: primitive cùng Key vẽ nổi bật, primitive có Key khác mờ đi, không Key giữ nguyên.</summary>
-        private readonly string highlight;
+        /// <summary>Key cần nổi bật (ô nhập đang có focus): primitive có Key trong tập này vẽ nổi bật, Key khác mờ đi, không Key giữ nguyên. Null = không nổi bật.</summary>
+        private readonly HashSet<string> highlight;
         private static readonly Brush HighlightBrush = Freeze(new SolidColorBrush(Color.FromRgb(0xe8, 0x59, 0x0c)));
         private const double DimOpacity = 0.25;
 
         private static Brush Freeze(Brush b) { b.Freeze(); return b; }
 
-        private PreviewRenderer(Canvas canvas, Bounds b, string highlight)
+        private PreviewRenderer(Canvas canvas, Bounds b, HashSet<string> highlight)
         {
             this.canvas = canvas;
-            this.highlight = string.IsNullOrEmpty(highlight) ? null : highlight;
+            this.highlight = highlight;
             double w = Math.Max(1, canvas.ActualWidth - 2 * Margin), h = Math.Max(1, canvas.ActualHeight - 2 * Margin);
             k = Math.Min(w / Math.Max(1, b.Width), h / Math.Max(1, b.Height));
             minX = b.MinX; maxY = b.MaxY;
@@ -39,15 +39,24 @@ namespace LynhCad.Manhole.Plugin.UI
 
         /// <summary>
         /// Xoá Canvas rồi vẽ model vừa khung hiện tại. Model rỗng hoặc khung chưa có kích thước → để trống.
-        /// highlightKey (tuỳ chọn) = Key của ô nhập đang có focus → kích thước đó nổi bật, các kích thước khác mờ.
+        /// highlightKeys (tuỳ chọn) = Key của ô nhập đang có focus → primitive mang Key đó nổi bật, Key khác mờ.
+        /// Không primitive nào mang Key trong danh sách (ô thuộc tab khác) thì vẽ bình thường, không làm mờ gì.
         /// </summary>
-        public static void Render(Canvas canvas, DrawingModel model, string highlightKey = null)
+        public static void Render(Canvas canvas, DrawingModel model, IEnumerable<string> highlightKeys = null)
         {
             canvas.Children.Clear();
             if (model == null || model.Items.Count == 0 || canvas.ActualWidth < 10 || canvas.ActualHeight < 10) return;
             var b = model.GetBounds();
             if (!b.IsValid) return;
-            var r = new PreviewRenderer(canvas, b, highlightKey);
+            HashSet<string> hl = null;
+            if (highlightKeys != null)
+            {
+                hl = new HashSet<string>();
+                foreach (var key in highlightKeys)
+                    if (!string.IsNullOrEmpty(key) && model.Items.Exists(i => i.Key == key)) hl.Add(key);
+                if (hl.Count == 0) hl = null;
+            }
+            var r = new PreviewRenderer(canvas, b, hl);
             // hatch trước để nằm dưới nét
             foreach (var p in model.Items) if (p is PHatch) p.Accept(r);
             foreach (var p in model.Items) if (!(p is PHatch)) p.Accept(r);
@@ -82,7 +91,7 @@ namespace LynhCad.Manhole.Plugin.UI
         private int Emphasis(string key)
         {
             if (highlight == null || string.IsNullOrEmpty(key)) return 0;
-            return key == highlight ? 1 : -1;
+            return highlight.Contains(key) ? 1 : -1;
         }
 
         private void AddPath(Geometry geom, string layer, bool fill, string tip = null, string key = null)
