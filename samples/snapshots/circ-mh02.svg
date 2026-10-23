@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2985 -1655.7 15195 9204.6" width="2279" height="1381" font-family="Arial, Helvetica, sans-serif">
-<rect x="-2985" y="-1655.7" width="15195" height="9204.6" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2985 -1655.7 13535 12109.6" width="2030" height="1816" font-family="Arial, Helvetica, sans-serif">
+<rect x="-2985" y="-1655.7" width="13535" height="12109.6" fill="white"/>
 <path d="M677.77,-175 A700,700 0 0 0 332.09,-616.21 A700,700 0 0 0 -226.52,-662.34 L-175.39,-573.79 A600,600 0 0 1 281.89,-529.66 A600,600 0 0 1 573.91,-175 L677.77,-175 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-460.34,-527.34 A700,700 0 0 0 -677.77,-175 L-573.91,-175 A600,600 0 0 1 -409.22,-438.79 L-460.34,-527.34 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M-677.77,175 A700,700 0 0 0 -0,700 A700,700 0 0 0 677.77,175 L573.91,175 A600,600 0 0 1 -0,600 A600,600 0 0 1 -573.91,175 L-677.77,175 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
@@ -18,6 +18,11 @@
 <path d="M5655,-609.5 L5755,-609.5 L5755,-722 L5655,-722 L5655,-609.5 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M6955,-609.5 L7055,-609.5 L7055,-722 L6955,-722 L6955,-609.5 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M5755,1790.5 L6955,1790.5 L6955,1728 L5755,1698 L5755,1790.5 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M355,8108.83 L2355,8108.83 L2355,7308.83 L355,7308.83 L355,8108.83 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M355,7308.83 L755,7308.83 L755,6988.83 L355,6988.83 L355,7308.83 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
+<path d="M355,6988.83 L755,6988.83 L755,6908.83 L355,6908.83 L355,6988.83 Z" fill="#efe6cc" fill-rule="evenodd" stroke="none"/>
+<path d="M355,6908.83 L755,6908.83 L755,6868.83 L395,6868.83 L395,6508.83 L355,6508.83 L355,6668.83 L235,6668.83 L235,6708.83 L355,6708.83 L355,6908.83 Z" fill="#b0179f" fill-rule="evenodd" stroke="none"/>
+<path d="M-645,6668.83 L343,6668.83 L343,6508.83 L-645,6508.83 L-645,6668.83 Z" fill="#dcdcdc" fill-rule="evenodd" stroke="none"/>
 <path d="M677.77,-175 A700,700 0 0 0 -226.52,-662.34" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M573.91,-175 A600,600 0 0 0 -175.39,-573.79" stroke="#111111" stroke-width="7" fill="none"/>
 <path d="M-460.34,-527.34 A700,700 0 0 0 -677.77,-175" stroke="#111111" stroke-width="7" fill="none"/>
@@ -436,6 +441,63 @@
 <text x="1090" y="3929.16" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="1090" dy="0">T1 2-N16 TRIMMERS EACH SIDE OF OPENING</tspan></text>
 <text x="0" y="5572.16" font-size="138.89" text-anchor="middle" fill="#111111" text-decoration="underline"><tspan x="0" dy="0">ROOF SLAB REINFORCEMENT - MH02</tspan></text>
 <text x="0" y="5667.16" font-size="69.44" text-anchor="middle" fill="#a07800"><tspan x="0" dy="0">SCALE 1:20</tspan></text>
+<path d="M355,8108.83 L2355,8108.83 L2355,7308.83 L355,7308.83 L355,8108.83 Z" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M2355,8148.83 L2355,7748.83 L2315,7728.83 L2395,7688.83 L2355,7668.83 L2355,7268.83" stroke="#111111" stroke-width="7" fill="none"/>
+<path d="M355,7308.83 L755,7308.83 L755,6988.83 L355,6988.83 L355,7308.83 Z" stroke="#888888" stroke-width="3.6" fill="none"/>
+<path d="M355,6988.83 L755,6988.83 L755,6908.83 L355,6908.83 L355,6988.83 Z" stroke="#888888" stroke-width="3.6" fill="none"/>
+<path d="M355,6908.83 L755,6908.83 L755,6868.83 L395,6868.83 L395,6508.83 L355,6508.83 L355,6668.83 L235,6668.83 L235,6708.83 L355,6708.83 L355,6908.83 Z" stroke="#b0179f" stroke-width="7" fill="none"/>
+<path d="M-645,6668.83 L343,6668.83 L343,6508.83 L-645,6508.83 L-645,6668.83 Z" stroke="#b0179f" stroke-width="7" fill="none"/>
+<path d="M-645,6698.83 L-645,6618.83 L-675,6603.83 L-615,6573.83 L-645,6558.83 L-645,6478.83" stroke="#b0179f" stroke-width="7" fill="none"/>
+<path d="M395,6508.83 L2355,6508.83" stroke="#888888" stroke-width="3.6" fill="none"/>
+<path d="M2435,6508.83 L2413.4,6472.83 L2456.6,6472.83 L2435,6508.83 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M2435,6508.83 L2413.4,6472.83 L2456.6,6472.83 L2435,6508.83 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
+<path d="M2435,6472.83 L2955,6472.83" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<text x="2478.2" y="6458.43" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="2478.2" dy="0">CL RL 14.200</tspan></text>
+<path d="M2435,7308.83 L2413.4,7272.83 L2456.6,7272.83 L2435,7308.83 Z" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M2435,7308.83 L2413.4,7272.83 L2456.6,7272.83 L2435,7308.83 Z" fill="#a07800" fill-rule="evenodd" stroke="none"/>
+<path d="M2435,7272.83 L2955,7272.83" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<text x="2478.2" y="7258.43" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="2478.2" dy="0">TOS RL 14.000</tspan></text>
+<path d="M325,7308.83 L-835,7308.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M325,6988.83 L-835,6988.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M-805,7338.83 L-805,6958.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M-788.03,7325.8 L-821.97,7291.86" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M-788.03,7005.8 L-821.97,6971.86" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="-825" y="7148.83" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 -825 7148.83)">80</text>
+<path d="M325,6908.83 L-835,6908.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M325,6508.83 L-835,6508.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M-805,6938.83 L-805,6478.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M-788.03,6925.8 L-821.97,6891.86" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M-788.03,6525.8 L-821.97,6491.86" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="-825" y="6708.83" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 -825 6708.83)">100</text>
+<path d="M325,7308.83 L-975,7308.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M325,6508.83 L-975,6508.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M-945,7338.83 L-945,6478.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M-928.03,7325.8 L-961.97,7291.86" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M-928.03,6525.8 L-961.97,6491.86" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="-965" y="6908.83" font-size="69.44" text-anchor="middle" fill="#2a8a2a" transform="rotate(-90 -965 6908.83)">200</text>
+<path d="M355,6838.83 L355,6318.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M755,6838.83 L755,6318.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M325,6348.83 L785,6348.83" stroke="#2a8a2a" stroke-width="3.6" fill="none"/>
+<path d="M338.03,6365.8 L371.97,6331.86" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<path d="M738.03,6365.8 L771.97,6331.86" stroke="#2a8a2a" stroke-width="7" fill="none"/>
+<text x="555" y="6328.83" font-size="69.44" text-anchor="middle" fill="#2a8a2a">100</text>
+<path d="M-145,6508.83 L-245,6408.83 L-1275,6408.83 L-1289,6408.83" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M-145,6508.83 L-188.84,6481.96 L-171.87,6464.99 Z" fill="#a07800"/>
+<text x="-1305" y="6350.5" font-size="69.44" text-anchor="end" fill="#a07800"><tspan x="-1305" dy="0">CLASS D ACCESS COVER TO AS 3996,</tspan><tspan x="-1305" dy="83.33">CLEAR OPENING Ø600, FLUSH WITH</tspan><tspan x="-1305" dy="83.33">FINISHED SURFACE</tspan></text>
+<path d="M555,6948.83 L3058.2,6948.83 L3072.2,6948.83" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="555" cy="6948.83" r="12" fill="#a07800"/>
+<text x="3088.2" y="6973.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3088.2" dy="0">20 NON-SHRINK MORTAR BEDDING</tspan></text>
+<path d="M595,6868.83 L720,6743.83 L3058.2,6743.83 L3072.2,6743.83" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<path d="M595,6868.83 L621.87,6824.99 L638.84,6841.96 Z" fill="#a07800"/>
+<text x="3088.2" y="6727.16" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3088.2" dy="0">FRAME TO MANUFACTURER'S</tspan><tspan x="3088.2" dy="83.33">DETAILS (BY OTHERS)</tspan></text>
+<path d="M555,7148.83 L730,7323.83 L3058.2,7323.83 L3072.2,7323.83" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="555" cy="7148.83" r="12" fill="#a07800"/>
+<text x="3088.2" y="7307.16" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3088.2" dy="0">PRECAST CONCRETE ADJUSTMENT</tspan><tspan x="3088.2" dy="83.33">RINGS (300 MAX), BEDDED IN MORTAR</tspan></text>
+<path d="M1555,7708.83 L3058.2,7708.83 L3072.2,7708.83" stroke="#a07800" stroke-width="3.6" fill="none"/>
+<circle cx="1555" cy="7708.83" r="12" fill="#a07800"/>
+<text x="3088.2" y="7733.83" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3088.2" dy="0">ROOF SLAB</tspan></text>
+<text x="355" y="8408.83" font-size="138.89" text-anchor="middle" fill="#111111" text-decoration="underline"><tspan x="355" dy="0">ACCESS COVER &amp; FRAME DETAIL - MH02</tspan></text>
+<text x="355" y="8503.83" font-size="69.44" text-anchor="middle" fill="#a07800"><tspan x="355" dy="0">SCALE 1:5</tspan></text>
 <path d="M3210,3312.16 L6730,3312.16" stroke="#111111" stroke-width="3.6" fill="none"/>
 <path d="M3210,3432.16 L6730,3432.16" stroke="#111111" stroke-width="3.6" fill="none"/>
 <path d="M3210,3552.16 L6730,3552.16" stroke="#111111" stroke-width="3.6" fill="none"/>
@@ -643,5 +705,5 @@
 <path d="M7470,5512.16 L7470,6032.16" stroke="#111111" stroke-width="3.6" fill="none"/>
 <path d="M7630,5772.16 L8430,5772.16" stroke="#d62828" stroke-width="10" fill="none"/>
 <text x="8030" y="5756.16" font-size="55.56" text-anchor="middle" fill="#111111"><tspan x="8030" dy="0">1600</tspan></text>
-<text x="3210" y="6282.16" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3210" dy="0">NOTES:</tspan><tspan x="3210" dy="83.33">1. ALL DIMENSIONS IN MILLIMETRES AND LEVELS IN METRES (AHD) UNLESS NOTED OTHERWISE.</tspan><tspan x="3210" dy="83.33">2. CONCRETE N40. COVER TO REINFORCEMENT 50 UNLESS NOTED OTHERWISE.</tspan><tspan x="3210" dy="83.33">3. REINFORCEMENT TO AS/NZS 4671 GRADE D500N.</tspan><tspan x="3210" dy="83.33">4. LAP LENGTHS 50d MINIMUM UNLESS NOTED OTHERWISE.</tspan><tspan x="3210" dy="83.33">5. BAR DIMENSIONS ARE TO BAR CENTRELINE. MINIMUM INTERNAL BEND DIAMETER 5d (AS 3600 TABLE 17.2.3.2); SCHEDULED LENGTHS ALLOW FOR BENDS.</tspan><tspan x="3210" dy="83.33">6. REINFORCEMENT INTERRUPTED BY OPENINGS SHALL BE CUT AND TRIMMER BARS PROVIDED AS SHOWN.</tspan><tspan x="3210" dy="83.33">7. PIPE PENETRATIONS SHALL BE SEALED WITH NON-SHRINK GROUT AND FLEXIBLE JOINT TO PIPE SUPPLIER'S DETAILS.</tspan><tspan x="3210" dy="83.33">8. COG = STANDARD 90° COG TO AS 3600 CL 13.1.2.7, LENGTH AS SCHEDULED (SHORTENED WHERE LIMITED BY SLAB DEPTH). SLAB BARS COGGED AT BOTH ENDS (BOTTOM BARS UP, TOP BARS DOWN); WALL VERTICAL BARS COGGED INTO ROOF SLAB.</tspan><tspan x="3210" dy="83.33">9. PRECAST MANHOLE COMPONENTS TO WSA 02 / AUTHORITY STANDARD DRAWINGS AND MANUFACTURER'S DETAILS.</tspan><tspan x="3210" dy="83.33">10. DRAFT GENERATED BY LYNHCADTOOLSBOX - TO BE CHECKED BY THE DESIGN ENGINEER.</tspan></text>
+<text x="3210" y="8770.5" font-size="69.44" text-anchor="start" fill="#a07800"><tspan x="3210" dy="0">NOTES:</tspan><tspan x="3210" dy="83.33">1. ALL DIMENSIONS IN MILLIMETRES AND LEVELS IN METRES (AHD) UNLESS NOTED OTHERWISE.</tspan><tspan x="3210" dy="83.33">2. CONCRETE N40. COVER TO REINFORCEMENT 50 UNLESS NOTED OTHERWISE.</tspan><tspan x="3210" dy="83.33">3. REINFORCEMENT TO AS/NZS 4671 GRADE D500N.</tspan><tspan x="3210" dy="83.33">4. LAP LENGTHS 50d MINIMUM UNLESS NOTED OTHERWISE.</tspan><tspan x="3210" dy="83.33">5. BAR DIMENSIONS ARE TO BAR CENTRELINE. MINIMUM INTERNAL BEND DIAMETER 5d (AS 3600 TABLE</tspan><tspan x="3210" dy="83.33">    17.2.3.2); SCHEDULED LENGTHS ALLOW FOR BENDS.</tspan><tspan x="3210" dy="83.33">6. REINFORCEMENT INTERRUPTED BY OPENINGS SHALL BE CUT AND TRIMMER BARS PROVIDED AS SHOWN.</tspan><tspan x="3210" dy="83.33">7. PIPE PENETRATIONS SHALL BE SEALED WITH NON-SHRINK GROUT AND FLEXIBLE JOINT TO PIPE</tspan><tspan x="3210" dy="83.33">    SUPPLIER'S DETAILS.</tspan><tspan x="3210" dy="83.33">8. COG = STANDARD 90° COG TO AS 3600 CL 13.1.2.7, LENGTH AS SCHEDULED (SHORTENED WHERE LIMITED</tspan><tspan x="3210" dy="83.33">    BY SLAB DEPTH). SLAB BARS COGGED AT BOTH ENDS (BOTTOM BARS UP, TOP BARS DOWN); WALL VERTICAL</tspan><tspan x="3210" dy="83.33">    BARS COGGED INTO ROOF SLAB.</tspan><tspan x="3210" dy="83.33">9. PRECAST MANHOLE COMPONENTS TO WSA 02 / AUTHORITY STANDARD DRAWINGS AND MANUFACTURER'S</tspan><tspan x="3210" dy="83.33">    DETAILS.</tspan><tspan x="3210" dy="83.33">10. DRAFT GENERATED BY LYNHCADTOOLSBOX - TO BE CHECKED BY THE DESIGN ENGINEER.</tspan></text>
 </svg>

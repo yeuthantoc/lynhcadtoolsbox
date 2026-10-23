@@ -34,6 +34,7 @@ namespace LynhCad.Manhole.Plugin.UI
             }
 
             cbType.ItemsSource = Enum.GetValues(typeof(ManholeType));
+            cbSheet.ItemsSource = new[] { SheetSize.None, SheetSize.A1, SheetSize.A3 };
             colRole.ItemsSource = Enum.GetValues(typeof(PipeRole));
             colWall.ItemsSource = Enum.GetValues(typeof(WallSide));
             foreach (var cb in new[] { cbWallV, cbWallH, cbBaseB, cbBaseT, cbRoofB, cbRoofT, cbTrim })
@@ -61,7 +62,7 @@ namespace LynhCad.Manhole.Plugin.UI
         /// </summary>
         private void UpdateEnabledFields()
         {
-            if (chkBaseTop == null || chkSteps == null || chkRebate == null) return;
+            if (chkBaseTop == null || chkSteps == null || chkRebate == null || chkCoverDetail == null || cbSheet == null) return;
             bool rebate = chkRebate.IsChecked == true;
             txtRebateDepth.IsEnabled = txtRebateWidth.IsEnabled = rebate;
             bool baseTop = chkBaseTop.IsChecked == true;
@@ -74,7 +75,19 @@ namespace LynhCad.Manhole.Plugin.UI
             foreach (var tb in new[] { txtStepSpacing, txtStepWidth, txtStepProjection, txtStepTopGap, txtStepBottomClear })
                 tb.IsEnabled = steps;
             txtStepAngle.IsEnabled = steps && chkStepAuto.IsChecked != true;
+
+            bool cover = chkCoverDetail.IsChecked == true;
+            foreach (var tb in new[] { txtCoverClass, txtCoverScale, txtFrameHeight, txtFrameFlange, txtBedding })
+                tb.IsEnabled = cover;
+
+            // khung tên / tỉ lệ chỉ có nghĩa khi tạo layout
+            bool sheet = cbSheet.SelectedItem is SheetSize && (SheetSize)cbSheet.SelectedItem != SheetSize.None;
+            chkFitScale.IsEnabled = sheet;
+            foreach (var tb in new[] { txtCompany, txtDwgNo, txtProject, txtRevision, txtClient, txtTitle1, txtTitle2, txtDrawn, txtDesigned, txtChecked, txtApproved })
+                tb.IsEnabled = sheet;
         }
+
+        private void OnSheetChanged(object sender, SelectionChangedEventArgs e) { UpdateEnabledFields(); }
 
         private bool IsRect { get { return Params != null && Params.Type == ManholeType.RectangularCast; } }
 

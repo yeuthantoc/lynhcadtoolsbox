@@ -76,6 +76,7 @@ namespace LynhCad.Manhole.Plugin
                     Color = Color.FromColorIndex(ColorMethod.ByAci, def.Color),
                     LineWeight = ToLineWeight(def.LineWeight),
                     Description = def.Description,
+                    IsPlottable = !def.NoPlot,
                 };
                 if (lt.Has(def.Linetype)) ltr.LinetypeObjectId = lt[def.Linetype];
                 if (!layers.IsWriteEnabled) layers.UpgradeOpen();

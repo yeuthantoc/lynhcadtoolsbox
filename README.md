@@ -28,6 +28,8 @@ Tool đầu tiên: **Manhole Detail**, vẽ tự động chi tiết hố ga BTCT
 - **SECTION A-A**: tự cắt dọc theo trục **ống ra**. Ống bị cắt vẽ dọc, ống phía sau vẽ ellipse đúng phối cảnh, benching và máng, thép bản đáy/nắp/tường (đường và chấm), cao độ CL / TOS / TOB / USB, kích thước.
 - **ROOF SLAB REINFORCEMENT**: lưới dưới, thanh bị lỗ thăm cắt, trimmer quanh lỗ.
 - **BAR SCHEDULE** (AutoCAD Table) + **NOTES**.
+- **ACCESS COVER & FRAME DETAIL** (tỉ lệ lớn, mặc định 1:5): mặt cắt qua mép lỗ thăm — mép bản nắp (có rãnh nếu bật), vành chỉnh cao độ đúc sẵn, vữa đệm không co ngót, khung thép góc có gờ đỡ, nắp phẳng mặt hoàn thiện; cao độ CL / TOS, kích thước ghi giá trị thật; cảnh báo khi khung + vữa cao hơn khoảng CL → mặt bản nắp hoặc vành chỉnh > 300. Layer `S-METL`.
+- **Layout A1 / A3 tự tạo** với block khung tên (`LCT_TITLE_A1` / `LCT_TITLE_A3`, attribute: công ty, dự án, chủ đầu tư, tên bản vẽ, số bản vẽ, rev, tờ, tỉ lệ, ngày, vẽ / thiết kế / kiểm tra / duyệt). Mỗi hình chiếu / bảng là một viewport khoá tỉ lệ; xếp lên tờ, không đủ chỗ thì sang tờ mới (`MH01-A3-1`, `MH01-A3-2`..., khung tên ghi "SHEET n OF N"). Giữ tỉ lệ đã chọn (vd 1:20); chỉ giảm sang tỉ lệ chuẩn kế tiếp khi có hình chiếu to hơn cả vùng vẽ. Máy in "DWG To PDF.pc3", khổ ISO full bleed. Vẽ lại block khung tên theo mẫu công ty (giữ tên tag) thì tool dùng block của bạn.
 - **Bậc thang (step irons)**, tuỳ chọn: một hàng bậc trên mặt trong tường, tự đặt dưới lỗ thăm và tránh lỗ ống (hoặc chỉ định góc). Mặt bằng vẽ hình chữ U; mặt cắt vẽ nhìn nghiêng (tường bị cắt) hoặc chính diện (tường phía sau); thêm ghi chú. Layer `S-STEP`.
 
 **Thép (AS/NZS 4671 D500N)**
@@ -157,6 +159,10 @@ Rãnh khung nắp: `"coverRebate": true`, `coverRebateDepth` (50, ≥ 20 và b�
 
 Bậc thang: `"stepIrons": true`, tuỳ chọn `stepSpacing` (300), `stepWidth` (350), `stepProjection` (150), `stepTopGap` (300, từ đáy bản nắp tới bậc trên cùng), `stepBottomClear` (300, bậc dưới cùng trên mặt benching), `stepAuto` (true) hoặc `"stepAuto": false` + `stepAngle` (độ, hướng từ tâm hố tới tường đặt bậc, 0° = +X).
 
+Chi tiết khung nắp: `drawCoverDetail` (true), `coverClass` ("D"), `frameHeight` (100), `frameFlange` (100), `beddingThickness` (20), `coverDetailScale` (5 = 1:5). Vành chỉnh cao độ = `coverAllowance` (+ chiều sâu rãnh) − vữa − khung.
+
+Layout & khung tên: `sheet` (`"A1"` mặc định, `"A3"`, `"None"` = chỉ vẽ model), `fitScaleToSheet` (true), `company`, `project`, `client`, `drawingTitle`, `drawingSubtitle` (trống = tự đặt), `drawingNumber`, `revision` ("A"), `drawnBy`, `designedBy`, `checkedBy`, `approvedBy`. Ngày lấy theo ngày vẽ.
+
 Hố tròn đổ tại chỗ: `"type": "CircularCast"`, dùng `internalDiameter`, `wallThickness` (≥ 150), `openingDiameter`, `roofProjection`, thép tường `wallVertical` / `wallHorizontal`, và ống dùng `"angle"`. Ví dụ: [`samples/circ-cast-mh04.json`](samples/circ-cast-mh04.json).
 
 ## Cấu trúc mã nguồn
@@ -166,7 +172,8 @@ src/LynhCad.Manhole.Core      netstandard2.0, KHÔNG phụ thuộc AutoCAD
   Model/      ManholeParams (thông số), ManholeGeometry (kích thước suy ra + kiểm tra), ParamsJson
   Rebar/      RebarDesigner (bố trí thép), RebarSchedule (gộp & đánh số hiệu), khối lượng AS/NZS 4671
   Geometry/   Vec2, Interval, union đường bao, rải thanh...
-  Drawing/    PlanBuilder, SectionBuilder, RoofPlanBuilder, ScheduleBuilder, DetailComposer
+  Drawing/    PlanBuilder, SectionBuilder, RoofPlanBuilder, CoverFrameBuilder, ScheduleBuilder, DetailComposer,
+              SheetFormats (khổ giấy + block khung tên), SheetComposer (xếp viewport lên các tờ)
               → sinh "primitive" trung gian (polyline, hatch, text, dim, leader, table)
   Export/     SvgExporter (preview / kiểm tra không cần AutoCAD)
 src/LynhCad.Loader            net48, DLL AutoCAD nạp: đăng ký lệnh, nạp/nạp lại plugin từ byte
@@ -176,6 +183,7 @@ src/LynhCad.Manhole.Plugin    net48 + WPF, plugin AutoCAD (gọi qua Entry.Run, 
   DetailData.cs   lưu / đọc thông số trong Xrecord của group
   AcadSetup.cs    layer S-*, linetype, text style, dim style LCT_1-20
   AcadRenderer.cs primitive → entity AutoCAD
+  SheetLayouts.cs tạo / xoá layout: page setup, khung tên, viewport
   UI/             hộp thoại WPF
 tools/LynhCad.Manhole.Preview  CLI: chạy bộ kiểm tra, xuất SVG từ JSON
 deploy/                        PackageContents.xml cho bundle tự nạp
@@ -186,7 +194,10 @@ Lõi tách khỏi AutoCAD nên logic có thể test và xem trước ở bất k
 ```bash
 dotnet run --project tools/LynhCad.Manhole.Preview -- check
 dotnet run --project tools/LynhCad.Manhole.Preview -- svg samples/rect-mh01.json out.svg
+dotnet run --project tools/LynhCad.Manhole.Preview -- sheet samples/rect-mh01.json sheets.svg A3   # các tờ layout
 ```
+
+![Tờ A1 tự tạo cho MH01](docs/sheet-mh01-a1.png)
 
 ## Giới hạn hiện tại (v0.1)
 
@@ -195,11 +206,13 @@ dotnet run --project tools/LynhCad.Manhole.Preview -- svg samples/rect-mh01.json
 - Thép tường tại lỗ ống: thống kê thanh nguyên (cắt tại chỗ) + trimmer, chưa tách thanh ngắn.
 - Lỗ thăm tròn: thanh bản nắp cắt theo hình vuông bao quanh lỗ.
 - Bậc thang: một hàng thẳng đứng; vị trí tự động chỉ xét lỗ thăm và lỗ ống (không xét máng giữa hố). Trên mặt cắt, bậc ở tường phía trước mặt cắt không thể hiện.
-- Chưa có: chi tiết khung nắp, hố sâu nhiều đoạn, mặt cắt B-B, layer/style theo template công ty.
+- Chi tiết khung nắp là minh hoạ chung (khung thép góc + nắp phẳng); khung / nắp thật theo nhà sản xuất.
+- Layout: khung tên mẫu chung; máy in mặc định "DWG To PDF.pc3" (không có thì chọn khổ giấy lại trong Page Setup). Cập nhật bằng `LCT_MANHOLE_EDIT` xoá và tạo lại các layout của chi tiết (chỉnh tay trên các layout đó sẽ mất).
+- Chưa có: hố sâu nhiều đoạn, mặt cắt B-B, layer/style theo template công ty.
 
 ## Lộ trình
 
 - [ ] Mặt cắt B-B vuông góc, step irons, chi tiết benching/máng
-- [ ] Đọc template công ty (layer, dim style, title block)
+- [ ] Đọc template công ty (layer, dim style); khung tên theo mẫu công ty
 - [ ] Nhập danh sách hố ga từ Excel
 - [ ] Hỗ trợ AutoCAD 2025+ (.NET 8)

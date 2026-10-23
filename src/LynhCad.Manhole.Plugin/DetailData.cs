@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
@@ -18,8 +19,13 @@ namespace LynhCad.Manhole.Plugin
         public ManholeParams Params;
         /// <summary>Tâm hố ga trên mặt bằng hiện tại (đã cộng độ dời nếu người dùng MOVE chi tiết).</summary>
         public Vec2 Center;
+        /// <summary>Các layout đã tạo cho chi tiết (xoá và tạo lại khi cập nhật).</summary>
+        public List<ObjectId> Layouts = new List<ObjectId>();
 
-        public static void Save(Transaction tr, Group grp, ManholeParams p, Vec2 center, ObjectIdCollection created)
+        /// <summary>Mã nhóm DXF lưu id layout (soft pointer, khác 330 của điểm neo).</summary>
+        private const int LayoutCode = 331;
+
+        public static void Save(Transaction tr, Group grp, ManholeParams p, Vec2 center, ObjectIdCollection created, IEnumerable<ObjectId> layouts = null)
         {
             // điểm neo: điểm đầu của đường đầu tiên trong chi tiết, dùng để biết chi tiết đã bị MOVE bao xa
             ObjectId anchorId = ObjectId.Null;
@@ -41,6 +47,8 @@ namespace LynhCad.Manhole.Plugin
                 rb.Add(new TypedValue((int)DxfCode.SoftPointerId, anchorId));
                 rb.Add(new TypedValue(11, anchorPt));
             }
+            if (layouts != null)
+                foreach (var lid in layouts) rb.Add(new TypedValue(LayoutCode, lid));
             foreach (var chunk in DetailNaming.Chunk(ParamsJson.Serialize(p), DetailNaming.XrecordChunkSize))
                 rb.Add(new TypedValue((int)DxfCode.Text, chunk));
 
@@ -75,6 +83,7 @@ namespace LynhCad.Manhole.Plugin
             Point3d center = Point3d.Origin, anchorPt = Point3d.Origin;
             ObjectId anchorId = ObjectId.Null;
             bool hasAnchorPt = false;
+            var layouts = new List<ObjectId>();
             foreach (var tv in xr.Data.AsArray())
             {
                 switch (tv.TypeCode)
@@ -82,6 +91,7 @@ namespace LynhCad.Manhole.Plugin
                     case 10: center = (Point3d)tv.Value; break;
                     case 11: anchorPt = (Point3d)tv.Value; hasAnchorPt = true; break;
                     case (short)DxfCode.SoftPointerId: anchorId = (ObjectId)tv.Value; break;
+                    case LayoutCode: layouts.Add((ObjectId)tv.Value); break;
                     case (short)DxfCode.Text: json.Append((string)tv.Value); break;
                 }
             }
@@ -97,7 +107,7 @@ namespace LynhCad.Manhole.Plugin
                 var c = tr.GetObject(anchorId, OpenMode.ForRead, false) as Curve;
                 if (c != null) center = center + (c.StartPoint - anchorPt);
             }
-            return new DetailData { Params = p, Center = new Vec2(center.X, center.Y) };
+            return new DetailData { Params = p, Center = new Vec2(center.X, center.Y), Layouts = layouts };
         }
 
         /// <summary>Tìm Group hố ga (có lưu thông số) chứa đối tượng được chọn.</summary>

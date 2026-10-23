@@ -28,6 +28,9 @@ dotnet run --project tools/LynhCad.Manhole.Preview -- svg samples/rect-mh01.json
 # Run after an intended drawing change and review the SVG diff before committing.
 dotnet run --project tools/LynhCad.Manhole.Preview -- snapshot
 
+# Paper-space preview of the generated layouts (title block + viewports, all sheets stacked)
+dotnet run --project tools/LynhCad.Manhole.Preview -- sheet samples/rect-mh01.json out.svg A3
+
 # Regenerate the two sample JSON + SVG files
 dotnet run --project tools/LynhCad.Manhole.Preview -- sample <folder>
 ```
@@ -70,6 +73,8 @@ Plugin specifics:
 - Each detail is a named **Group** `LCT_<id>` (not a block); naming and Xrecord chunking rules live in Core `DetailNaming` so `check` covers them. `DetailData` (`DetailData.cs`) stores the params JSON (chunked strings), the centre point and an anchor curve in an Xrecord on the group's extension dictionary; `LCT_MANHOLE_EDIT` reads it, offsets by how far the anchor moved, erases the group's entities and redraws in place.
 - `AcadSetup.EnsureArrow` sets DIMBLK and must run outside a transaction. Layers (`Drawing/Layers.cs`, `S-*`), text style `LCT_ROMANS` and dim style are created only if missing; existing user-edited layers are kept.
 - Step irons (`stepIrons`, off by default): `StepPlanner` (Model/StepIrons.cs) sets `ManholeGeometry.Steps` — auto placement scans 5° rays, rejects positions within 75 mm of a same-wall pipe penetration in plan (any height), then prefers under/nearest the opening and closest to its centre; manual = `stepAngle`. Drawn by PlanBuilder (U), SectionBuilder (profile on a wall parallel to the view, front view on the back wall, nothing on the front wall), notes, and the pipe preview; layer `S-STEP`.
+- Cover & frame detail (`drawCoverDetail`, on by default): `CoverFrameBuilder` draws true geometry scaled by K = scale / `coverDetailScale` (default 1:5) inside the 1:20 drawing; dims carry real values via `TextOverride`; placed under the roof slab plan, and the composer keeps the general NOTES clear of it.
+- Layouts (`sheet` = A1 default / A3 / None): `DetailComposer` records each view's model rect in `ComposeResult.Views`; Core `SheetComposer.Plan` keeps the chosen scale unless a single view exceeds the sheet's draw area (then next standard scale, re-composed so text stays 2.5 mm), caps the bar-shapes table height (extra columns), and packs one viewport per view onto as many sheets as needed (several orders, fewest sheets). Title blocks `LCT_TITLE_A1/A3` come from `SheetFormats` via `SymbolLibrary` (attributes by tag; a user-redefined block is kept). Plugin `SheetLayouts` creates layouts `<id>-<size>[-n]` (DWG To PDF.pc3 full-bleed media, `Layout.Initialize`, title block, locked viewports on non-plotting `S-VPRT`) and stores their ids in the group Xrecord (code 331); `LCT_MANHOLE_EDIT` deletes and recreates them. Every layout step only reports on failure. Not yet verified inside AutoCAD.
 - The Pipes tab shows a live plan preview: Core `PipeLayoutPreview.Build` (works even with invalid params, marks `ManholeGeometry.PipesWithErrors` red, outlet blue) rendered by `UI/PreviewRenderer` (`IPrimVisitor` → WPF Canvas). Refresh goes through `QueuePreview()` (coalesced `Dispatcher.BeginInvoke`, after the binding commits); a preview failure must never break the dialog.
 - `AcadRenderer.Add` re-applies text/dim styles after `SetDatabaseDefaults`; hatch `PatternScale`/`PatternAngle` must be set before `SetHatchPattern`. A failing primitive is skipped and reported ("Bỏ qua ...") rather than aborting the detail.
 

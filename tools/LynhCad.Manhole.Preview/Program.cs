@@ -58,12 +58,23 @@ namespace LynhCad.Manhole.Preview
                         foreach (var e in sv.Errors) Console.WriteLine("ERROR: " + e);
                         File.WriteAllText(args[2], SvgExporter.Export(sv.Model, 20));
                         return 0;
+                    case "sheet":
+                        if (args.Length < 3) { Console.WriteLine("usage: sheet <params.json> <out.svg> [A1|A3]"); return 2; }
+                        var sp = ParamsJson.Load(args[1]);
+                        if (args.Length > 3) sp.Sheet = (SheetSize)Enum.Parse(typeof(SheetSize), args[3], true);
+                        if (sp.Sheet == SheetSize.None) sp.Sheet = SheetSize.A1;
+                        var plan = SheetComposer.Plan(sp, "01/01/2026");
+                        foreach (var w in plan.Warnings) Console.WriteLine("WARNING: " + w);
+                        if (!plan.Compose.Ok) { foreach (var e in plan.Compose.Errors) Console.WriteLine("ERROR: " + e); return 1; }
+                        File.WriteAllText(args[2], SvgExporter.Export(SheetComposer.PaperPreview(plan), 1));
+                        Console.WriteLine("{0} {1}: scale 1:{2:0}, {3} sheet(s), fits {4} -> {5}", sp.Id, sp.Sheet, plan.Scale, plan.Pages.Count, plan.Fits, args[2]);
+                        return 0;
                     case "snapshot":
                         string samples = Snapshots.FindSamplesDir();
                         if (samples == null) { Console.WriteLine("samples/ not found"); return 2; }
                         return Snapshots.Write(samples);
                     default:
-                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | dims <json> <svg> | rebar <json> <svg> | pipesec <json> <svg> | sample <folder> | snapshot");
+                        Console.WriteLine("commands: check | svg <json> <svg> | pipes <json> <svg> | dims <json> <svg> | rebar <json> <svg> | pipesec <json> <svg> | sheet <json> <svg> [A1|A3] | sample <folder> | snapshot");
                         return 2;
                 }
             }
@@ -117,6 +128,8 @@ namespace LynhCad.Manhole.Preview
             CircularCastSample();
             PipePreview();
             Steps();
+            CoverDetail();
+            Sheets();
             Rebate();
             CogsAndBends();
             LeaderEnds();
@@ -459,6 +472,139 @@ namespace LynhCad.Manhole.Preview
             junk = ManholeParams.SampleCircular();
             junk.Pipes.Clear();
             True("pipe preview with no pipes", PipeLayoutPreview.Build(junk).Model.Items.Count > 0);
+        }
+
+        private static void Sheets()
+        {
+            // khung tên: đủ attribute
+            foreach (var size in new[] { SheetSize.A1, SheetSize.A3 })
+            {
+                var f = SheetFormats.Get(size);
+                var tags = SymbolLibrary.Get(f.BlockName).Items.OfType<PText>().Where(t => t.AttributeTag != null).Select(t => t.AttributeTag).ToList();
+                True("title block " + size + " has 14 attributes", tags.Count == 14 && tags.Distinct().Count() == 14);
+                True("title block " + size + " panel inside frame, draw area above panel",
+                    f.Panel.X2 <= f.Frame.X2 + 1e-9 && f.Panel.Y1 >= f.Frame.Y1 - 1e-9 && f.DrawArea.Y1 > f.Panel.Y2);
+            }
+            Eq("A1 paper width", 841, SheetFormats.Get(SheetSize.A1).Width);
+            Eq("A3 paper height", 297, SheetFormats.Get(SheetSize.A3).Height);
+
+            // None: không tạo tờ, giữ tỉ lệ
+            var none = ManholeParams.SampleRectangular();
+            none.Sheet = SheetSize.None;
+            var pn = SheetComposer.Plan(none, "01/01/2026");
+            True("sheet none: no pages, scale kept", !pn.HasSheet && pn.Pages.Count == 0 && Math.Abs(pn.Scale - 20) < 1e-9 && pn.Compose.Ok);
+
+            // mặc định A1: MH01 vừa 1 tờ ở 1:20
+            var p = ManholeParams.SampleRectangular();
+            True("default sheet A1 + fit", p.Sheet == SheetSize.A1 && p.FitScaleToSheet);
+            var plan = SheetComposer.Plan(p, "01/01/2026");
+            Eq("MH01 A1 scale", 20, plan.Scale);
+            Eq("MH01 A1 one sheet", 1, plan.Pages.Count);
+            CheckPlan("MH01 A1", plan);
+            var attrs = plan.Pages[0].TitleBlock.Attributes;
+            True("title attrs", attrs[SheetFormats.TagTitle1] == "MANHOLE MH01" && attrs[SheetFormats.TagSheet] == "1 OF 1"
+                && attrs[SheetFormats.TagScale] == "AS SHOWN" && attrs[SheetFormats.TagDate] == "01/01/2026" && attrs[SheetFormats.TagRev] == "A"
+                && attrs[SheetFormats.TagProject] == "-");
+
+            // A3: nhiều tờ, vẫn 1:20, số tờ trong khung tên
+            foreach (var q in new[] { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular(), ManholeParams.SampleCircularCast() })
+            {
+                q.Sheet = SheetSize.A3;
+                q.Project = "west street"; q.Company = "acme";
+                var p3 = SheetComposer.Plan(q, "01/01/2026");
+                True(q.Id + " A3 several sheets at 1:20", p3.Pages.Count > 1 && Math.Abs(p3.Scale - 20) < 1e-9 && p3.Fits);
+                CheckPlan(q.Id + " A3", p3);
+                int n = p3.Pages.Count;
+                True(q.Id + " A3 sheet numbers", p3.Pages.Select(pg => pg.TitleBlock.Attributes[SheetFormats.TagSheet])
+                    .SequenceEqual(Enumerable.Range(1, n).Select(i => i + " OF " + n)));
+                True(q.Id + " A3 first sheet has plan", p3.Pages[0].Viewports.Any(v => v.Name == "PLAN"));
+                True(q.Id + " title upper-cased", p3.Pages[0].TitleBlock.Attributes[SheetFormats.TagProject] == "WEST STREET");
+            }
+
+            // không cho giảm tỉ lệ + khổ quá nhỏ: cảnh báo, vẫn có tờ
+            var big = ManholeParams.SampleRectangular();
+            big.Sheet = SheetSize.A3; big.Scale = 5; big.FitScaleToSheet = false;
+            var pb = SheetComposer.Plan(big, "");
+            True("no fit: warning", !pb.Fits && pb.Warnings.Any(w => w.Contains("không vừa")) && pb.Pages.Count > 0);
+            // cho giảm: 1:5 không vừa A3 → tỉ lệ chuẩn lớn hơn, có cảnh báo
+            big.FitScaleToSheet = true;
+            var pf = SheetComposer.Plan(big, "");
+            True("fit: scale reduced to a standard scale", pf.Fits && pf.Scale > 5 && SheetComposer.StandardScales.Contains(pf.Scale)
+                && pf.Warnings.Any(w => w.Contains("đã vẽ ở")));
+
+            // ghi chú chung xuống dòng (khối ghi chú vừa A3)
+            var notes = DetailComposer.Compose(ManholeParams.SampleRectangular()).Model.Items.OfType<PText>().First(t => t.Text.StartsWith("NOTES"));
+            True("notes wrapped", notes.Lines.All(l => l.Length <= ScheduleBuilder.NoteWrap + 4));
+
+            // JSON cũ: mặc định A1, tự giảm tỉ lệ, khung tên trống
+            var partial = ParamsJson.Deserialize("{\"id\":\"X\",\"pipes\":[{\"mark\":\"A\",\"il\":10.0,\"role\":\"outlet\"}]}");
+            True("json default sheet", partial.Sheet == SheetSize.A1 && partial.FitScaleToSheet && partial.Revision == "A" && partial.Company == "");
+            var js = ParamsJson.Serialize(new ManholeParams { Sheet = SheetSize.A3 });
+            True("json sheet text", js.Contains("\"A3\"") && ParamsJson.Deserialize(js).Sheet == SheetSize.A3);
+        }
+
+        /// <summary>Mỗi hình chiếu đúng một viewport, trong vùng vẽ, không chồng nhau, kích thước = cửa sổ model / tỉ lệ.</summary>
+        private static void CheckPlan(string name, SheetPlan plan)
+        {
+            var area = plan.Format.DrawArea;
+            var all = plan.Pages.SelectMany(pg => pg.Viewports).ToList();
+            True(name + ": every view once", all.Select(v => v.Name).OrderBy(x => x).SequenceEqual(plan.Compose.Views.Select(v => v.Name).OrderBy(x => x)));
+            foreach (var pg in plan.Pages)
+                foreach (var v in pg.Viewports)
+                {
+                    True(name + ": " + v.Name + " inside draw area", v.Paper.X1 >= area.X1 - 1e-6 && v.Paper.X2 <= area.X2 + 1e-6
+                        && v.Paper.Y1 >= area.Y1 - 1e-6 && v.Paper.Y2 <= area.Y2 + 1e-6);
+                    Eq(name + ": " + v.Name + " width = window / scale", v.ModelWindow.Width / plan.Scale, v.Paper.Width, 1e-6);
+                    True(name + ": " + v.Name + " no overlap", pg.Viewports.Where(o => o != v).All(o =>
+                        v.Paper.X2 <= o.Paper.X1 + 1e-6 || o.Paper.X2 <= v.Paper.X1 + 1e-6 || v.Paper.Y2 <= o.Paper.Y1 + 1e-6 || o.Paper.Y2 <= v.Paper.Y1 + 1e-6));
+                }
+        }
+
+        private static void CoverDetail()
+        {
+            // mặc định có chi tiết khung nắp, tỉ lệ 1:5
+            var p = ManholeParams.SampleRectangular();
+            True("cover detail on by default", p.DrawCoverDetail && Math.Abs(p.CoverDetailScale - 5) < 1e-9);
+            var res = DetailComposer.Compose(p);
+            var texts = res.Model.Items.OfType<PText>().Select(t => t.Text).ToList();
+            True("cover detail title", texts.Any(t => t.StartsWith("ACCESS COVER & FRAME DETAIL")));
+            True("cover detail scale 1:5", texts.Contains("SCALE 1:5"));
+            True("cover detail metal layer", res.Model.Items.Any(i => i.Layer == Layers.Metal));
+            // CL - TOS = 200 = vành 80 + vữa 20 + khung 100; kích thước ghi giá trị thật
+            var over = res.Model.Items.OfType<PDim>().Select(d => d.TextOverride).ToList();
+            True("cover detail dims 80 / 100 / 200", over.Contains("80") && over.Contains("100") && over.Contains("200"));
+            True("cover detail class D note", res.Model.Items.OfType<PLeader>().Any(l => l.Text.StartsWith("CLASS D ACCESS COVER TO AS 3996")));
+            True("cover detail no warning", res.Warnings.All(w => !w.StartsWith("Chi tiết khung nắp")));
+
+            // tắt → không có
+            p.DrawCoverDetail = false;
+            True("cover detail off", DetailComposer.Compose(p).Model.Items.All(i => i.Layer != Layers.Metal));
+
+            // khung + vữa cao hơn khoảng CL → TOS: cảnh báo
+            var tall = ManholeParams.SampleRectangular();
+            tall.FrameHeight = 250;
+            True("cover detail too tall warns", DetailComposer.Compose(tall).Warnings.Any(w => w.Contains("cao hơn khoảng CL")));
+
+            // có rãnh: kích thước rãnh, cánh khung rộng hơn rãnh thì cảnh báo
+            var reb = ManholeParams.SampleRectangular();
+            reb.CoverRebate = true; reb.CoverRebateDepth = 50; reb.CoverRebateWidth = 80;
+            var rr = DetailComposer.Compose(reb);
+            True("cover detail rebate dim", rr.Model.Items.OfType<PDim>().Any(d => d.TextOverride == "50"));
+            True("cover detail flange wider than rebate warns", rr.Warnings.Any(w => w.Contains("rộng") && w.Contains("rãnh")));
+
+            // chi tiết không lấn vào ghi chú chung (mọi mẫu)
+            foreach (var q in new[] { ManholeParams.SampleRectangular(), ManholeParams.SampleCircular(), ManholeParams.SampleCircularCast() })
+            {
+                var m = DetailComposer.Compose(q).Model;
+                var notes = m.Items.OfType<PText>().First(t => t.Text.StartsWith("NOTES"));
+                var nb = new Bounds(); notes.AddBounds(nb);
+                var title = m.Items.OfType<PText>().First(t => t.Text.StartsWith("ACCESS COVER & FRAME DETAIL"));
+                True("notes below/apart from cover detail " + q.Id, nb.MaxY < title.Position.Y || nb.MinX > title.Position.X + 400 * q.Scale);
+            }
+
+            // JSON cũ thiếu trường → mặc định
+            var partial = ParamsJson.Deserialize("{\"id\":\"X\",\"pipes\":[{\"mark\":\"A\",\"il\":10.0,\"role\":\"outlet\"}]}");
+            True("json default cover detail", partial.DrawCoverDetail && partial.CoverClass == "D" && Math.Abs(partial.FrameHeight - 100) < 1e-9);
         }
 
         private static void Steps()

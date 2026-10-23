@@ -247,6 +247,67 @@
                                 <TextBlock Grid.Row="3" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
                             </Grid>
                         </GroupBox>
+
+                        <!-- Chi tiết khung nắp -->
+                        <GroupBox Header="Access cover &amp; frame detail" Margin="0,8,0,0" Padding="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                                <CheckBox x:Name="chkCoverDetail" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" Margin="4,6" Content="Draw cover &amp; frame detail (section through the opening edge)" IsChecked="{Binding DrawCoverDetail}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Cover class (AS 3996)" ToolTip="Load class A, B, C, D, E, F or G" />
+                                <TextBox x:Name="txtCoverClass" Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding CoverClass}" />
+                                <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource Lbl}" Text="Detail scale  1 :" ToolTip="Larger scale than the main drawing, e.g. 5 = 1:5" />
+                                <TextBox x:Name="txtCoverScale" Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding CoverDetailScale}" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Lbl}" Text="Frame height" ToolTip="Cover frame height; the cover is flush with the top of the frame" />
+                                <TextBox x:Name="txtFrameHeight" Grid.Row="2" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding FrameHeight}" />
+                                <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource Lbl}" Text="Frame flange width" ToolTip="Bottom flange of the frame bedded on mortar, from the opening edge outwards" />
+                                <TextBox x:Name="txtFrameFlange" Grid.Row="2" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding FrameFlange}" />
+                                <TextBlock Grid.Row="2" Grid.Column="5" Style="{StaticResource Unit}" Text="mm" />
+                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Lbl}" Text="Mortar bedding" ToolTip="Non-shrink mortar under the frame. Adjustment rings fill the rest of CL to top of roof" />
+                                <TextBox x:Name="txtBedding" Grid.Row="3" Grid.Column="1" Style="{StaticResource Num}" Text="{Binding BeddingThickness}" />
+                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource Unit}" Text="mm" />
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Layout & khung tên -->
+                        <GroupBox Header="Sheet layout &amp; title block" Margin="0,8,0,0" Padding="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="160" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Lbl}" Text="Sheet (layout)" ToolTip="None = model space only. A1 / A3 = create layouts with title block and viewports; views that do not fit go on further sheets" />
+                                <ComboBox x:Name="cbSheet" Grid.Row="0" Grid.Column="1" Width="90" Margin="2,3" HorizontalAlignment="Left" SelectedItem="{Binding Sheet}" SelectionChanged="OnSheetChanged" />
+                                <CheckBox x:Name="chkFitScale" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="4,6" Content="Reduce scale if a view is larger than the sheet" IsChecked="{Binding FitScaleToSheet}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Company" />
+                                <TextBox x:Name="txtCompany" Grid.Row="1" Grid.Column="1" Style="{StaticResource Num}" Width="200" TextAlignment="Left" Text="{Binding Company}" />
+                                <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource Lbl}" Text="Drawing No." />
+                                <TextBox x:Name="txtDwgNo" Grid.Row="1" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding DrawingNumber}" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Lbl}" Text="Project" />
+                                <TextBox x:Name="txtProject" Grid.Row="2" Grid.Column="1" Style="{StaticResource Num}" Width="200" TextAlignment="Left" Text="{Binding Project}" />
+                                <TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource Lbl}" Text="Revision" />
+                                <TextBox x:Name="txtRevision" Grid.Row="2" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding Revision}" />
+                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Lbl}" Text="Client" />
+                                <TextBox x:Name="txtClient" Grid.Row="3" Grid.Column="1" Style="{StaticResource Num}" Width="200" TextAlignment="Left" Text="{Binding Client}" />
+                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource Lbl}" Text="Drawing title" ToolTip="Blank = MANHOLE &lt;ID&gt;" />
+                                <TextBox x:Name="txtTitle1" Grid.Row="4" Grid.Column="1" Style="{StaticResource Num}" Width="200" TextAlignment="Left" Text="{Binding DrawingTitle}" />
+                                <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource Lbl}" Text="Title line 2" ToolTip="Blank = GENERAL ARRANGEMENT &amp; REINFORCEMENT" />
+                                <TextBox x:Name="txtTitle2" Grid.Row="5" Grid.Column="1" Style="{StaticResource Num}" Width="200" TextAlignment="Left" Text="{Binding DrawingSubtitle}" />
+                                <TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource Lbl}" Text="Drawn" />
+                                <TextBox x:Name="txtDrawn" Grid.Row="3" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding DrawnBy}" />
+                                <TextBlock Grid.Row="4" Grid.Column="3" Style="{StaticResource Lbl}" Text="Designed" />
+                                <TextBox x:Name="txtDesigned" Grid.Row="4" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding DesignedBy}" />
+                                <TextBlock Grid.Row="5" Grid.Column="3" Style="{StaticResource Lbl}" Text="Checked" />
+                                <TextBox x:Name="txtChecked" Grid.Row="5" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding CheckedBy}" />
+                                <TextBlock Grid.Row="6" Grid.Column="3" Style="{StaticResource Lbl}" Text="Approved" />
+                                <TextBox x:Name="txtApproved" Grid.Row="6" Grid.Column="4" Style="{StaticResource Num}" Text="{Binding ApprovedBy}" />
+                            </Grid>
+                        </GroupBox>
                     </StackPanel>
                 </ScrollViewer>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" />

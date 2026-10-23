@@ -16,6 +16,9 @@ namespace LynhCad.Manhole.Core.Model
 
     public enum PipeRole { Inlet = 0, Outlet = 1 }
 
+    /// <summary>Khổ giấy của layout tự tạo. None = chỉ vẽ trong model space.</summary>
+    public enum SheetSize { None = 0, A3 = 3, A1 = 1 }
+
     /// <summary>Tường mà ống xuyên qua (chỉ dùng cho hố ga chữ nhật). N = +Y, E = +X.</summary>
     public enum WallSide { North = 0, East = 1, South = 2, West = 3 }
 
@@ -146,6 +149,20 @@ namespace LynhCad.Manhole.Core.Model
         /// <summary>Rãnh rộng hơn lỗ thăm mỗi phía (mm); hố tròn: rãnh tròn đường kính = lỗ + 2×giá trị này.</summary>
         [DataMember(Name = "coverRebateWidth")] public double CoverRebateWidth { get; set; }
 
+        // ---------- Chi tiết khung nắp (cover & frame detail) ----------
+        /// <summary>Vẽ thêm hình chiếu "ACCESS COVER &amp; FRAME DETAIL" (mặt cắt qua mép lỗ thăm, tỉ lệ lớn).</summary>
+        [DataMember(Name = "drawCoverDetail")] public bool DrawCoverDetail { get; set; }
+        /// <summary>Cấp tải nắp theo AS 3996 (A, B, C, D, E, F, G).</summary>
+        [DataMember(Name = "coverClass")] public string CoverClass { get; set; }
+        /// <summary>Chiều cao khung nắp (mm), nắp phẳng mặt trên khung.</summary>
+        [DataMember(Name = "frameHeight")] public double FrameHeight { get; set; }
+        /// <summary>Bề rộng cánh đáy khung đặt lên lớp vữa (mm, tính từ mép lỗ thăm ra ngoài).</summary>
+        [DataMember(Name = "frameFlange")] public double FrameFlange { get; set; }
+        /// <summary>Chiều dày lớp vữa không co ngót dưới khung (mm).</summary>
+        [DataMember(Name = "beddingThickness")] public double BeddingThickness { get; set; }
+        /// <summary>Mẫu số tỉ lệ của chi tiết khung nắp (5 = 1:5). Vẽ phóng to trong bản vẽ chính.</summary>
+        [DataMember(Name = "coverDetailScale")] public double CoverDetailScale { get; set; }
+
         // ---------- Cao độ ----------
         /// <summary>Cao độ nắp (cover level), m.</summary>
         [DataMember(Name = "coverLevel")] public double CoverLevel { get; set; }
@@ -216,6 +233,26 @@ namespace LynhCad.Manhole.Core.Model
         [DataMember(Name = "drawRoofPlan")] public bool DrawRoofPlan { get; set; }
         [DataMember(Name = "drawSchedule")] public bool DrawSchedule { get; set; }
 
+        // ---------- Layout & khung tên ----------
+        /// <summary>Tạo layout khổ này (khung tên + viewport vào chi tiết). None = không tạo layout.</summary>
+        public SheetSize Sheet { get; set; }
+        [DataMember(Name = "sheet")]
+        private string SheetText { get { return Sheet.ToString(); } set { Sheet = PipeSpec.ParseEnum(value, SheetSize.A1); } }
+        /// <summary>true: nếu chi tiết ở tỉ lệ Scale không vừa khổ giấy thì tự giảm sang tỉ lệ chuẩn kế tiếp (1:25, 1:50...).</summary>
+        [DataMember(Name = "fitScaleToSheet")] public bool FitScaleToSheet { get; set; }
+        [DataMember(Name = "company")] public string Company { get; set; }
+        [DataMember(Name = "project")] public string Project { get; set; }
+        [DataMember(Name = "client")] public string Client { get; set; }
+        /// <summary>Tên bản vẽ dòng 1 / dòng 2. Bỏ trống = tự đặt ("MANHOLE MH01" / "GENERAL ARRANGEMENT &amp; REINFORCEMENT").</summary>
+        [DataMember(Name = "drawingTitle")] public string DrawingTitle { get; set; }
+        [DataMember(Name = "drawingSubtitle")] public string DrawingSubtitle { get; set; }
+        [DataMember(Name = "drawingNumber")] public string DrawingNumber { get; set; }
+        [DataMember(Name = "revision")] public string Revision { get; set; }
+        [DataMember(Name = "drawnBy")] public string DrawnBy { get; set; }
+        [DataMember(Name = "designedBy")] public string DesignedBy { get; set; }
+        [DataMember(Name = "checkedBy")] public string CheckedBy { get; set; }
+        [DataMember(Name = "approvedBy")] public string ApprovedBy { get; set; }
+
         public ManholeParams()
         {
             SetDefaults();
@@ -235,6 +272,7 @@ namespace LynhCad.Manhole.Core.Model
             OpeningX = 900; OpeningY = 600; OpeningDiameter = 600;
             OpeningOffsetX = 0; OpeningOffsetY = 0;
             CoverRebate = false; CoverRebateDepth = 50; CoverRebateWidth = 150;
+            DrawCoverDetail = true; CoverClass = "D"; FrameHeight = 100; FrameFlange = 100; BeddingThickness = 20; CoverDetailScale = 5;
             CoverLevel = 15.000; CoverAllowance = 200; SumpDepth = 50;
             Cover = 50;
             WallVertical = new BarSpec(12, 200);
@@ -258,6 +296,9 @@ namespace LynhCad.Manhole.Core.Model
             ConcreteGrade = "N40";
             DrawRoofPlan = true;
             DrawSchedule = true;
+            Sheet = SheetSize.A1; FitScaleToSheet = true;
+            Company = ""; Project = ""; Client = ""; DrawingTitle = ""; DrawingSubtitle = "";
+            DrawingNumber = ""; Revision = "A"; DrawnBy = ""; DesignedBy = ""; CheckedBy = ""; ApprovedBy = "";
         }
 
         public ManholeParams Clone()

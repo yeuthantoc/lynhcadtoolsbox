@@ -11,6 +11,8 @@ namespace LynhCad.Manhole.Core.Drawing
         /// <summary>Nét in, đơn vị 1/100 mm (vd 35 = 0.35 mm).</summary>
         public int LineWeight;
         public string Description;
+        /// <summary>Layer không in (vd viewport).</summary>
+        public bool NoPlot;
     }
 
     /// <summary>
@@ -57,6 +59,10 @@ namespace LynhCad.Manhole.Core.Drawing
         public const string SectionMark = "S-SECT";
         public const string Table = "S-SCHD";
         public const string Steps = "S-STEP";
+        public const string Metal = "S-METL";
+        public const string Sheet = "S-SHEET";
+        /// <summary>Viewport trên layout: không in.</summary>
+        public const string Viewport = "S-VPRT";
 
         public static readonly List<LayerDef> All = new List<LayerDef>
         {
@@ -75,6 +81,9 @@ namespace LynhCad.Manhole.Core.Drawing
             new LayerDef { Name = SectionMark,    Color = 7,   Linetype = "Continuous", LineWeight = 35, Description = "Section markers" },
             new LayerDef { Name = Table,          Color = 7,   Linetype = "Continuous", LineWeight = 18, Description = "Bar schedule" },
             new LayerDef { Name = Steps,          Color = 5,   Linetype = "Continuous", LineWeight = 35, Description = "Step irons" },
+            new LayerDef { Name = Metal,          Color = 6,   Linetype = "Continuous", LineWeight = 35, Description = "Cover & frame metalwork" },
+            new LayerDef { Name = Sheet,          Color = 7,   Linetype = "Continuous", LineWeight = 35, Description = "Sheet border & title block" },
+            new LayerDef { Name = Viewport,       Color = 8,   Linetype = "Continuous", LineWeight = 13, Description = "Layout viewports (not plotted)", NoPlot = true },
         };
     }
 }

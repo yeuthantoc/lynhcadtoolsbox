@@ -32,7 +32,10 @@ namespace LynhCad.Manhole.Core.Drawing
                 case LevelLeft: return Level(-1);
                 case SectionRight: return Section(1);
                 case SectionLeft: return Section(-1);
-                default: throw new KeyNotFoundException("Không có block " + name);
+                default:
+                    var sheet = SheetFormats.ForBlock(name);
+                    if (sheet != null) return SheetFormats.Block(sheet);
+                    throw new KeyNotFoundException("Không có block " + name);
             }
         }
 

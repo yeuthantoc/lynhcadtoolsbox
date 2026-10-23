@@ -14,20 +14,27 @@ namespace LynhCad.Manhole.Core.Drawing
     /// </summary>
     public static class ShapeScheduleBuilder
     {
-        /// <summary>Số ô trên một hàng.</summary>
+        /// <summary>Số ô trên một hàng (mặc định).</summary>
         public const int Columns = 2;
 
-        public static DrawingModel Build(ManholeGeometry g, RebarSchedule sch, DrawStyle st)
+        /// <param name="maxHeight">Chiều cao tối đa của bảng (mm giấy, 0 = không giới hạn): bảng cao hơn thì thêm cột.</param>
+        public static DrawingModel Build(ManholeGeometry g, RebarSchedule sch, DrawStyle st, double maxHeight = 0)
         {
             var m = new DrawingModel();
             double s = st.Scale;
             double cellW = 78 * s, cellH = 26 * s, labelW = 22 * s;
             double h = st.TextSmall;
+            double titleH = 6 * s;
 
             int n = sch.Marks.Count;
-            int rows = (n + Columns - 1) / Columns;
-            double totalW = Columns * cellW;
-            double titleH = 6 * s;
+            int cols = Columns;
+            if (maxHeight > 0 && n > 0)
+            {
+                int maxRows = Math.Max(1, (int)Math.Floor((maxHeight * s - titleH) / cellH + 1e-9));
+                cols = Math.Max(Columns, (n + maxRows - 1) / maxRows);
+            }
+            int rows = (n + cols - 1) / cols;
+            double totalW = cols * cellW;
 
             // khung + tiêu đề
             m.Add(PPolyline.Rect(new Rect2(0, -titleH - rows * cellH, totalW, 0), Layers.Table));
@@ -38,13 +45,13 @@ namespace LynhCad.Manhole.Core.Drawing
                 double y = -titleH - r * cellH;
                 m.Add(PPolyline.Line(new Vec2(0, y), new Vec2(totalW, y), Layers.Table));
             }
-            for (int c = 1; c < Columns; c++)
+            for (int c = 1; c < cols; c++)
                 m.Add(PPolyline.Line(new Vec2(c * cellW, -titleH), new Vec2(c * cellW, -titleH - rows * cellH), Layers.Table));
 
             for (int i = 0; i < n; i++)
             {
                 var bm = sch.Marks[i];
-                int r = i / Columns, c = i % Columns;
+                int r = i / cols, c = i % cols;
                 double x0 = c * cellW, y0 = -titleH - r * cellH;   // góc trên-trái ô
                 // nhãn
                 string label = string.Format("{0}  {1}\n{2} No.\nL = {3:0}", bm.Mark, bm.Size, bm.Count, bm.Length);

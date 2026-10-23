@@ -73,17 +73,17 @@ namespace LynhCad.Manhole.Plugin
             var ed = doc.Editor;
 
             // dựng hình trước, báo lỗi trước khi bắt chọn điểm
-            var models = new List<KeyValuePair<ManholeParams, DrawingModel>>();
+            var models = new List<KeyValuePair<ManholeParams, SheetPlan>>();
             foreach (var p in list)
             {
                 // một hố: báo lỗi bằng hộp thoại và dừng; nhiều hố: ghi lỗi ra dòng lệnh, bỏ qua hố đó
-                var res = Compose(ed, p, list.Count == 1);
-                if (res == null)
+                var plan = Compose(ed, p, list.Count == 1);
+                if (plan == null)
                 {
                     if (list.Count == 1) return;
                     continue;
                 }
-                models.Add(new KeyValuePair<ManholeParams, DrawingModel>(p, res.Model));
+                models.Add(new KeyValuePair<ManholeParams, SheetPlan>(p, plan));
             }
             if (models.Count == 0) return;
 
@@ -103,17 +103,20 @@ namespace LynhCad.Manhole.Plugin
                 foreach (var item in models)
                 {
                     var p = item.Key;
-                    var model = item.Value;
+                    var plan = item.Value;
+                    var model = plan.Compose.Model;
                     // điểm chọn = tâm hố của hố đầu tiên; các hố sau xếp sang phải
                     double dx = first ? x : x - model.GetBounds().MinX;
                     var center = new Vec2(dx, basePt.Y);
                     model.Translate(center);
 
-                    var created = RenderDetail(db, tr, space, p, model, arrows, ed);
+                    AcadSetup setup;
+                    var created = RenderDetail(db, tr, space, p, plan.Scale, model, arrows, ed, out setup);
+                    var layouts = MakeLayouts(db, tr, setup, plan, p, center, ed);
                     var grp = MakeGroup(db, tr, p.Id, created);
-                    if (grp != null) DetailData.Save(tr, grp, p, center, created);
+                    if (grp != null) DetailData.Save(tr, grp, p, center, created, layouts);
 
-                    x = model.GetBounds().MaxX + new DrawStyle(p.Scale).ViewGap * 2;
+                    x = model.GetBounds().MaxX + new DrawStyle(plan.Scale).ViewGap * 2;
                     first = false;
                     ed.WriteMessage("\n[{0}] Đã vẽ {1} đối tượng.", p.Id, created.Count);
                 }
@@ -156,10 +159,18 @@ namespace LynhCad.Manhole.Plugin
             var p = win.Params;
             PluginSettings.SaveLast(p);
 
-            var res = Compose(ed, p, true);
-            if (res == null) return;
-            var model = res.Model;
+            var plan = Compose(ed, p, true);
+            if (plan == null) return;
+            var model = plan.Compose.Model;
             model.Translate(data.Center);
+
+            // tên các layout cũ của chi tiết (xoá rồi tạo lại theo thông số mới)
+            List<string> oldLayouts;
+            using (var tr = db.TransactionManager.StartTransaction())
+            {
+                oldLayouts = SheetLayouts.Names(tr, data.Layouts);
+                tr.Commit();
+            }
 
             var arrows = Arrows.Ensure(db);
 
@@ -181,11 +192,16 @@ namespace LynhCad.Manhole.Plugin
                 // vẽ vào đúng không gian chứa chi tiết cũ (model hoặc layout)
                 var ownerId = tr.GetObject(per.ObjectId, OpenMode.ForRead, true).OwnerId;
                 var space = (BlockTableRecord)tr.GetObject(ownerId, OpenMode.ForWrite);
-                var created = RenderDetail(db, tr, space, p, model, arrows, ed);
+                AcadSetup setup;
+                var created = RenderDetail(db, tr, space, p, plan.Scale, model, arrows, ed, out setup);
                 if (created.Count > 0) grp.Append(created);
                 grp.Description = DetailNaming.GroupDescription(p.Id);
                 RenameGroup(db, tr, grp, p.Id);
-                DetailData.Save(tr, grp, p, data.Center, created);
+                var msgs = new List<string>();
+                SheetLayouts.Delete(oldLayouts, msgs);
+                foreach (var m in msgs) ed.WriteMessage("\n[{0}] {1}", p.Id, m);
+                var layouts = MakeLayouts(db, tr, setup, plan, p, data.Center, ed);
+                DetailData.Save(tr, grp, p, data.Center, created, layouts);
                 tr.Commit();
                 ed.WriteMessage("\n[{0}] Đã cập nhật: xoá {1}, vẽ lại {2} đối tượng.", p.Id, erased, created.Count);
             }
@@ -193,28 +209,41 @@ namespace LynhCad.Manhole.Plugin
         }
 
         /// <summary>
-        /// Dựng chi tiết và ghi cảnh báo / lỗi ra dòng lệnh. Trả về null nếu thông số có lỗi
-        /// (alert = true: báo thêm bằng hộp thoại).
+        /// Dựng chi tiết (ở tỉ lệ vừa khổ giấy nếu có layout) và ghi cảnh báo / lỗi ra dòng lệnh.
+        /// Trả về null nếu thông số có lỗi (alert = true: báo thêm bằng hộp thoại).
         /// </summary>
-        private static ComposeResult Compose(Editor ed, ManholeParams p, bool alert)
+        private static SheetPlan Compose(Editor ed, ManholeParams p, bool alert)
         {
-            var res = DetailComposer.Compose(p);
+            var plan = SheetComposer.Plan(p, DateTime.Now.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture));
+            var res = plan.Compose;
             foreach (var w in res.Warnings) ed.WriteMessage("\n[{0}] Cảnh báo: {1}", p.Id, w);
-            if (res.Ok) return res;
+            foreach (var w in plan.Warnings) ed.WriteMessage("\n[{0}] Cảnh báo: {1}", p.Id, w);
+            if (res.Ok) return plan;
             foreach (var e in res.Errors) ed.WriteMessage("\n[{0}] LỖI: {1}", p.Id, e);
             if (alert) AcApp.ShowAlertDialog("Thông số hố ga " + p.Id + " có lỗi:\n\n- " + string.Join("\n- ", res.Errors));
             return null;
         }
 
-        private static ObjectIdCollection RenderDetail(Database db, Transaction tr, BlockTableRecord space, ManholeParams p,
-            DrawingModel model, Arrows arrows, Editor ed)
+        private static ObjectIdCollection RenderDetail(Database db, Transaction tr, BlockTableRecord space, ManholeParams p, double scale,
+            DrawingModel model, Arrows arrows, Editor ed, out AcadSetup setup)
         {
-            var setup = new AcadSetup();
-            setup.Run(db, tr, p.Scale, arrows.Oblique, arrows.Dot, arrows.OpenDot);
+            setup = new AcadSetup();
+            setup.Run(db, tr, scale, arrows.Oblique, arrows.Dot, arrows.OpenDot);
             var renderer = new AcadRenderer(db, tr, space, setup);
             renderer.Render(model);
             foreach (var msg in renderer.Skipped) ed.WriteMessage("\n[{0}] {1}", p.Id, msg);
             return renderer.Created;
+        }
+
+        /// <summary>Tạo layout (khung tên + viewport) theo plan; lỗi chỉ ghi ra dòng lệnh, không làm hỏng chi tiết.</summary>
+        private static List<ObjectId> MakeLayouts(Database db, Transaction tr, AcadSetup setup, SheetPlan plan, ManholeParams p, Vec2 center, Editor ed)
+        {
+            var msgs = new List<string>();
+            List<ObjectId> ids;
+            try { ids = SheetLayouts.Create(db, tr, setup, plan, p.Id, center, msgs); }
+            catch (System.Exception ex) { ids = new List<ObjectId>(); msgs.Add("Không tạo được layout: " + ex.Message); }
+            foreach (var m in msgs) ed.WriteMessage("\n[{0}] {1}", p.Id, m);
+            return ids;
         }
 
         private static Group MakeGroup(Database db, Transaction tr, string id, ObjectIdCollection ids)
